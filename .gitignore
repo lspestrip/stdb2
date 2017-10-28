@@ -1,0 +1,44 @@
+*~
+.vscode/
+
+# Local configuration files
+.env
+.env.*
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+.ini
+.ini.*
+
+# Python byte-compiled stuff
+__pycache__/
+*.py[cod]
+
+# Other generic Python stuff we do not need to track
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Django stuff
+*.log
+.static_storage/
+.media/
+local_settings.py
+db.sqlite3

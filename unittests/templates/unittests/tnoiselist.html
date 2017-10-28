@@ -1,0 +1,24 @@
+{% extends "unittests/base.html" %}
+
+{% block title %}
+LSPE/Strip DB: List of tests
+{% endblock %}
+
+{% block contents %}
+<h1>Noise temperature estimates</h1>
+
+<p>Number of reports in the database: {{ tnoise_tests | length }}</p>
+<table>
+    <thead>
+        <th>Analysis</th>
+        <th>Acqusition date</th>
+    </thead>
+    {% for cur in tnoise_tests %}
+    <tr>
+        <td>{{ cur.noise_temperature }}</a></td>
+        <td>{{ cur.analysis_date }}</td>
+        <td>🗙</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

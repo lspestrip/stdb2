@@ -1,0 +1,31 @@
+{% load staticfiles %}
+<!-- Doctype HTML5 -->
+<!doctype html>
+
+<html lang="en">
+
+    <!-- Set character encoding for the document -->
+    <meta charset="utf-8">
+
+    <!-- Document Title -->
+    <title>{% block title %}{% endblock %}</title>
+
+    <!-- Meta Description -->
+    <meta name="description" content="LSPE/Strip database of the tests done on the polarimetric units">
+
+    <body>
+        {% block action_bar %}
+        <div id="action-bar">
+            <ul>
+                <li><a href="{% url 'unittests:listoftests' %}">Tests</a></li>
+                <li><a href="{% url 'unittests:listofnoisetemps' %}">Noise temperatures</a></li>
+                {% block action_bar_buttons %}
+                {% endblock %}
+            </ul>
+        </div>
+        {% endblock %}
+
+        {% block contents %}
+        {% endblock %}
+    </body>
+</html>

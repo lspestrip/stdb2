@@ -1,0 +1,18 @@
+{%extends "unittests/base.html" %}
+
+{% block title %}
+LSPE/Strip DB: Add new test
+{% endblock %}
+
+{% block contents %}
+<h2>Add new test</h2>
+<form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    <table id="add-test-table">
+        {{ form.as_table }}
+    </table>
+
+    <input type="submit" value="Add new test"/>
+</form>
+
+{% endblock %}

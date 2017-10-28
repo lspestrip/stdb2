@@ -1,0 +1,17 @@
+{%extends "unittests/base.html" %}
+
+{% block title %}
+LSPE/Strip DB: Add detector outputs
+{% endblock %}
+
+{% block contents %}
+<form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    <table id="add-det-outputs">
+        {{ form.as_table }}
+    </table>
+
+    <input type="submit" value="Add detector outputs to STRIP{{polarimeter_number}} test"/>
+</form>
+
+{% endblock %}

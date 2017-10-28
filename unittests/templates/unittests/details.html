@@ -1,0 +1,108 @@
+{% extends "unittests/base.html" %}
+
+{% block title %}
+LSPE/Strip DB: Details of test on STRIP{{test.polarimeter_number}}
+{% endblock %}
+
+{% block action_bar_buttons %}
+<li><a href="{% url 'unittests:addtest' %}">Add test</a></li>
+{% endblock %}
+
+{% block contents %}
+<h1>Test information</h1>
+
+<h2>General information</h2>
+<table>
+    <tr><td>Polarimeter</td><td>STRIP{{test.polarimeter_number}}</td></tr>
+    <tr><td>Cryogenic?</td><td>{{test.cryogenic}}</td></tr>
+    <tr><td>Acquisition date</td><td>{{test.acquisition_date}}</td></tr>
+    <tr><td>Type of test</td><td>{{test.test_type}}</td></tr>
+    <tr><td>Band</td><td>{{test.band}}</td></tr>
+</table>
+
+
+<h2>ADC offsets</h2>
+
+{% if adc_offsets %}
+<table class="data-table" id="adc-offsets-table">
+    <thead>
+        <th>PWR0</th>
+        <th>PWR1</th>
+        <th>PWR2</th>
+        <th>PWR3</th>
+    </thead>
+    {% for ofs in adc_offsets %}
+    <tr>
+        <td>{{ofs.pwr0_adu}}</td>
+        <td>{{ofs.pwr1_adu}}</td>
+        <td>{{ofs.pwr2_adu}}</td>
+        <td>{{ofs.pwr3_adu}}</td>
+        <td><a href="{% url 'unittests:deleteAdcOffset' test.id ofs.id %}">🗙</a></td>
+    </tr>
+    {% endfor %}
+</table>
+{% endif %}
+
+<ul class="data-table-actions">
+    <a href="{% url 'unittests:addAdcOffset' test.id %}">Add new</a>
+</ul>
+
+<h2>Detector outputs</h2>
+
+{% if det_outputs %}
+<table class="data-table" id="detector-outputs">
+    <thead>
+        <th>PWR0</th>
+        <th>PWR1</th>
+        <th>PWR2</th>
+        <th>PWR3</th>
+    </thead>
+    {% for out in det_outputs %}
+    <tr>
+        <td>{{out.pwr0_adu}}</td>
+        <td>{{out.pwr1_adu}}</td>
+        <td>{{out.pwr2_adu}}</td>
+        <td>{{out.pwr3_adu}}</td>
+        <td><a href="{% url 'unittests:deletedetoutputs' test.id out.id %}">🗙</a></td>
+    </tr>
+    {% endfor %}
+</table>
+{% endif %}
+
+<ul class="data-table-actions">
+    <li><a href="{% url 'unittests:adddetoutputs' test.id %}">Add new</a></li>
+    <li><a href="{% url 'unittests:adddetoutputsjson' test.id %}">Import a JSON file</a></li>
+</ul>
+
+
+<h2>Noise temperatures</h2>
+
+{% if tnoise_analyses %}
+<table class="data-table" id="tnoise-table">
+    {% for analysis in tnoise_analyses %}
+    <tr><td>{{analysis}}</td></tr>
+    {% endfor %}
+</table>
+{% endif %}
+
+<ul class="data-table-actions">
+    <li><a href="{% url 'unittests:addtnoise' test.id %}">Add new</a></li>
+    <li><a href="{% url 'unittests:addtnoisejson' test.id %}">Import a JSON file</a></li>
+</ul>
+
+
+<h2>Operators</h2>
+
+{% if operators %}
+<table id="operators-table">
+    {% for op in operators %}
+    <tr><td>{{op.name}}</td></tr>
+    {% endfor %}
+</table>
+{% endif %}
+
+<h2>Actions</h2>
+<ul>
+    <li><a href="{% url 'unittests:downloadtest' test.id %}">Download</a> the data file</li>
+</ul>
+{% endblock %}

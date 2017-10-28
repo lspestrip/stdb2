@@ -1,5 +1,7 @@
 # LSPE/Strip Test Database
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 This repository contains a Django project that runs a site to access a database
 of polarimetric unit tests for the [LSPE](http://planck.roma1.infn.it/lspe/index.html)/[Strip](http://planck.roma1.infn.it/lspe/strip.html) instrument.
 

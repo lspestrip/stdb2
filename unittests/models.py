@@ -28,6 +28,10 @@ class TestType(models.Model):
     def __str__(self):
         return self.description
 
+    class Meta:
+        verbose_name = 'type of test'
+        ordering = ['description']
+
 
 class Operator(models.Model):
     'Person who has run a test'
@@ -76,6 +80,11 @@ class PolarimeterTest(models.Model):
     def polarimeter_name(self):
         return 'STRIP{0:02d}'.format(self.polarimeter_number)
 
+    class Meta:
+        verbose_name = 'test of a polarimetric unit'
+        ordering = ['polarimeter_number', 'acquisition_date']
+        get_latest_by = 'acquisition_date'
+
 
 class AdcOffset(models.Model):
     'Offset configuration used for the four ADCs'
@@ -94,6 +103,9 @@ class AdcOffset(models.Model):
             self.pwr3_adu
         )
 
+    class Meta:
+        verbose_name = 'values of the four ADC offsets'
+
 
 class DetectorOutput(models.Model):
     'Average output of the four detectors'
@@ -111,6 +123,9 @@ class DetectorOutput(models.Model):
             self.pwr2_adu,
             self.pwr3_adu
         )
+
+    class Meta:
+        verbose_name = 'average output of the four detectors'
 
 
 class Biases(models.Model):
@@ -142,6 +157,9 @@ class Biases(models.Model):
     h5_idrain = models.FloatField(verbose_name='H5 Idrain [mA]')
     h5_vgate = models.FloatField(verbose_name='H5 Vgate [mV]')
 
+    class Meta:
+        verbose_name = 'biases used in the six HEMTs'
+
 
 class Temperatures(models.Model):
     'Temperatures of the cryochamber'
@@ -165,6 +183,9 @@ class Temperatures(models.Model):
             'TloadA = {0:.1f} K, TloadB = {1:.1f} K, Tcross = {2:.1f} K, Tpol = {3:.1f}'
             .format(self.t_load_a_1, self.t_load_b_1, self.t_cross_guide_1, self.t_polarimeter_1)
         )
+
+    class Meta:
+        verbose_name = 'temperatures of the cryochamber'
 
 
 class NoiseTemperatureAnalysis(models.Model):
@@ -194,6 +215,9 @@ class NoiseTemperatureAnalysis(models.Model):
                 .format(self.noise_temperature,
                         self.test.polarimeter_name()))
 
+    class Meta:
+        verbose_name = 'noise temperature and gain estimates'
+
 
 class StabilityAnalysis(models.Model):
     'Results of the analysis of a long-acquisition test'
@@ -215,3 +239,6 @@ class StabilityAnalysis(models.Model):
 
     def __str__(self):
         return self.test.polarimeter_name()
+
+    class Meta:
+        verbose_name = 'noise analysis for tests done in stable conditions'

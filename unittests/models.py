@@ -65,7 +65,7 @@ class PolarimeterTest(models.Model):
     band = models.CharField(max_length=1, choices=BAND_CHOICES)
 
     test_type = models.ForeignKey(TestType, on_delete=models.CASCADE)
-    operators = models.ManyToManyField(Operator)
+    operators = models.ManyToManyField(Operator, related_name='tests')
 
     def __str__(self):
         return 'STRIP{0}, {1}'.format(

@@ -10,6 +10,7 @@ import simplejson as json
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 from django.template import loader
+from django.views.decorators.http import require_safe
 
 from .models import (
     PolarimeterTest,
@@ -27,6 +28,7 @@ from .forms import (
 )
 
 
+@require_safe
 def list_of_tests(request):
     'Produce a list of the tests in the database'
 
@@ -54,6 +56,7 @@ def addtest(request):
                   })
 
 
+@require_safe
 def details(request, test_id):
     'Show details about a test'
 
@@ -67,6 +70,7 @@ def details(request, test_id):
     })
 
 
+@require_safe
 def details_json(request, test_id):
     'Return a JSON object containing the details of the test'
 
@@ -125,6 +129,7 @@ def delete_test(request, test_id):
     return HttpResponseRedirect('/unittests/')
 
 
+@require_safe
 def download_test(request, test_id):
     'Allow the user to download the data file for a test'
 
@@ -233,6 +238,7 @@ def add_detector_outputs_from_json(request, test_id):
     })
 
 
+@require_safe
 def list_of_noise_temperatures(request):
     'Show a list of the results of Tnoise tests'
 

@@ -15,9 +15,12 @@ LSPE/Strip DB: Details of test on STRIP{{test.polarimeter_number}}
 <table>
     <tr><td>Polarimeter</td><td>STRIP{{test.polarimeter_number}}</td></tr>
     <tr><td>Cryogenic?</td><td>{{test.cryogenic}}</td></tr>
-    <tr><td>Acquisition date</td><td>{{test.acquisition_date}}</td></tr>
+    <tr><td>Acquisition date</td><td>
+        <time datetime="{{test.acquisition_date|date:"Y-m-d"}}">{{test.acquisition_date|date:"l, F j, Y"}}</time>
+    </td></tr>
     <tr><td>Type of test</td><td>{{test.test_type}}</td></tr>
     <tr><td>Band</td><td>{{test.band}}</td></tr>
+    <tr><td>Notes</td><td>{{test.notes|linebreaks}}</td></tr>
 </table>
 
 

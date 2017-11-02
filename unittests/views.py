@@ -10,6 +10,7 @@ import simplejson as json
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 from django.template import loader
+from django.views import View
 from django.views.decorators.http import require_safe
 
 from .models import (
@@ -28,126 +29,132 @@ from .forms import (
 )
 
 
-@require_safe
-def list_of_tests(request):
-    'Produce a list of the tests in the database'
+class TestListView(View):
+    template = 'unittests/testlist.html'
 
-    context = {
-        'tests': PolarimeterTest.objects.all()
-    }
-    return render(request, 'unittests/testlist.html', context)
+    def get(self, request):
+        'Produce a list of the tests in the database'
+
+        context = {
+            'tests': PolarimeterTest.objects.all()
+        }
+        return render(request, self.template, context)
 
 
-def addtest(request):
-    'Prompt the user to insert information about a new test, and save it'
+class AddTestView(View):
+    template = 'unittests/addtest.html'
 
-    if request.method == 'POST':
+    def post(self, request):
         form = AddTestForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
 
             return HttpResponseRedirect('/unittests/')
-    else:
+
+    def get(self, request):
         form = AddTestForm()
 
-    return render(request, 'unittests/addtest.html',
-                  {
-                      'form': form
-                  })
+        return render(request, self.template,
+                      {
+                          'form': form
+                      })
 
 
-@require_safe
-def details(request, test_id):
-    'Show details about a test'
+class TestDetails(View):
+    template = 'unittests/details.html'
 
-    cur_test = get_object_or_404(PolarimeterTest, pk=test_id)
-    return render(request, 'unittests/details.html', {
-        'test': cur_test,
-        'adc_offsets': AdcOffset.objects.filter(test=cur_test),
-        'det_outputs': DetectorOutput.objects.filter(test=cur_test),
-        'tnoise_analyses': NoiseTemperatureAnalysis.objects.filter(test=cur_test),
-        'operators': cur_test.operators.all(),
-    })
+    def get(self, request, test_id):
+        'Show details about a test'
 
-
-@require_safe
-def details_json(request, test_id):
-    'Return a JSON object containing the details of the test'
-
-    cur_test = get_object_or_404(PolarimeterTest, pk=test_id)
-    adc_offsets = []
-    for ofs in AdcOffset.objects.filter(test=cur_test):
-        adc_offsets.append({
-            'pwr0_adu': ofs.pwr0_adu,
-            'pwr1_adu': ofs.pwr1_adu,
-            'pwr2_adu': ofs.pwr2_adu,
-            'pwr3_adu': ofs.pwr3_adu,
+        cur_test = get_object_or_404(PolarimeterTest, pk=test_id)
+        return render(request, self.template, {
+            'test': cur_test,
+            'adc_offsets': AdcOffset.objects.filter(test=cur_test),
+            'det_outputs': DetectorOutput.objects.filter(test=cur_test),
+            'tnoise_analyses': NoiseTemperatureAnalysis.objects.filter(test=cur_test),
+            'operators': cur_test.operators.all(),
         })
 
-    det_outputs = []
-    for out in DetectorOutput.objects.filter(test=cur_test):
-        det_outputs.append({
-            'pwr0_adu': out.pwr0_adu,
-            'pwr1_adu': out.pwr1_adu,
-            'pwr2_adu': out.pwr2_adu,
-            'pwr3_adu': out.pwr3_adu,
-        })
 
-    tnoise_analyses = []
-    for analysis in NoiseTemperatureAnalysis.objects.filter(test=cur_test):
-        tnoise_analyses.append({
-            'polarimeter_gain': analysis.polarimeter_gain,
-            'polarimeter_gain_err': analysis.polarimeter_gain_err,
+class TestDetailsJson(View):
+    def get(self, request, test_id):
+        'Return a JSON object containing the details of the test'
 
-            'gain_product': analysis.gain_product,
-            'gain_product_err': analysis.gain_product_err,
+        cur_test = get_object_or_404(PolarimeterTest, pk=test_id)
+        adc_offsets = []
+        for ofs in AdcOffset.objects.filter(test=cur_test):
+            adc_offsets.append({
+                'pwr0_adu': ofs.pwr0_adu,
+                'pwr1_adu': ofs.pwr1_adu,
+                'pwr2_adu': ofs.pwr2_adu,
+                'pwr3_adu': ofs.pwr3_adu,
+            })
 
-            'noise_temperature': analysis.noise_temperature,
-            'noise_temperature_err': analysis.noise_temperature_err,
-        })
+        det_outputs = []
+        for out in DetectorOutput.objects.filter(test=cur_test):
+            det_outputs.append({
+                'pwr0_adu': out.pwr0_adu,
+                'pwr1_adu': out.pwr1_adu,
+                'pwr2_adu': out.pwr2_adu,
+                'pwr3_adu': out.pwr3_adu,
+            })
 
-    result = {
-        'url': 'details/{0}'.format(test_id),
-        'polarimeter_number': cur_test.polarimeter_number,
-        'cryogenic': cur_test.cryogenic,
-        'acquisition_date': cur_test.acquisition_date.strftime('%Y-%m-%d'),
-        'phsw_state': cur_test.phsw_state,
-        'band': cur_test.band,
-        'test_type': str(cur_test.test_type),
-        'adc_offsets': adc_offsets,
-        'detector_outputs': det_outputs,
-        'operators': [x.name for x in cur_test.operators.all()],
-    }
-    return HttpResponse(json.dumps(result, indent=4), content_type='application/json')
+        tnoise_analyses = []
+        for analysis in NoiseTemperatureAnalysis.objects.filter(test=cur_test):
+            tnoise_analyses.append({
+                'polarimeter_gain': analysis.polarimeter_gain,
+                'polarimeter_gain_err': analysis.polarimeter_gain_err,
 
+                'gain_product': analysis.gain_product,
+                'gain_product_err': analysis.gain_product_err,
 
-def delete_test(request, test_id):
-    'Remove a test from the database'
+                'noise_temperature': analysis.noise_temperature,
+                'noise_temperature_err': analysis.noise_temperature_err,
+            })
 
-    cur_test = get_object_or_404(PolarimeterTest, pk=test_id)
-    cur_test.delete()
-    return HttpResponseRedirect('/unittests/')
-
-
-@require_safe
-def download_test(request, test_id):
-    'Allow the user to download the data file for a test'
-
-    cur_test = get_object_or_404(PolarimeterTest, pk=test_id)
-    data_file = cur_test.data_file
-    data_file.open()
-    data = '\n'.join([x.decode('utf-8') for x in data_file.readlines()])
-    resp = HttpResponse(data, content_type='text/plain')
-    resp['Content-Disposition'] = 'attachment; filename="{0}"'.format(
-        os.path.basename(data_file.name))
-    return resp
+        result = {
+            'url': 'details/{0}'.format(test_id),
+            'polarimeter_number': cur_test.polarimeter_number,
+            'cryogenic': cur_test.cryogenic,
+            'acquisition_date': cur_test.acquisition_date.strftime('%Y-%m-%d'),
+            'phsw_state': cur_test.phsw_state,
+            'band': cur_test.band,
+            'test_type': str(cur_test.test_type),
+            'adc_offsets': adc_offsets,
+            'detector_outputs': det_outputs,
+            'operators': [x.name for x in cur_test.operators.all()],
+        }
+        return HttpResponse(json.dumps(result, indent=4), content_type='application/json')
 
 
-def add_adc_offsets(request, test_id):
-    'Set the value of the four ADC offsets for a test'
+class TestDeleteView(View):
+    def get(self, request, test_id):
+        'Remove a test from the database'
 
-    cur_test = get_object_or_404(PolarimeterTest, pk=test_id)
-    if request.method == 'POST':
+        cur_test = get_object_or_404(PolarimeterTest, pk=test_id)
+        cur_test.delete()
+        return HttpResponseRedirect('/unittests/')
+
+
+class TestDownload(View):
+    def get(self, request, test_id):
+        'Allow the user to download the data file for a test'
+
+        cur_test = get_object_or_404(PolarimeterTest, pk=test_id)
+        data_file = cur_test.data_file
+        data_file.open()
+        data = '\n'.join([x.decode('utf-8') for x in data_file.readlines()])
+        resp = HttpResponse(data, content_type='text/plain')
+        resp['Content-Disposition'] = 'attachment; filename="{0}"'.format(
+            os.path.basename(data_file.name))
+        return resp
+
+
+class AdcOffsetAddView(View):
+    def post(self, request, test_id):
+        'Set the value of the four ADC offsets for a test'
+
+        cur_test = get_object_or_404(PolarimeterTest, pk=test_id)
         form = AddAdcOffset(request.POST)
         if form.is_valid():
             new_offsets = form.save(commit=False)
@@ -155,29 +162,32 @@ def add_adc_offsets(request, test_id):
             new_offsets.save()
 
             return HttpResponseRedirect('/unittests/details/{0}'.format(test_id))
-    else:
+
+    def get(self, request, test_id):
+        cur_test = get_object_or_404(PolarimeterTest, pk=test_id)
         form = AddAdcOffset()
 
-    return render(request, 'unittests/addadcofs.html', {
-        'test_id': test_id,
-        'polarimeter_number': cur_test.polarimeter_number,
-        'form': form,
-    })
+        return render(request, 'unittests/addadcofs.html', {
+            'test_id': test_id,
+            'polarimeter_number': cur_test.polarimeter_number,
+            'form': form,
+        })
 
 
-def delete_adc_offsets(request, test_id, ofs_id):
-    'Remove a set of ADC offsets'
+class AdcOffsetDeleteView(View):
+    def get(self, request, test_id, ofs_id):
+        'Remove a set of ADC offsets'
 
-    cur_ofs = get_object_or_404(AdcOffset, pk=ofs_id)
-    cur_ofs.delete()
-    return HttpResponseRedirect('/unittests/details/{0}'.format(test_id))
+        cur_ofs = get_object_or_404(AdcOffset, pk=ofs_id)
+        cur_ofs.delete()
+        return HttpResponseRedirect('/unittests/details/{0}'.format(test_id))
 
 
-def add_detector_outputs(request, test_id):
-    'Set the level of the detector outputs for a test'
+class DetOutputAddView(View):
+    def post(self, request, test_id):
+        'Set the level of the detector outputs for a test'
 
-    cur_test = get_object_or_404(PolarimeterTest, pk=test_id)
-    if request.method == 'POST':
+        cur_test = get_object_or_404(PolarimeterTest, pk=test_id)
         form = AddDetectorOutputs(request.POST)
         if form.is_valid():
             new_output = form.save(commit=False)
@@ -185,29 +195,32 @@ def add_detector_outputs(request, test_id):
             new_output.save()
 
             return HttpResponseRedirect('/unittests/details/{0}'.format(test_id))
-    else:
+
+    def get(self, request, test_id):
+        cur_test = get_object_or_404(PolarimeterTest, pk=test_id)
         form = AddDetectorOutputs()
 
-    return render(request, 'unittests/adddetoutput.html', {
-        'test_id': test_id,
-        'polarimeter_number': cur_test.polarimeter_number,
-        'form': form,
-    })
+        return render(request, 'unittests/adddetoutput.html', {
+            'test_id': test_id,
+            'polarimeter_number': cur_test.polarimeter_number,
+            'form': form,
+        })
 
 
-def delete_detector_outputs(request, test_id, output_id):
-    'Remove a set of detector_outputs'
+class DetOutputDeleteView(View):
+    def get(self, request, test_id, output_id):
+        'Remove a set of detector_outputs'
 
-    cur_output = get_object_or_404(DetectorOutput, pk=output_id)
-    cur_output.delete()
-    return HttpResponseRedirect('/unittests/details/{0}'.format(test_id))
+        cur_output = get_object_or_404(DetectorOutput, pk=output_id)
+        cur_output.delete()
+        return HttpResponseRedirect('/unittests/details/{0}'.format(test_id))
 
 
-def add_detector_outputs_from_json(request, test_id):
-    'Import the level of the detector outputs for a test from a JSON record'
+class DetOutputJsonView(View):
+    def post(self, request, test_id):
+        'Import the level of the detector outputs for a test from a JSON record'
 
-    cur_test = get_object_or_404(PolarimeterTest, pk=test_id)
-    if request.method == 'POST':
+        cur_test = get_object_or_404(PolarimeterTest, pk=test_id)
         form = CreateFromJSON(request.POST)
         if form.is_valid():
             data = json.loads(form.cleaned_data['json_text'])
@@ -221,49 +234,56 @@ def add_detector_outputs_from_json(request, test_id):
             new_output.save()
 
             return HttpResponseRedirect('/unittests/details/{0}'.format(test_id))
-    else:
+
+    def get(self, request, test_id):
+        cur_test = get_object_or_404(PolarimeterTest, pk=test_id)
         form = CreateFromJSON(initial={'json_text': '''{                           
-    "detector_offsets": {   
-        "PWR0_adu": 1.0,
-        "PWR1_adu": 2.0,
-        "PWR2_adu": 3.0,
-        "PWR3_adu": 4.0 
-    }                       
+        "detector_offsets": {   
+            "PWR0_adu": 1.0,
+            "PWR1_adu": 2.0,
+            "PWR2_adu": 3.0,
+            "PWR3_adu": 4.0 
+        }                       
 }'''})
 
-    return render(request, 'unittests/adddetoutput.html', {
-        'test_id': test_id,
-        'polarimeter_number': cur_test.polarimeter_number,
-        'form': form,
-    })
+        return render(request, 'unittests/adddetoutput.html', {
+            'test_id': test_id,
+            'polarimeter_number': cur_test.polarimeter_number,
+            'form': form,
+        })
 
 
-@require_safe
-def list_of_noise_temperatures(request):
-    'Show a list of the results of Tnoise tests'
+class TnoiseListView(View):
+    template = 'unittests/tnoiselist.html'
 
-    context = {
-        'tnoise_tests': NoiseTemperatureAnalysis.objects.all(),
-    }
-    return render(request, 'unittests/tnoiselist.html', context)
+    def get(self, request):
+        'Show a list of the results of Tnoise tests'
 
-
-def add_noise_temperature(request, test_id):
-    'Add a new estimate for the noise temperature of a polarimeter'
-
-    context = {
-        'test_id': test_id,
-    }
-    return render(request, 'unittests/addtnoise.html', context)
+        context = {
+            'tnoise_tests': NoiseTemperatureAnalysis.objects.all(),
+        }
+        return render(request, self.template, context)
 
 
-def add_noise_temperature_from_json(request, test_id):
+class TnoiseAddView(View):
+    template = 'unittests/addtnoise.html'
+
+    def get(self, request, test_id):
+        'Add a new estimate for the noise temperature of a polarimeter'
+
+        context = {
+            'test_id': test_id,
+        }
+        return render(request, self.template, context)
+
+
+class TnoiseAddFromJsonView(View):
     'Import a JSON file containing the estimates of Tnoise for a polarimeter'
 
-    'Import the level of the detector outputs for a test from a JSON record'
+    def post(self, request, test_id):
+        'Import the level of the detector outputs for a test from a JSON record'
 
-    cur_test = get_object_or_404(PolarimeterTest, pk=test_id)
-    if request.method == 'POST':
+        cur_test = get_object_or_404(PolarimeterTest, pk=test_id)
         form = CreateFromJSON(request.POST)
         if form.is_valid():
             data = json.loads(form.cleaned_data['json_text'])
@@ -283,7 +303,9 @@ def add_noise_temperature_from_json(request, test_id):
             new_analysis.save()
 
             return HttpResponseRedirect('/unittests/details/{0}'.format(test_id))
-    else:
+
+    def get(self, request, test_id):
+        cur_test = get_object_or_404(PolarimeterTest, pk=test_id)
         form = CreateFromJSON(initial={'json_text': '''{
     "average_gain": {
         "mean": 3045.8428562313666,
@@ -303,7 +325,7 @@ def add_noise_temperature_from_json(request, test_id):
     "date": "2017-10-01"
 }'''})
 
-    return render(request, 'unittests/addtnoise.html', {
-        'test_id': test_id,
-        'form': form,
-    })
+        return render(request, 'unittests/addtnoise.html', {
+            'test_id': test_id,
+            'form': form,
+        })

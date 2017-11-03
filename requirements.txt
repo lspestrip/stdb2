@@ -1,3 +1,6 @@
 django
 simplejson
 decouple
+astropy
+numpy
+xlrd

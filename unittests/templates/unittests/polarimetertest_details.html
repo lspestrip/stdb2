@@ -5,7 +5,7 @@ LSPE/Strip DB: Details of test on STRIP{{test.polarimeter_number}}
 {% endblock %}
 
 {% block action_bar_buttons %}
-<li><a href="{% url 'unittests:addtest' %}">Add test</a></li>
+<li><a href="{% url 'unittests:test_create' %}">Add test</a></li>
 {% endblock %}
 
 {% block contents %}
@@ -40,14 +40,14 @@ LSPE/Strip DB: Details of test on STRIP{{test.polarimeter_number}}
         <td>{{ofs.pwr1_adu}}</td>
         <td>{{ofs.pwr2_adu}}</td>
         <td>{{ofs.pwr3_adu}}</td>
-        <td><a href="{% url 'unittests:deleteAdcOffset' test.id ofs.id %}">🗙</a></td>
+        <td><a href="{% url 'unittests:adc_delete' test.id ofs.id %}">🗙</a></td>
     </tr>
     {% endfor %}
 </table>
 {% endif %}
 
 <ul class="data-table-actions">
-    <a href="{% url 'unittests:addAdcOffset' test.id %}">Add new</a>
+    <a href="{% url 'unittests:adc_create' test.id %}">Add new</a>
 </ul>
 
 <h2>Detector outputs</h2>
@@ -66,15 +66,15 @@ LSPE/Strip DB: Details of test on STRIP{{test.polarimeter_number}}
         <td>{{out.pwr1_adu}}</td>
         <td>{{out.pwr2_adu}}</td>
         <td>{{out.pwr3_adu}}</td>
-        <td><a href="{% url 'unittests:deletedetoutputs' test.id out.id %}">🗙</a></td>
+        <td><a href="{% url 'unittests:detoutput_delete' test.id out.id %}">🗙</a></td>
     </tr>
     {% endfor %}
 </table>
 {% endif %}
 
 <ul class="data-table-actions">
-    <li><a href="{% url 'unittests:adddetoutputs' test.id %}">Add new</a></li>
-    <li><a href="{% url 'unittests:adddetoutputsjson' test.id %}">Import a JSON file</a></li>
+    <li><a href="{% url 'unittests:detoutput_create' test.id %}">Add new</a></li>
+    <li><a href="{% url 'unittests:detoutput_create_json' test.id %}">Import a JSON file</a></li>
 </ul>
 
 
@@ -89,8 +89,8 @@ LSPE/Strip DB: Details of test on STRIP{{test.polarimeter_number}}
 {% endif %}
 
 <ul class="data-table-actions">
-    <li><a href="{% url 'unittests:addtnoise' test.id %}">Add new</a></li>
-    <li><a href="{% url 'unittests:addtnoisejson' test.id %}">Import a JSON file</a></li>
+    <li><a href="{% url 'unittests:tnoise_create' test.id %}">Add new</a></li>
+    <li><a href="{% url 'unittests:tnoise_create_json' test.id %}">Import a JSON file</a></li>
 </ul>
 
 
@@ -106,6 +106,6 @@ LSPE/Strip DB: Details of test on STRIP{{test.polarimeter_number}}
 
 <h2>Actions</h2>
 <ul>
-    <li><a href="{% url 'unittests:downloadtest' test.id %}">Download</a> the data file</li>
+    <li><a href="{% url 'unittests:test_download' test.id %}">Download</a> the data file</li>
 </ul>
 {% endblock %}

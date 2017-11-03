@@ -17,8 +17,8 @@
         {% block action_bar %}
         <div id="action-bar">
             <ul>
-                <li><a href="{% url 'unittests:listoftests' %}">Tests</a></li>
-                <li><a href="{% url 'unittests:listofnoisetemps' %}">Noise temperatures</a></li>
+                <li><a href="{% url 'unittests:test_list' %}">Tests</a></li>
+                <li><a href="{% url 'unittests:tnoise_list' %}">Noise temperatures</a></li>
                 {% block action_bar_buttons %}
                 {% endblock %}
             </ul>

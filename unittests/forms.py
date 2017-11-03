@@ -4,7 +4,7 @@ from django import forms
 from .models import PolarimeterTest, AdcOffset, DetectorOutput
 
 
-class AddTestForm(forms.ModelForm):
+class TestForm(forms.ModelForm):
     class Meta:
         model = PolarimeterTest
         fields = [
@@ -20,7 +20,7 @@ class AddTestForm(forms.ModelForm):
         ]
 
 
-class AddAdcOffset(forms.ModelForm):
+class AdcOffsetCreate(forms.ModelForm):
     class Meta:
         model = AdcOffset
         fields = [
@@ -31,7 +31,7 @@ class AddAdcOffset(forms.ModelForm):
         ]
 
 
-class AddDetectorOutputs(forms.ModelForm):
+class DetOutputCreate(forms.ModelForm):
     class Meta:
         model = DetectorOutput
         fields = [

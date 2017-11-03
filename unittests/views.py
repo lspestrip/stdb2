@@ -7,30 +7,34 @@ import os.path
 
 import simplejson as json
 
-from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render, get_object_or_404
-from django.template import loader
+from django.core.urlresolvers import reverse_lazy
+from django.http import HttpResponse
+from django.shortcuts import render, get_object_or_404, redirect
 from django.views import View
-from django.views.decorators.http import require_safe
+from django.views.generic import (
+    CreateView,
+    DeleteView,
+)
 
 from .models import (
     PolarimeterTest,
     AdcOffset,
     DetectorOutput,
-    Operator,
-    NoiseTemperatureAnalysis
+    NoiseTemperatureAnalysis,
+    dict_to_tnoise_analysis,
+    dict_to_detector_output,
 )
 
 from .forms import (
-    AddTestForm,
-    AddAdcOffset,
-    AddDetectorOutputs,
+    TestForm,
+    AdcOffsetCreate,
+    DetOutputCreate,
     CreateFromJSON,
 )
 
 
 class TestListView(View):
-    template = 'unittests/testlist.html'
+    template = 'unittests/polarimetertest_list.html'
 
     def get(self, request):
         'Produce a list of the tests in the database'
@@ -41,33 +45,28 @@ class TestListView(View):
         return render(request, self.template, context)
 
 
-class AddTestView(View):
-    template = 'unittests/addtest.html'
+class TestCreate(CreateView):
+    form_class = TestForm
+    model = PolarimeterTest
+    template_name = 'unittests/polarimetertest_create.html'
 
-    def post(self, request):
-        form = AddTestForm(request.POST, request.FILES)
-        if form.is_valid():
-            form.save()
-
-            return HttpResponseRedirect('/unittests/')
-
-    def get(self, request):
-        form = AddTestForm()
-
-        return render(request, self.template,
-                      {
-                          'form': form
-                      })
+    def get_form(self, form_class=None):
+        form = super(TestCreate, self).get_form(form_class)
+        form.fields['acquisition_date'].widget.attrs.update(
+            {'class': 'datepicker'})
+        form.fields['acquisition_date'].widget.format = '%Y-%m-%d'
+        form.fields['acquisition_date'].input_formats = ['%Y-%m-%d']
+        return form
 
 
 class TestDetails(View):
-    template = 'unittests/details.html'
+    template_name = 'unittests/polarimetertest_details.html'
 
     def get(self, request, test_id):
         'Show details about a test'
 
         cur_test = get_object_or_404(PolarimeterTest, pk=test_id)
-        return render(request, self.template, {
+        return render(request, self.template_name, {
             'test': cur_test,
             'adc_offsets': AdcOffset.objects.filter(test=cur_test),
             'det_outputs': DetectorOutput.objects.filter(test=cur_test),
@@ -113,7 +112,8 @@ class TestDetailsJson(View):
             })
 
         result = {
-            'url': 'details/{0}'.format(test_id),
+            'url': cur_test.get_absolute_url(),
+            'download_url': cur_test.get_download_url(),
             'polarimeter_number': cur_test.polarimeter_number,
             'cryogenic': cur_test.cryogenic,
             'acquisition_date': cur_test.acquisition_date.strftime('%Y-%m-%d'),
@@ -127,13 +127,9 @@ class TestDetailsJson(View):
         return HttpResponse(json.dumps(result, indent=4), content_type='application/json')
 
 
-class TestDeleteView(View):
-    def get(self, request, test_id):
-        'Remove a test from the database'
-
-        cur_test = get_object_or_404(PolarimeterTest, pk=test_id)
-        cur_test.delete()
-        return HttpResponseRedirect('/unittests/')
+class TestDeleteView(DeleteView):
+    model = PolarimeterTest
+    success_url = reverse_lazy('unittests:test_list')
 
 
 class TestDownload(View):
@@ -143,8 +139,8 @@ class TestDownload(View):
         cur_test = get_object_or_404(PolarimeterTest, pk=test_id)
         data_file = cur_test.data_file
         data_file.open()
-        data = '\n'.join([x.decode('utf-8') for x in data_file.readlines()])
-        resp = HttpResponse(data, content_type='text/plain')
+        data = data_file.read()
+        resp = HttpResponse(data, content_type='application/fits')
         resp['Content-Disposition'] = 'attachment; filename="{0}"'.format(
             os.path.basename(data_file.name))
         return resp
@@ -155,19 +151,19 @@ class AdcOffsetAddView(View):
         'Set the value of the four ADC offsets for a test'
 
         cur_test = get_object_or_404(PolarimeterTest, pk=test_id)
-        form = AddAdcOffset(request.POST)
+        form = AdcOffsetCreate(request.POST)
         if form.is_valid():
             new_offsets = form.save(commit=False)
             new_offsets.test = cur_test
             new_offsets.save()
 
-            return HttpResponseRedirect('/unittests/details/{0}'.format(test_id))
+            return redirect(cur_test)
 
     def get(self, request, test_id):
         cur_test = get_object_or_404(PolarimeterTest, pk=test_id)
-        form = AddAdcOffset()
+        form = AdcOffsetCreate()
 
-        return render(request, 'unittests/addadcofs.html', {
+        return render(request, 'unittests/adc_create.html', {
             'test_id': test_id,
             'polarimeter_number': cur_test.polarimeter_number,
             'form': form,
@@ -180,7 +176,7 @@ class AdcOffsetDeleteView(View):
 
         cur_ofs = get_object_or_404(AdcOffset, pk=ofs_id)
         cur_ofs.delete()
-        return HttpResponseRedirect('/unittests/details/{0}'.format(test_id))
+        return redirect('unittests:test_details', kwargs={'test_id': test_id})
 
 
 class DetOutputAddView(View):
@@ -188,19 +184,19 @@ class DetOutputAddView(View):
         'Set the level of the detector outputs for a test'
 
         cur_test = get_object_or_404(PolarimeterTest, pk=test_id)
-        form = AddDetectorOutputs(request.POST)
+        form = DetOutputCreate(request.POST)
         if form.is_valid():
             new_output = form.save(commit=False)
             new_output.test = cur_test
             new_output.save()
 
-            return HttpResponseRedirect('/unittests/details/{0}'.format(test_id))
+            return redirect('unittests:test_details', kwargs={'test_id': test_id})
 
     def get(self, request, test_id):
         cur_test = get_object_or_404(PolarimeterTest, pk=test_id)
-        form = AddDetectorOutputs()
+        form = DetOutputCreate()
 
-        return render(request, 'unittests/adddetoutput.html', {
+        return render(request, 'unittests/detoutput_create.html', {
             'test_id': test_id,
             'polarimeter_number': cur_test.polarimeter_number,
             'form': form,
@@ -213,7 +209,7 @@ class DetOutputDeleteView(View):
 
         cur_output = get_object_or_404(DetectorOutput, pk=output_id)
         cur_output.delete()
-        return HttpResponseRedirect('/unittests/details/{0}'.format(test_id))
+        return redirect('unittests:test_details', kwargs={'test_id': test_id})
 
 
 class DetOutputJsonView(View):
@@ -224,29 +220,27 @@ class DetOutputJsonView(View):
         form = CreateFromJSON(request.POST)
         if form.is_valid():
             data = json.loads(form.cleaned_data['json_text'])
-            new_output = DetectorOutput(
-                pwr0_adu=data['detector_offsets']['PWR0_adu'],
-                pwr1_adu=data['detector_offsets']['PWR1_adu'],
-                pwr2_adu=data['detector_offsets']['PWR2_adu'],
-                pwr3_adu=data['detector_offsets']['PWR3_adu'],
-            )
+            new_output = dict_to_detector_output(data)
             new_output.test = cur_test
             new_output.save()
 
-            return HttpResponseRedirect('/unittests/details/{0}'.format(test_id))
+            return redirect('unittests:test_details', kwargs={'test_id': test_id})
 
     def get(self, request, test_id):
         cur_test = get_object_or_404(PolarimeterTest, pk=test_id)
-        form = CreateFromJSON(initial={'json_text': '''{                           
-        "detector_offsets": {   
-            "PWR0_adu": 1.0,
-            "PWR1_adu": 2.0,
-            "PWR2_adu": 3.0,
-            "PWR3_adu": 4.0 
-        }                       
-}'''})
+        form = CreateFromJSON(initial={
+            'json_text': json.dumps(
+                {
+                    "detector_offsets": {
+                        "PWR0_adu": 1.0,
+                        "PWR1_adu": 2.0,
+                        "PWR2_adu": 3.0,
+                        "PWR3_adu": 4.0
+                    }
+                })
+        })
 
-        return render(request, 'unittests/adddetoutput.html', {
+        return render(request, 'unittests/detoutput.html', {
             'test_id': test_id,
             'polarimeter_number': cur_test.polarimeter_number,
             'form': form,
@@ -254,7 +248,7 @@ class DetOutputJsonView(View):
 
 
 class TnoiseListView(View):
-    template = 'unittests/tnoiselist.html'
+    template = 'unittests/tnoise_list.html'
 
     def get(self, request):
         'Show a list of the results of Tnoise tests'
@@ -266,7 +260,7 @@ class TnoiseListView(View):
 
 
 class TnoiseAddView(View):
-    template = 'unittests/addtnoise.html'
+    template = 'unittests/tnoise_create.html'
 
     def get(self, request, test_id):
         'Add a new estimate for the noise temperature of a polarimeter'
@@ -287,45 +281,36 @@ class TnoiseAddFromJsonView(View):
         form = CreateFromJSON(request.POST)
         if form.is_valid():
             data = json.loads(form.cleaned_data['json_text'])
-            new_analysis = NoiseTemperatureAnalysis(
-                polarimeter_gain=data['average_gain']['mean'],
-                polarimeter_gain_err=data['average_gain']['std'],
-                gain_product=data['gain_prod']['mean'],
-                gain_product_err=data['gain_prod']['std'],
-                noise_temperature=data['tnoise']['mean'],
-                noise_temperature_err=data['tnoise']['std'],
-                estimation_method=data['estimation_method'],
-                code_version=data['striptun_version'],
-                code_commit=data['latest_git_commit'],
-                analysis_date=data['date']
-            )
+            new_analysis = dict_to_tnoise_analysis(data)
             new_analysis.test = cur_test
             new_analysis.save()
 
-            return HttpResponseRedirect('/unittests/details/{0}'.format(test_id))
+            return redirect('unittests:test_details', kwargs={'test_id': test_id})
 
     def get(self, request, test_id):
-        cur_test = get_object_or_404(PolarimeterTest, pk=test_id)
-        form = CreateFromJSON(initial={'json_text': '''{
-    "average_gain": {
-        "mean": 3045.8428562313666,
-        "std": 562.5624766927529
-    },
-    "gain_prod": {
-        "mean": 2918.8247765887895,
-        "std": 741.1967061432678
-    },
-    "tnoise": {
-        "mean": 18.516167480747846,
-        "std": 7.8330311448372605
-    },
-    "estimation_method": "nonlinear fit",
-    "striptun_version": "1.0",
-    "latest_git_commit": "a26d6b81ca46f3e33361a4bef3a58b884b6175bb",
-    "date": "2017-10-01"
-}'''})
+        form = CreateFromJSON(initial={
+            'json_text': json.dumps(
+                {
+                    "average_gain": {
+                        "mean": 1.0,
+                        "std": 2.0,
+                    },
+                    "gain_prod": {
+                        "mean": 3.0,
+                        "std": 4.0,
+                    },
+                    "tnoise": {
+                        "mean": 5.0,
+                        "std": 6.0,
+                    },
+                    "estimation_method": "nonlinear fit",
+                    "striptun_version": "1.0",
+                    "latest_git_commit": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+                    "date": "2017-01-01"
+                })
+        })
 
-        return render(request, 'unittests/addtnoise.html', {
+        return render(request, 'unittests/tnoise_create.html', {
             'test_id': test_id,
             'form': form,
         })

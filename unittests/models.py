@@ -18,7 +18,14 @@ housekeeping temperatures, and so on is available and ready to be put in the
 database.
 '''
 
+import os
+from tempfile import NamedTemporaryFile
+from typing import Dict, Any
+
 from django.db import models
+from django.core.urlresolvers import reverse
+from django.core.files import File
+from .file_conversions import convert_data_file_to_fits
 
 
 class TestType(models.Model):
@@ -61,8 +68,9 @@ class PolarimeterTest(models.Model):
     polarimeter_number = models.IntegerField(
         verbose_name='Number of the polarimeter')
     cryogenic = models.BooleanField(verbose_name='Cryogenic test')
-    acquisition_date = models.DateField(verbose_name='Date of acquisition')
-    data_file = models.FileField(max_length=1024, upload_to='test_data/')
+    acquisition_date = models.DateField(
+        verbose_name='Date of acquisition (YY-MM-DD)')
+    data_file = models.FileField(max_length=1024, upload_to='unit_test_data/')
     notes = models.TextField(verbose_name='Notes', blank=True)
     phsw_state = models.CharField(
         max_length=12, default='0000', choices=PHSW_STATES)
@@ -79,6 +87,39 @@ class PolarimeterTest(models.Model):
 
     def polarimeter_name(self):
         return 'STRIP{0:02d}'.format(self.polarimeter_number)
+
+    def get_absolute_url(self):
+        return reverse('unittests:test_details', kwargs={'test_id': self.pk})
+
+    def get_download_url(self):
+        return reverse('unittests:test_download', kwargs={'test_id': self.pk})
+
+    def get_delete_url(self):
+        return reverse('unittests:test_delete', kwargs={'test_id': self.pk})
+
+    def save(self, *args, **kwargs):
+        if self.data_file:
+            test_type = ''.join(filter(str.isalpha,
+                                       self.test_type.description))
+            fits_file_name = ('{polname}_{date}_{testtype}.fits.gz'
+                              .format(polname=self.polarimeter_name(),
+                                      date=self.acquisition_date.strftime(
+                                  '%Y-%m-%d'),
+                                  testtype=test_type))
+
+            with NamedTemporaryFile(suffix='.fits.gz', delete=False) as temporary_file:
+                tmp_file_name = temporary_file.name
+                convert_data_file_to_fits(
+                    self.data_file.name, self.data_file, temporary_file)
+
+            with open(tmp_file_name, 'rb') as temporary_file:
+                self.data_file = File(temporary_file, fits_file_name)
+
+                super(PolarimeterTest, self).save(*args, **kwargs)
+
+            os.remove(tmp_file_name)
+        else:
+            super(PolarimeterTest, self).save(*args, **kwargs)
 
     class Meta:
         verbose_name = 'test of a polarimetric unit'
@@ -126,6 +167,15 @@ class DetectorOutput(models.Model):
 
     class Meta:
         verbose_name = 'average output of the four detectors'
+
+
+def dict_to_detector_output(data: Dict[str, Any]) -> DetectorOutput:
+    return DetectorOutput(
+        pwr0_adu=data['detector_offsets']['PWR0_adu'],
+        pwr1_adu=data['detector_offsets']['PWR1_adu'],
+        pwr2_adu=data['detector_offsets']['PWR2_adu'],
+        pwr3_adu=data['detector_offsets']['PWR3_adu'],
+    )
 
 
 class Biases(models.Model):
@@ -217,6 +267,21 @@ class NoiseTemperatureAnalysis(models.Model):
 
     class Meta:
         verbose_name = 'noise temperature and gain estimates'
+
+
+def dict_to_tnoise_analysis(data: Dict[str, Any]) -> NoiseTemperatureAnalysis:
+    return NoiseTemperatureAnalysis(
+        polarimeter_gain=data['average_gain']['mean'],
+        polarimeter_gain_err=data['average_gain']['std'],
+        gain_product=data['gain_prod']['mean'],
+        gain_product_err=data['gain_prod']['std'],
+        noise_temperature=data['tnoise']['mean'],
+        noise_temperature_err=data['tnoise']['std'],
+        estimation_method=data['estimation_method'],
+        code_version=data['striptun_version'],
+        code_commit=data['latest_git_commit'],
+        analysis_date=data['date']
+    )
 
 
 class StabilityAnalysis(models.Model):

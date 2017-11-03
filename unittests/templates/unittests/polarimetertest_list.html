@@ -5,7 +5,7 @@ LSPE/Strip DB: List of tests
 {% endblock %}
 
 {% block action_bar_buttons %}
-<li><a href="{% url 'unittests:addtest' %}">Add test</a></li>
+<li><a href="{% url 'unittests:test_create' %}">Add test</a></li>
 {% endblock %}
 
 {% block contents %}
@@ -21,9 +21,9 @@ LSPE/Strip DB: List of tests
     </thead>
     {% for test in tests %}
     <tr>
-        <td><a href="{% url 'unittests:details' test.id %}">STRIP{{ test.polarimeter_number }} {{ test.test_type }}</a></td>
+        <td><a href="{% url 'unittests:test_details' test.id %}">STRIP{{ test.polarimeter_number }} {{ test.test_type }}</a></td>
         <td>{{ test.acquisition_date }}</td>
-        <td><a href="{% url 'unittests:deletetest' test.id %}">🗙</a></td>
+        <td><a href="{% url 'unittests:test_delete' test.id %}">🗙</a></td>
     </tr>
     {% endfor %}
 </table>

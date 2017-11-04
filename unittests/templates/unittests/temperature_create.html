@@ -1,0 +1,17 @@
+{%extends "unittests/base.html" %}
+
+{% block title %}
+LSPE/Strip DB: Add temperatures
+{% endblock %}
+
+{% block contents %}
+<form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    <table id="add-temperatures">
+        {{ form.as_table }}
+    </table>
+
+    <input type="submit" value="Add set of temperatures to STRIP{{polarimeter_number}} test"/>
+</form>
+
+{% endblock %}

@@ -2,7 +2,6 @@
 
 from io import BytesIO
 import os.path
-import re
 from zipfile import ZipFile
 from typing import Any, Dict
 

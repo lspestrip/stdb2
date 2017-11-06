@@ -9,143 +9,156 @@ LSPE/Strip DB: Details of test on STRIP{{test.polarimeter_number}}
 {% endblock %}
 
 {% block contents %}
-<h1>Test information</h1>
+<h1>STRIP{{test.polarimeter_number}} {{test.test_type}} test</h1>
 
-<h2>General information</h2>
-<table>
-    <tr><td>Polarimeter</td><td>STRIP{{test.polarimeter_number}}</td></tr>
-    <tr><td>Cryogenic?</td><td>{{test.cryogenic}}</td></tr>
-    <tr><td>Acquisition date</td><td>
-        <time datetime="{{test.acquisition_date|date:"Y-m-d"}}">{{test.acquisition_date|date:"l, F j, Y"}}</time>
-    </td></tr>
-    <tr><td>Type of test</td><td>{{test.test_type}}</td></tr>
-    <tr><td>Band</td><td>{{test.band}}</td></tr>
-    <tr><td>Notes</td><td>{{test.notes|linebreaks}}</td></tr>
-</table>
+<div class="section general">
+    <div class="row">
+        <div class="one-half column">
+            <h5>General information</h5>
+            <table>
+                <tr><td>Cryogenic?</td><td>{{test.cryogenic}}</td></tr>
+                <tr><td>Acquisition date</td><td>
+                    <time datetime="{{test.acquisition_date|date:"Y-m-d"}}">{{test.acquisition_date|date:"l, F j, Y"}}</time>
+                </td></tr>
+                <tr><td>Band</td><td>{{test.band}}</td></tr>
+                <tr><td>Notes</td><td>{{test.notes|linebreaks}}</td></tr>
+            </table>
+            <a href="{% url 'unittests:test_download' test.id %}">Download</a> the data file
+        </div>
 
+        <div class="one-half column">        
+            <h5>Operators</h5>
+        
+            {% if operators %}
+            <ul id="operators-table">
+                {% for op in operators %}
+                <li>{{op.name}}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+        </div>
+    </div>
+</div>
 
-<h2>ADC offsets</h2>
+<div class="section outputs">
+    <div class="row">
+        <div class="one-half column">
+            <h5>ADC offsets</h5>
 
-{% if adc_offsets %}
-<table class="data-table" id="adc-offsets-table">
-    <thead>
-        <th>PWR0</th>
-        <th>PWR1</th>
-        <th>PWR2</th>
-        <th>PWR3</th>
-    </thead>
-    <tbody>
-        {% for ofs in adc_offsets %}
-        <tr>
-            <td>{{ofs.pwr0_adu}}</td>
-            <td>{{ofs.pwr1_adu}}</td>
-            <td>{{ofs.pwr2_adu}}</td>
-            <td>{{ofs.pwr3_adu}}</td>
-            <td><a href="{% url 'unittests:adc_delete' test.id ofs.id %}">🗙</a></td>
-        </tr>
+            {% if adc_offsets %}
+            <table class="data-table" id="adc-offsets-table">
+                <thead>
+                    <th>PWR0</th>
+                    <th>PWR1</th>
+                    <th>PWR2</th>
+                    <th>PWR3</th>
+                </thead>
+                <tbody>
+                    {% for ofs in adc_offsets %}
+                    <tr>
+                        <td>{{ofs.pwr0_adu}}</td>
+                        <td>{{ofs.pwr1_adu}}</td>
+                        <td>{{ofs.pwr2_adu}}</td>
+                        <td>{{ofs.pwr3_adu}}</td>
+                        <td><a href="{% url 'unittests:adc_delete' test.id ofs.id %}">🗙</a></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% endif %}
+
+            <ul class="data-table-actions">
+                <li><a href="{% url 'unittests:adc_create' test.id %}">Add new</a></li>
+            </ul>
+        </div>
+
+        <div class="one-half column">
+            <h5>Detector outputs</h5>
+            
+                {% if det_outputs %}
+                <table class="data-table" id="detector-outputs">
+                    <thead>
+                        <th>PWR0</th>
+                        <th>PWR1</th>
+                        <th>PWR2</th>
+                        <th>PWR3</th>
+                    </thead>
+                    <tbody>
+                        {% for out in det_outputs %}
+                        <tr>
+                            <td>{{out.pwr0_adu}}</td>
+                            <td>{{out.pwr1_adu}}</td>
+                            <td>{{out.pwr2_adu}}</td>
+                            <td>{{out.pwr3_adu}}</td>
+                            <td><a href="{% url 'unittests:detoutput_delete' test.id out.id %}">🗙</a></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% endif %}
+            
+                <ul class="data-table-actions">
+                    <li><a href="{% url 'unittests:detoutput_create' test.id %}">Add new</a></li>
+                    <li><a href="{% url 'unittests:detoutput_create_json' test.id %}">Import a JSON file</a></li>
+                </ul>
+        </div>
+    </div>
+</div>
+
+<div class="section temperatures">
+    <h5>Temperatures</h5>
+
+    {% if temperatures %}
+    <table class="data-table" id="temperature-table">
+        <thead>
+            <th>T<sub>A1</sub> [K]</th>
+            <th>T<sub>A2</sub> [K]</th>
+            <th>T<sub>B1</sub> [K]</th>
+            <th>T<sub>B2</sub> [K]</th>
+            <th>T<sub>pol1</sub> [K]</th>
+            <th>T<sub>pol2</sub> [K]</th>
+            <th>T<sub>cross1</sub> [K]</th>
+            <th>T<sub>cross2</sub> [K]</th>
+        </thead>
+        <tbody>
+            {% for temp in temperatures %}
+            <tr>
+                <td>{{temp.t_load_a_1}}</td>
+                <td>{{temp.t_load_a_2}}</td>
+                <td>{{temp.t_load_b_1}}</td>
+                <td>{{temp.t_load_b_2}}</td>
+                <td>{{temp.t_polarimeter_1}}</td>
+                <td>{{temp.t_polarimeter_2}}</td>
+                <td>{{temp.t_cross_guide_1}}</td>
+                <td>{{temp.t_cross_guide_2}}</td>
+                <td><a href="{% url 'unittests:temperature_delete' test.id temp.id %}">🗙</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+
+    <ul class="data-table-actions">
+        <a href="{% url 'unittests:temperature_create' test.id %}">Add new</a>
+    </ul>
+</div>
+
+<div class="section reports">        
+    <h3>Reports</h3>
+    <h5>Noise temperatures</h5>
+
+    {% if tnoise_analyses %}
+    <table class="data-table" id="tnoise-table">
+        {% for analysis in tnoise_analyses %}
+        <tr><td>{{analysis}}</td></tr>
         {% endfor %}
-    </tbody>
-</table>
-{% endif %}
+    </table>
+    {% endif %}
 
-<ul class="data-table-actions">
-    <a href="{% url 'unittests:adc_create' test.id %}">Add new</a>
-</ul>
+    <ul class="data-table-actions">
+        <li><a href="{% url 'unittests:tnoise_create' test.id %}">Add new</a></li>
+        <li><a href="{% url 'unittests:tnoise_create_json' test.id %}">Import a JSON file</a></li>
+    </ul>
+</div>
 
-<h2>Detector outputs</h2>
-
-{% if det_outputs %}
-<table class="data-table" id="detector-outputs">
-    <thead>
-        <th>PWR0</th>
-        <th>PWR1</th>
-        <th>PWR2</th>
-        <th>PWR3</th>
-    </thead>
-    <tbody>
-        {% for out in det_outputs %}
-        <tr>
-            <td>{{out.pwr0_adu}}</td>
-            <td>{{out.pwr1_adu}}</td>
-            <td>{{out.pwr2_adu}}</td>
-            <td>{{out.pwr3_adu}}</td>
-            <td><a href="{% url 'unittests:detoutput_delete' test.id out.id %}">🗙</a></td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
-{% endif %}
-
-<ul class="data-table-actions">
-    <li><a href="{% url 'unittests:detoutput_create' test.id %}">Add new</a></li>
-    <li><a href="{% url 'unittests:detoutput_create_json' test.id %}">Import a JSON file</a></li>
-</ul>
-
-<h2>Temperatures</h2>
-
-{% if temperatures %}
-<table class="data-table" id="temperature-table">
-    <thead>
-        <th>T<sub>A1</sub> [K]</th>
-        <th>T<sub>A2</sub> [K]</th>
-        <th>T<sub>B1</sub> [K]</th>
-        <th>T<sub>B2</sub> [K]</th>
-        <th>T<sub>pol1</sub> [K]</th>
-        <th>T<sub>pol2</sub> [K]</th>
-        <th>T<sub>cross1</sub> [K]</th>
-        <th>T<sub>cross2</sub> [K]</th>
-    </thead>
-    <tbody>
-        {% for temp in temperatures %}
-        <tr>
-            <td>{{temp.t_load_a_1}}</td>
-            <td>{{temp.t_load_a_2}}</td>
-            <td>{{temp.t_load_b_1}}</td>
-            <td>{{temp.t_load_b_2}}</td>
-            <td>{{temp.t_polarimeter_1}}</td>
-            <td>{{temp.t_polarimeter_2}}</td>
-            <td>{{temp.t_cross_guide_1}}</td>
-            <td>{{temp.t_cross_guide_2}}</td>
-            <td><a href="{% url 'unittests:temperature_delete' test.id temp.id %}">🗙</a></td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
-{% endif %}
-
-<ul class="data-table-actions">
-    <a href="{% url 'unittests:temperature_create' test.id %}">Add new</a>
-</ul>
-
-
-<h2>Noise temperatures</h2>
-
-{% if tnoise_analyses %}
-<table class="data-table" id="tnoise-table">
-    {% for analysis in tnoise_analyses %}
-    <tr><td>{{analysis}}</td></tr>
-    {% endfor %}
-</table>
-{% endif %}
-
-<ul class="data-table-actions">
-    <li><a href="{% url 'unittests:tnoise_create' test.id %}">Add new</a></li>
-    <li><a href="{% url 'unittests:tnoise_create_json' test.id %}">Import a JSON file</a></li>
-</ul>
-
-
-<h2>Operators</h2>
-
-{% if operators %}
-<table id="operators-table">
-    {% for op in operators %}
-    <tr><td>{{op.name}}</td></tr>
-    {% endfor %}
-</table>
-{% endif %}
-
-<h2>Actions</h2>
-<ul>
-    <li><a href="{% url 'unittests:test_download' test.id %}">Download</a> the data file</li>
-</ul>
 {% endblock %}

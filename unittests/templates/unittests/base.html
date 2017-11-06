@@ -13,19 +13,27 @@
     <!-- Meta Description -->
     <meta name="description" content="LSPE/Strip database of the tests done on the polarimetric units">
 
-    <body>
-        {% block action_bar %}
-        <div id="action-bar">
-            <ul>
-                <li><a href="{% url 'unittests:test_list' %}">Tests</a></li>
-                <li><a href="{% url 'unittests:tnoise_list' %}">Noise temperatures</a></li>
-                {% block action_bar_buttons %}
-                {% endblock %}
-            </ul>
-        </div>
-        {% endblock %}
+    {% block head %}
+    <link rel="stylesheet" type="text/css" href="{% static 'unittests/normalize.css' %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'unittests/skeleton.css' %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'unittests/style.css' %}"/>
+    {% endblock %}
 
-        {% block contents %}
-        {% endblock %}
+    <body>
+        <div class="container">
+            {% block action_bar %}
+            <div id="action-bar">
+                <ul>
+                    <li><a href="{% url 'unittests:test_list' %}">Tests</a></li>
+                    <li><a href="{% url 'unittests:tnoise_list' %}">Noise temperatures</a></li>
+                    {% block action_bar_buttons %}
+                    {% endblock %}
+                </ul>
+            </div>
+            {% endblock %}
+
+            {% block contents %}
+            {% endblock %}
+        </div>
     </body>
 </html>

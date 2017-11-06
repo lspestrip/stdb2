@@ -9,23 +9,27 @@ LSPE/Strip DB: List of tests
 {% endblock %}
 
 {% block contents %}
-<h1>Polarimetric unit tests</h1>
+<div class="row">
+    <div class="one-half column" style="margin-top: 1em">
+        <h1>Polarimetric unit tests</h1>
+        <p>Number of tests in the database: {{ tests | length }}</p>
 
-<p>Number of tests in the database: {{ tests | length }}</p>
+        {% if tests %}
+        <table>
+            <thead>
+                <th>Test</th>
+                <th>Acqusition date</th>
+            </thead>
+            {% for test in tests %}
+            <tr>
+                <td><a href="{% url 'unittests:test_details' test.id %}">STRIP{{ test.polarimeter_number }} {{ test.test_type }}</a></td>
+                <td>{{ test.acquisition_date }}</td>
+                <td><a href="{% url 'unittests:test_delete' test.id %}">🗙</a></td>
+            </tr>
+            {% endfor %}
+        </table>
+        {% endif %}
+    </div>
+</div>
 
-{% if tests %}
-<table>
-    <thead>
-        <th>Test</th>
-        <th>Acqusition date</th>
-    </thead>
-    {% for test in tests %}
-    <tr>
-        <td><a href="{% url 'unittests:test_details' test.id %}">STRIP{{ test.polarimeter_number }} {{ test.test_type }}</a></td>
-        <td>{{ test.acquisition_date }}</td>
-        <td><a href="{% url 'unittests:test_delete' test.id %}">🗙</a></td>
-    </tr>
-    {% endfor %}
-</table>
-{% endif %}
 {% endblock %}

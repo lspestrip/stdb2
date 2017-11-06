@@ -21,6 +21,7 @@ from .models import (
     AdcOffset,
     DetectorOutput,
     NoiseTemperatureAnalysis,
+    Temperatures,
     dict_to_tnoise_analysis,
     dict_to_detector_output,
 )
@@ -29,6 +30,7 @@ from .forms import (
     TestForm,
     AdcOffsetCreate,
     DetOutputCreate,
+    TemperatureCreate,
     CreateFromJSON,
 )
 
@@ -70,6 +72,7 @@ class TestDetails(View):
             'test': cur_test,
             'adc_offsets': AdcOffset.objects.filter(test=cur_test),
             'det_outputs': DetectorOutput.objects.filter(test=cur_test),
+            'temperatures': Temperatures.objects.filter(test=cur_test),
             'tnoise_analyses': NoiseTemperatureAnalysis.objects.filter(test=cur_test),
             'operators': cur_test.operators.all(),
         })
@@ -98,6 +101,19 @@ class TestDetailsJson(View):
                 'pwr3_adu': out.pwr3_adu,
             })
 
+        temperatures = []
+        for temp in Temperatures.objects.filter(test=cur_test):
+            temperatures.append({
+                't_load_a_1': temp.t_load_a_1,
+                't_load_a_2': temp.t_load_a_2,
+                't_load_b_1': temp.t_load_b_1,
+                't_load_b_2': temp.t_load_b_2,
+                't_cross_guide_1': temp.t_cross_guide_1,
+                't_cross_guide_2': temp.t_cross_guide_2,
+                't_polarimeter_1': temp.t_polarimeter_1,
+                't_polarimeter_2': temp.t_polarimeter_2,
+            })
+
         tnoise_analyses = []
         for analysis in NoiseTemperatureAnalysis.objects.filter(test=cur_test):
             tnoise_analyses.append({
@@ -122,6 +138,7 @@ class TestDetailsJson(View):
             'test_type': str(cur_test.test_type),
             'adc_offsets': adc_offsets,
             'detector_outputs': det_outputs,
+            'temperatures': temperatures,
             'operators': [x.name for x in cur_test.operators.all()],
         }
         return HttpResponse(json.dumps(result, indent=4), content_type='application/json')
@@ -146,12 +163,13 @@ class TestDownload(View):
         return resp
 
 
-class AdcOffsetAddView(View):
-    def post(self, request, test_id):
-        'Set the value of the four ADC offsets for a test'
+class AddMixin(View):
+    form_class = None
+    template_name = ''
 
+    def post(self, request, test_id):
         cur_test = get_object_or_404(PolarimeterTest, pk=test_id)
-        form = AdcOffsetCreate(request.POST)
+        form = self.form_class(request.POST)
         if form.is_valid():
             new_offsets = form.save(commit=False)
             new_offsets.test = cur_test
@@ -161,55 +179,42 @@ class AdcOffsetAddView(View):
 
     def get(self, request, test_id):
         cur_test = get_object_or_404(PolarimeterTest, pk=test_id)
-        form = AdcOffsetCreate()
+        form = self.form_class()
 
-        return render(request, 'unittests/adc_create.html', {
+        return render(request, self.template_name, {
             'test_id': test_id,
             'polarimeter_number': cur_test.polarimeter_number,
             'form': form,
         })
 
 
-class AdcOffsetDeleteView(View):
-    def get(self, request, test_id, ofs_id):
-        'Remove a set of ADC offsets'
+class DeleteMixin(View):
+    model = None
 
-        cur_ofs = get_object_or_404(AdcOffset, pk=ofs_id)
+    def get(self, request, test_id, obj_id):
+        cur_ofs = get_object_or_404(self.model, pk=obj_id)
         cur_ofs.delete()
-        return redirect('unittests:test_details', kwargs={'test_id': test_id})
+
+        cur_obj = get_object_or_404(PolarimeterTest, pk=test_id)
+        return redirect(cur_obj)
 
 
-class DetOutputAddView(View):
-    def post(self, request, test_id):
-        'Set the level of the detector outputs for a test'
+class AdcOffsetAddView(AddMixin):
+    form_class = AdcOffsetCreate
+    template_name = 'unittests/adc_create.html'
 
-        cur_test = get_object_or_404(PolarimeterTest, pk=test_id)
-        form = DetOutputCreate(request.POST)
-        if form.is_valid():
-            new_output = form.save(commit=False)
-            new_output.test = cur_test
-            new_output.save()
 
-            return redirect('unittests:test_details', kwargs={'test_id': test_id})
+class AdcOffsetDeleteView(DeleteMixin):
+    model = AdcOffset
 
-    def get(self, request, test_id):
-        cur_test = get_object_or_404(PolarimeterTest, pk=test_id)
-        form = DetOutputCreate()
 
-        return render(request, 'unittests/detoutput_create.html', {
-            'test_id': test_id,
-            'polarimeter_number': cur_test.polarimeter_number,
-            'form': form,
-        })
+class DetOutputAddView(AddMixin):
+    form_class = DetOutputCreate
+    template_name = 'unittests/detoutput_create.html'
 
 
 class DetOutputDeleteView(View):
-    def get(self, request, test_id, output_id):
-        'Remove a set of detector_outputs'
-
-        cur_output = get_object_or_404(DetectorOutput, pk=output_id)
-        cur_output.delete()
-        return redirect('unittests:test_details', kwargs={'test_id': test_id})
+    model = DetectorOutput
 
 
 class DetOutputJsonView(View):
@@ -245,6 +250,15 @@ class DetOutputJsonView(View):
             'polarimeter_number': cur_test.polarimeter_number,
             'form': form,
         })
+
+
+class TemperatureAddView(AddMixin):
+    form_class = TemperatureCreate
+    template_name = 'unittests/temperature_create.html'
+
+
+class TemperatureDeleteView(DeleteMixin):
+    model = Temperatures
 
 
 class TnoiseListView(View):

@@ -22,11 +22,15 @@ urlpatterns = [
         views.DetOutputAddView.as_view(), name='detoutput_create'),
     url(r'^tests/(?P<test_id>\d+)/newdetoutputjson$',
         views.DetOutputJsonView.as_view(), name='detoutput_create_json'),
+    url(r'^tests/(?P<test_id>\d+)/newtemperature$',
+        views.TemperatureAddView.as_view(), name='temperature_create'),
 
-    url(r'^tests/(?P<test_id>\d+)/AdcOffset/(?P<ofs_id>\d+)/delete$',
+    url(r'^tests/(?P<test_id>\d+)/AdcOffset/(?P<obj_id>\d+)/delete$',
         views.AdcOffsetDeleteView.as_view(), name='adc_delete'),
-    url(r'^tests/(?P<test_id>\d+)/detoutput/(?P<output_id>\d+)/delete$',
+    url(r'^tests/(?P<test_id>\d+)/detoutput/(?P<obj_id>\d+)/delete$',
         views.DetOutputDeleteView.as_view(), name='detoutput_delete'),
+    url(r'^tests/(?P<test_id>\d+)/temperature/(?P<obj_id>\d+)/delete$',
+        views.TemperatureDeleteView.as_view(), name='temperature_delete'),
 
     url(r'^tnoise/$', views.TnoiseListView.as_view(), name='tnoise_list'),
     url(r'^tnoise/add/(?P<test_id>\d+)$',

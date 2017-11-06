@@ -1,7 +1,12 @@
 # -*- encoding: utf-8 -*-
 
 from django import forms
-from .models import PolarimeterTest, AdcOffset, DetectorOutput
+from .models import (
+    PolarimeterTest,
+    AdcOffset,
+    DetectorOutput,
+    Temperatures
+)
 
 
 class TestForm(forms.ModelForm):
@@ -39,6 +44,21 @@ class DetOutputCreate(forms.ModelForm):
             'pwr1_adu',
             'pwr2_adu',
             'pwr3_adu',
+        ]
+
+
+class TemperatureCreate(forms.ModelForm):
+    class Meta:
+        model = Temperatures
+        fields = [
+            't_load_a_1',
+            't_load_a_2',
+            't_load_b_1',
+            't_load_b_2',
+            't_polarimeter_1',
+            't_polarimeter_2',
+            't_cross_guide_1',
+            't_cross_guide_2',
         ]
 
 

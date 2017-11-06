@@ -34,15 +34,17 @@ LSPE/Strip DB: Details of test on STRIP{{test.polarimeter_number}}
         <th>PWR2</th>
         <th>PWR3</th>
     </thead>
-    {% for ofs in adc_offsets %}
-    <tr>
-        <td>{{ofs.pwr0_adu}}</td>
-        <td>{{ofs.pwr1_adu}}</td>
-        <td>{{ofs.pwr2_adu}}</td>
-        <td>{{ofs.pwr3_adu}}</td>
-        <td><a href="{% url 'unittests:adc_delete' test.id ofs.id %}">🗙</a></td>
-    </tr>
-    {% endfor %}
+    <tbody>
+        {% for ofs in adc_offsets %}
+        <tr>
+            <td>{{ofs.pwr0_adu}}</td>
+            <td>{{ofs.pwr1_adu}}</td>
+            <td>{{ofs.pwr2_adu}}</td>
+            <td>{{ofs.pwr3_adu}}</td>
+            <td><a href="{% url 'unittests:adc_delete' test.id ofs.id %}">🗙</a></td>
+        </tr>
+        {% endfor %}
+    </tbody>
 </table>
 {% endif %}
 
@@ -60,21 +62,59 @@ LSPE/Strip DB: Details of test on STRIP{{test.polarimeter_number}}
         <th>PWR2</th>
         <th>PWR3</th>
     </thead>
-    {% for out in det_outputs %}
-    <tr>
-        <td>{{out.pwr0_adu}}</td>
-        <td>{{out.pwr1_adu}}</td>
-        <td>{{out.pwr2_adu}}</td>
-        <td>{{out.pwr3_adu}}</td>
-        <td><a href="{% url 'unittests:detoutput_delete' test.id out.id %}">🗙</a></td>
-    </tr>
-    {% endfor %}
+    <tbody>
+        {% for out in det_outputs %}
+        <tr>
+            <td>{{out.pwr0_adu}}</td>
+            <td>{{out.pwr1_adu}}</td>
+            <td>{{out.pwr2_adu}}</td>
+            <td>{{out.pwr3_adu}}</td>
+            <td><a href="{% url 'unittests:detoutput_delete' test.id out.id %}">🗙</a></td>
+        </tr>
+        {% endfor %}
+    </tbody>
 </table>
 {% endif %}
 
 <ul class="data-table-actions">
     <li><a href="{% url 'unittests:detoutput_create' test.id %}">Add new</a></li>
     <li><a href="{% url 'unittests:detoutput_create_json' test.id %}">Import a JSON file</a></li>
+</ul>
+
+<h2>Temperatures</h2>
+
+{% if temperatures %}
+<table class="data-table" id="temperature-table">
+    <thead>
+        <th>T<sub>A1</sub> [K]</th>
+        <th>T<sub>A2</sub> [K]</th>
+        <th>T<sub>B1</sub> [K]</th>
+        <th>T<sub>B2</sub> [K]</th>
+        <th>T<sub>pol1</sub> [K]</th>
+        <th>T<sub>pol2</sub> [K]</th>
+        <th>T<sub>cross1</sub> [K]</th>
+        <th>T<sub>cross2</sub> [K]</th>
+    </thead>
+    <tbody>
+        {% for temp in temperatures %}
+        <tr>
+            <td>{{temp.t_load_a_1}}</td>
+            <td>{{temp.t_load_a_2}}</td>
+            <td>{{temp.t_load_b_1}}</td>
+            <td>{{temp.t_load_b_2}}</td>
+            <td>{{temp.t_polarimeter_1}}</td>
+            <td>{{temp.t_polarimeter_2}}</td>
+            <td>{{temp.t_cross_guide_1}}</td>
+            <td>{{temp.t_cross_guide_2}}</td>
+            <td><a href="{% url 'unittests:temperature_delete' test.id temp.id %}">🗙</a></td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endif %}
+
+<ul class="data-table-actions">
+    <a href="{% url 'unittests:temperature_create' test.id %}">Add new</a>
 </ul>
 
 

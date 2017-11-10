@@ -17,7 +17,7 @@ SAMPLING_FREQUENCY = 25.0
 def convert_text_file_to_h5(input_file, output_file):
     '''Convert a text file into a HDF5 file
 
-    The parameter "input_file" should be a file-like object. The FITS file will
+    The parameter "input_file" should be a file-like object. The HDF5 file will
     be saved into "output_file" (which can either be a file name or a file-like
     object).
     '''
@@ -115,7 +115,7 @@ def read_worksheet_settings(wks: xlrd.book.Book) -> Dict[str, Any]:
 
 
 def hygenize_name(name: str) -> str:
-    'Return a name which is suitable for FITS column/keyword names'
+    'Return a name which is suitable for HDF5 column/keyword names'
 
     # Remove unwanted character and clip to the first 8 characters
     return ''.join([ch for ch in name.upper() if not ch in (' ', '+', '-', '(', ')')])[:8]
@@ -149,7 +149,7 @@ def unit_from_name(name: str) -> str:
 
 
 def convert_excel_file_to_h5(input_file, h5_file, dataset_name):
-    'Convert an Excel file into a FITS HDU'
+    'Convert an Excel file into a HDF5 dataset'
 
     # Read data and metadata from the Excel file
     with xlrd.open_workbook(file_contents=input_file.read()) as workbook:
@@ -231,7 +231,7 @@ def convert_excel_file_to_h5(input_file, h5_file, dataset_name):
                 if not fixed_max:
                     fixed_max = values[0]
                 else:
-                    fixed_max = min(fixed_max, values[0])
+                    fixed_max = max(fixed_max, values[0])
 
     if fixed_column:
         dataset.attrs['fixed_value'] = fixed_column
@@ -247,14 +247,14 @@ def convert_excel_file_to_h5(input_file, h5_file, dataset_name):
 
 
 def convert_zip_file_to_h5(input_file, output_file):
-    '''Convert the Excel files in a ZIP file into one single FITS
+    '''Convert the Excel files in a ZIP file into one HDF5 file
 
     The Excel files must have been saved using the Keithley machine, either the
-    old or the new one. All the files are saved in separate HDU in the FITS
+    old or the new one. All the files are saved in separate HDU in the HDF5
     files.
 
     The parameter "input_file" must be a file-like object, which will be treated
-    as a ZIP archive. The FITS file will be named after "output_file".
+    as a ZIP archive. The HDF5 file will be named after "output_file".
     '''
 
     # To check the correspondences between the (two!) notations used in
@@ -312,10 +312,10 @@ def convert_zip_file_to_h5(input_file, output_file):
 
 
 def convert_data_file_to_h5(data_file_name, data_file, output_file):
-    '''Convert a data file into a FITS file
+    '''Convert a data file into a HDF5 file
 
-    Return the name of the FITS file which has just been created. The parameter
-    "data_file_name" is used only to infer the type of the file from its extension.
+    The parameter "data_file_name" is used only to infer the type of the file
+    from its extension: it does not need to match a real file.
     '''
     basename = os.path.basename(data_file_name)
     _, file_ext = os.path.splitext(basename)

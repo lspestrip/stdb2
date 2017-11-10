@@ -1,50 +1,68 @@
 # -*- encoding: utf-8 -*-
 
+from collections import OrderedDict
 from io import BytesIO
 import os.path
+import re
 from zipfile import ZipFile
 from typing import Any, Dict
 
-from astropy.io import fits
+import h5py
 import numpy as np
 import xlrd
 
 SAMPLING_FREQUENCY = 25.0
 
 
-def convert_text_file_to_fits(input_file, output_file):
-    '''Convert a text file into a FITS file
+def convert_text_file_to_h5(input_file, output_file):
+    '''Convert a text file into a HDF5 file
 
     The parameter "input_file" should be a file-like object. The FITS file will
     be saved into "output_file" (which can either be a file name or a file-like
     object).
     '''
 
-    data = np.loadtxt(input_file, skiprows=1)
-    if data.shape[1] != 13:
+    rawdata = np.loadtxt(input_file, skiprows=1)
+    if rawdata.shape[1] != 13:
         raise ValueError('the input file has {0} columns instead of 13'
                          .format(data.shape[1]))
 
-    table_hdu = fits.BinTableHDU.from_columns([
-        fits.Column(name='TIME', format='E', unit='s',
-                    array=np.arange(data.shape[0]) / SAMPLING_FREQUENCY),
-        fits.Column(name='PCTIME', format='E', unit='', array=data[:, 0]),
-        fits.Column(name='PHB', format='B', unit='', array=data[:, 1]),
-        fits.Column(name='RECORD', format='B', unit='', array=data[:, 2]),
-        fits.Column(name='DEM0', format='E', unit='ADU', array=data[:, 3]),
-        fits.Column(name='DEM1', format='E', unit='ADU', array=data[:, 4]),
-        fits.Column(name='DEM2', format='E', unit='ADU', array=data[:, 5]),
-        fits.Column(name='DEM3', format='E', unit='ADU', array=data[:, 6]),
-        fits.Column(name='PWR0', format='E', unit='ADU', array=data[:, 7]),
-        fits.Column(name='PWR1', format='E', unit='ADU', array=data[:, 8]),
-        fits.Column(name='PWR2', format='E', unit='ADU', array=data[:, 9]),
-        fits.Column(name='PWR3', format='E', unit='ADU', array=data[:, 10]),
-        fits.Column(name='RFPOWER', format='E', unit='dB', array=data[:, 11]),
-        fits.Column(name='FREQ', format='E', unit='GHz', array=data[:, 12]),
+    data_type = np.dtype([
+        ('time_s', np.float32),
+        ('pctime', np.float32),
+        ('phb', np.int8),
+        ('record', np.int8),
+        ('dem_Q1_ADU', np.float32),
+        ('dem_U1_ADU', np.float32),
+        ('dem_U2_ADU', np.float32),
+        ('dem_Q2_ADU', np.float32),
+        ('pwr_Q1_ADU', np.float32),
+        ('pwr_U1_ADU', np.float32),
+        ('pwr_U2_ADU', np.float32),
+        ('pwr_Q2_ADU', np.float32),
+        ('rfpower_dB', np.float32),
+        ('freq_Hz', np.float32)
     ])
 
-    hdulist = fits.HDUList([fits.PrimaryHDU(), table_hdu])
-    hdulist.writeto(output_file, checksum=True)
+    with h5py.File(output_file, 'w') as h5_file:
+        data = h5_file.create_dataset(
+            'time_series', (rawdata.shape[0],),
+            dtype=data_type, compression='gzip', shuffle=True)
+
+        data['time_s'] = np.arange(rawdata.shape[0]) / SAMPLING_FREQUENCY
+        data['pctime'] = rawdata[:, 0]
+        data['phb'] = rawdata[:, 1]
+        data['record'] = rawdata[:, 2]
+        data['dem_Q1_ADU'] = rawdata[:, 3]
+        data['dem_U1_ADU'] = rawdata[:, 4]
+        data['dem_U2_ADU'] = rawdata[:, 5]
+        data['dem_Q2_ADU'] = rawdata[:, 6]
+        data['pwr_Q1_ADU'] = rawdata[:, 7]
+        data['pwr_U1_ADU'] = rawdata[:, 8]
+        data['pwr_U2_ADU'] = rawdata[:, 9]
+        data['pwr_Q2_ADU'] = rawdata[:, 10]
+        data['rfpower_dB'] = rawdata[:, 11]
+        data['freq_Hz'] = rawdata[:, 12]
 
 
 def read_worksheet_table(wks: xlrd.book.Book) -> Dict[str, Any]:
@@ -56,7 +74,7 @@ def read_worksheet_table(wks: xlrd.book.Book) -> Dict[str, Any]:
     '''
 
     sheet = wks.sheet_by_index(0)
-    result = {}
+    result = OrderedDict()
     nrows = sheet.nrows
     for cur_col in range(sheet.ncols):
         name = sheet.cell(0, cur_col).value
@@ -71,7 +89,7 @@ def read_worksheet_table(wks: xlrd.book.Book) -> Dict[str, Any]:
 
 def read_worksheet_settings(wks: xlrd.book.Book) -> Dict[str, Any]:
     sheet = wks.sheet_by_name('Settings')
-    result = {}
+    result = OrderedDict()
     for cur_row in range(sheet.nrows):
         key = str(sheet.cell(cur_row, 0).value)
         if key == '':
@@ -130,29 +148,105 @@ def unit_from_name(name: str) -> str:
         raise ValueError('column "{0}" was not recognized'.format(name))
 
 
-def convert_excel_file_to_fits_hdu(input_file) -> fits.BinTableHDU:
+def convert_excel_file_to_h5(input_file, h5_file, dataset_name):
     'Convert an Excel file into a FITS HDU'
+
+    # Read data and metadata from the Excel file
     with xlrd.open_workbook(file_contents=input_file.read()) as workbook:
         settings = read_worksheet_settings(workbook)
         datatable = read_worksheet_table(workbook)
 
-    column_list = []
-    for cur_key in sorted(datatable.keys()):
-        cur_values = datatable[cur_key]
-        column_list.append(fits.Column(name=hygenize_name(cur_key),
-                                       format='E',
-                                       unit=unit_from_name(cur_key),
-                                       array=cur_values))
+    assert len(datatable.keys()) > 0, \
+        'unexpected format for Excel file "{0}", no rows of data'.format(
+            input_file.name)
 
-    data_hdu = fits.BinTableHDU.from_columns(column_list)
+    # In a data table produced by Keithley, we have columns named like in the
+    # following example:
+    #
+    #   GateI(1) GateV(1) DrainI(1)  GateI(2) GateV(2) DrainI(2)  ...
+    #
+    # We refer to the tuple (GateI, GateV, DrainI) as a «block», and we are
+    # going to save all these data in a HDF5 3D data block. To do this, we need
+    # to understand how many columns are in a block, so we build the variable
+    # "basenames", which should ideally be equal to ["GateI", "GateV", "DrainI"]
+    # for the example above.
+
+    basename_re = re.compile('^[a-zA-Z]+')
+    basenames = []
+    samples_per_column = None
+    for cur_key in datatable.keys():
+        if not samples_per_column:
+            samples_per_column = len(datatable[cur_key])
+        cur_basename = basename_re.search(cur_key)
+        assert cur_basename, 'unable to understand column "{0}"'.format(
+            cur_key)
+        cur_column_name = cur_basename.group(0)
+        if cur_column_name in basenames:
+            # We're done, we have got a column which we already got: this
+            # signals a new block (e.g., we are getting "DrainI(2)" after we
+            # already found "DrainI(1)")
+            break
+
+        basenames.append(cur_column_name)
+
+    # If we built "basenames" correctly, the number of columns should be a
+    # multiple of "basename"'s length
+    assert len(datatable.keys()) % len(basenames) == 0, \
+        'unexpected data columns at the end of the Excel file "{0}"'.format(
+            input_file.name)
+
+    # We use a custom type for samples in a block, so we can keep the 3-tuple of
+    # values together
+    data_type = np.dtype([(x, np.float32) for x in basenames])
+
+    num_of_blocks = len(datatable.keys()) // len(basenames)
+    dataset = h5_file.create_dataset(
+        dataset_name, (samples_per_column, num_of_blocks),
+        dtype=data_type, compression='gzip', shuffle=True)
+
+    # It's time to fill the HDF5 dataset
+    fixed_column = None
+    fixed_min, fixed_max = None, None
+    for cur_block_idx in range(num_of_blocks):
+        for cur_basename in basenames:
+            if num_of_blocks > 1:
+                cur_key = '{0}({1})'.format(cur_basename, cur_block_idx + 1)
+                values = datatable[cur_key]
+            else:
+                values = datatable[cur_basename]
+
+            dataset[cur_basename, :, cur_block_idx] = values
+
+            # If the column doesn't change, keep track of it
+            if not fixed_column and (np.max(values) - np.min(values) < 1e-10):
+                fixed_column = cur_basename
+
+            # Extract some statistics from fixed columns
+            if fixed_column == cur_basename:
+                if not fixed_min:
+                    # Take just the first, they're all the same
+                    fixed_min = values[0]
+                else:
+                    fixed_min = min(fixed_min, values[0])
+                if not fixed_max:
+                    fixed_max = values[0]
+                else:
+                    fixed_max = min(fixed_max, values[0])
+
+    if fixed_column:
+        dataset.attrs['fixed_value'] = fixed_column
+        dataset.attrs['fixed_min'] = fixed_min
+        dataset.attrs['fixed_max'] = fixed_max
+        dataset.attrs['fixed_delta'] = (fixed_max - fixed_min) / num_of_blocks
+
+    # For completeness, we append any string taken from the Excel file's
+    # metadata to the list of attributes for this dataset
     for key, value in settings.items():
         if type(value) is str:
-            data_hdu.header[hygenize_name(key)] = value
-
-    return data_hdu
+            dataset.attrs[hygenize_name(key)] = value
 
 
-def convert_zip_file_to_fits(input_file, output_file):
+def convert_zip_file_to_h5(input_file, output_file):
     '''Convert the Excel files in a ZIP file into one single FITS
 
     The Excel files must have been saved using the Keithley machine, either the
@@ -166,65 +260,58 @@ def convert_zip_file_to_fits(input_file, output_file):
     # To check the correspondences between the (two!) notations used in
     # Bicocca and the proper STRIP naming conventions, refer to the note
     # LSPE-STRIP-SP-004 («LSPE-STRIP naming convention»)
-    hdu_names = {
+    dataset_names = {
         # HEMT tests (Idrain vs Vdrain)
-        'Q1/tests/data/Id_vs_Vd': 'HA1IDVD', 'Id_vs_Vd_H0': 'HA1IDVD',
-        'Q2/tests/data/Id_vs_Vd': 'HA2IDVD', 'Id_vs_Vd_H2': 'HA2IDVD',
-        'Q3/tests/data/Id_vs_Vd': 'HA3IDVD', 'Id_vs_Vd_H4': 'HA3IDVD',
-        'Q6/tests/data/Id_vs_Vd': 'HB1IDVD', 'Id_vs_Vd_H1': 'HB1IDVD',
-        'Q5/tests/data/Id_vs_Vd': 'HB2IDVD', 'Id_vs_Vd_H3': 'HB2IDVD',
-        'Q4/tests/data/Id_vs_Vd': 'HB3IDVD', 'Id_vs_Vd_H5': 'HB3IDVD',
+        'Q1/tests/data/Id_vs_Vd': 'HA1/IDVD', 'Id_vs_Vd_H0': 'HA1/IDVD',
+        'Q2/tests/data/Id_vs_Vd': 'HA2/IDVD', 'Id_vs_Vd_H2': 'HA2/IDVD',
+        'Q3/tests/data/Id_vs_Vd': 'HA3/IDVD', 'Id_vs_Vd_H4': 'HA3/IDVD',
+        'Q6/tests/data/Id_vs_Vd': 'HB1/IDVD', 'Id_vs_Vd_H1': 'HB1/IDVD',
+        'Q5/tests/data/Id_vs_Vd': 'HB2/IDVD', 'Id_vs_Vd_H3': 'HB2/IDVD',
+        'Q4/tests/data/Id_vs_Vd': 'HB3/IDVD', 'Id_vs_Vd_H5': 'HB3/IDVD',
 
         # HEMT tests (Idrain vs Vgate)
-        'Q1/tests/data/Id_vs_Vg': 'HA1IDVG', 'Id_vs_Vg_H0': 'HA1IDVG',
-        'Q2/tests/data/Id_vs_Vg': 'HA2IDVG', 'Id_vs_Vg_H2': 'HA2IDVG',
-        'Q3/tests/data/Id_vs_Vg': 'HA3IDVG', 'Id_vs_Vg_H4': 'HA3IDVG',
-        'Q6/tests/data/Id_vs_Vg': 'HB1IDVG', 'Id_vs_Vg_H1': 'HB1IDVG',
-        'Q5/tests/data/Id_vs_Vg': 'HB2IDVG', 'Id_vs_Vg_H3': 'HB2IDVG',
-        'Q4/tests/data/Id_vs_Vg': 'HB3IDVG', 'Id_vs_Vg_H5': 'HB3IDVG',
+        'Q1/tests/data/Id_vs_Vg': 'HA1/IDVG', 'Id_vs_Vg_H0': 'HA1/IDVG',
+        'Q2/tests/data/Id_vs_Vg': 'HA2/IDVG', 'Id_vs_Vg_H2': 'HA2/IDVG',
+        'Q3/tests/data/Id_vs_Vg': 'HA3/IDVG', 'Id_vs_Vg_H4': 'HA3/IDVG',
+        'Q6/tests/data/Id_vs_Vg': 'HB1/IDVG', 'Id_vs_Vg_H1': 'HB1/IDVG',
+        'Q5/tests/data/Id_vs_Vg': 'HB2/IDVG', 'Id_vs_Vg_H3': 'HB2/IDVG',
+        'Q4/tests/data/Id_vs_Vg': 'HB3/IDVG', 'Id_vs_Vg_H5': 'HB3/IDVG',
 
         # Detector tests
-        'DET1/tests/data/If_vs_Vf': 'Q1IFVF', 'If_vs_Vf_Det1': 'Q1IFVF',
-        'DET4/tests/data/If_vs_Vf': 'Q2IFVF', 'If_vs_Vf_Det4': 'Q2IFVF',
-        'DET2/tests/data/If_vs_Vf': 'U1IFVF', 'If_vs_Vf_Det2': 'U1IFVF',
-        'DET3/tests/data/If_vs_Vf': 'U2IFVF', 'If_vs_Vf_Det3': 'U2IFVF',
+        'DET1/tests/data/If_vs_Vf': 'Q1/IFVF', 'If_vs_Vf_Det1': 'Q1/IFVF',
+        'DET4/tests/data/If_vs_Vf': 'Q2/IFVF', 'If_vs_Vf_Det4': 'Q2/IFVF',
+        'DET2/tests/data/If_vs_Vf': 'U1/IFVF', 'If_vs_Vf_Det2': 'U1/IFVF',
+        'DET3/tests/data/If_vs_Vf': 'U2/IFVF', 'If_vs_Vf_Det3': 'U2/IFVF',
 
         # PHSW tests
-        'V1_PS1/tests/data/If_vs_Vf': 'PSA1IFVF', 'If_vs_Vfd_V1_PS1': 'PSA1IFVF',
-        'V2_PS1/tests/data/If_vs_Vf': 'PSA2IFVF', 'If_vs_Vfd_V2_PS1': 'PSA2IFVF',
-        'V1_PS2/tests/data/If_vs_Vf': 'PSB1IFVF', 'If_vs_Vfd_V1_PS2': 'PSB1IFVF',
-        'V2_PS2/tests/data/If_vs_Vf': 'PSB2IFVF', 'If_vs_Vfd_V2_PS2': 'PSB2IFVF',
+        'V1_PS1/tests/data/If_vs_Vf': 'PSA1/IFVF', 'If_vs_Vfd_V1_PS1': 'PSA1/IFVF',
+        'V2_PS1/tests/data/If_vs_Vf': 'PSA2/IFVF', 'If_vs_Vfd_V2_PS1': 'PSA2/IFVF',
+        'V1_PS2/tests/data/If_vs_Vf': 'PSB1/IFVF', 'If_vs_Vfd_V1_PS2': 'PSB1/IFVF',
+        'V2_PS2/tests/data/If_vs_Vf': 'PSB2/IFVF', 'If_vs_Vfd_V2_PS2': 'PSB2/IFVF',
     }
 
-    with ZipFile(input_file) as zip_file:
-        hdu_list = []
-        for info in zip_file.infolist():
-            if not info.filename.endswith('.xls'):
-                # Skip non-Excel files
-                continue
+    with h5py.File(output_file, 'w') as h5_file:
+        with ZipFile(input_file) as zip_file:
+            hdu_list = []
+            for info in zip_file.infolist():
+                if not info.filename.endswith('.xls'):
+                    # Skip non-Excel files
+                    continue
 
-            current_hduname = None
-            for pattern, hduname in hdu_names.items():
-                if pattern in info.filename:
-                    current_hduname = hduname
-                    break
+                dataset_name = None
+                for pattern, hduname in dataset_names.items():
+                    if pattern in info.filename:
+                        dataset_name = hduname
+                        break
 
-            if not current_hduname:
-                continue
+                if not dataset_name:
+                    continue
 
-            with zip_file.open(info) as xls_file:
-                cur_hdu = convert_excel_file_to_fits_hdu(xls_file)
-                cur_hdu.header['EXTNAME'] = current_hduname
-                hdu_list.append(cur_hdu)
-
-    # Order the HDUs depending on their name
-    hdu_list.sort(key=lambda x: x.header['EXTNAME'])
-
-    fits.HDUList([fits.PrimaryHDU()] +
-                 hdu_list).writeto(output_file, checksum=True)
+                with zip_file.open(info) as xls_file:
+                    convert_excel_file_to_h5(xls_file, h5_file, dataset_name)
 
 
-def convert_data_file_to_fits(data_file_name, data_file, output_file):
+def convert_data_file_to_h5(data_file_name, data_file, output_file):
     '''Convert a data file into a FITS file
 
     Return the name of the FITS file which has just been created. The parameter
@@ -236,9 +323,9 @@ def convert_data_file_to_fits(data_file_name, data_file, output_file):
     with BytesIO(data_file.read()) as input_file:
         file_ext = file_ext.lower()
         if file_ext == '.txt':
-            convert_text_file_to_fits(input_file, output_file)
+            convert_text_file_to_h5(input_file, output_file)
         elif file_ext == '.zip':
-            convert_zip_file_to_fits(input_file, output_file)
+            convert_zip_file_to_h5(input_file, output_file)
         else:
             raise ValueError('extension "{0}" not recognized'.format(file_ext))
 

@@ -25,7 +25,7 @@ from typing import Dict, Any
 from django.db import models
 from django.core.urlresolvers import reverse
 from django.core.files import File
-from .file_conversions import convert_data_file_to_fits
+from .file_conversions import convert_data_file_to_h5
 
 
 class TestType(models.Model):
@@ -109,7 +109,7 @@ class PolarimeterTest(models.Model):
 
             with NamedTemporaryFile(suffix='.fits.gz', delete=False) as temporary_file:
                 tmp_file_name = temporary_file.name
-                convert_data_file_to_fits(
+                convert_data_file_to_h5(
                     self.data_file.name, self.data_file, temporary_file)
 
             with open(tmp_file_name, 'rb') as temporary_file:
@@ -290,10 +290,10 @@ class StabilityAnalysis(models.Model):
     test = models.ForeignKey(to=PolarimeterTest, on_delete=models.CASCADE)
 
     oof_alpha = models.FloatField(verbose_name='1/f noise slope')
-    oof_knee_frequency = models.FloatField(
+    oof_knee_frequency_hz = models.FloatField(
         verbose_name='1/f knee frequency [Hz]')
-    wn_level = models.FloatField(verbose_name='white noise level [ADU^2]')
-    sampling_frequency = models.FloatField(
+    wn_level_adu2_rhz = models.FloatField(verbose_name='white noise level [ADU^2]')
+    sampling_frequency_hz = models.FloatField(
         verbose_name='sampling frequency [Hz]', default=25.0)
 
     code_version = models.CharField(max_length=12,

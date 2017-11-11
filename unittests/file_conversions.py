@@ -283,16 +283,21 @@ def convert_zip_file_to_h5(input_file, output_file):
         'DET2/tests/data/If_vs_Vf': 'U1/IFVF', 'If_vs_Vf_Det2': 'U1/IFVF',
         'DET3/tests/data/If_vs_Vf': 'U2/IFVF', 'If_vs_Vf_Det3': 'U2/IFVF',
 
-        # PHSW tests
+        # PHSW tests (forward)
         'V1_PS1/tests/data/If_vs_Vf': 'PSA1/IFVF', 'If_vs_Vfd_V1_PS1': 'PSA1/IFVF',
         'V2_PS1/tests/data/If_vs_Vf': 'PSA2/IFVF', 'If_vs_Vfd_V2_PS1': 'PSA2/IFVF',
         'V1_PS2/tests/data/If_vs_Vf': 'PSB1/IFVF', 'If_vs_Vfd_V1_PS2': 'PSB1/IFVF',
         'V2_PS2/tests/data/If_vs_Vf': 'PSB2/IFVF', 'If_vs_Vfd_V2_PS2': 'PSB2/IFVF',
+
+        # PHSW tests (reverse)
+        'V1_PS1/tests/data/Ir_vs_Vr': 'PSA1/IRVR', 'Ir_vs_Vr_V1_PS1': 'PSA1/IRVR',
+        'V2_PS1/tests/data/Ir_vs_Vr': 'PSA2/IRVR', 'Ir_vs_Vr_V2_PS1': 'PSA2/IRVR',
+        'V1_PS2/tests/data/Ir_vs_Vr': 'PSB1/IRVR', 'Ir_vs_Vr_V1_PS2': 'PSB1/IRVR',
+        'V2_PS2/tests/data/Ir_vs_Vr': 'PSB2/IRVR', 'Ir_vs_Vr_V2_PS2': 'PSB2/IRVR',
     }
 
     with h5py.File(output_file, 'w') as h5_file:
         with ZipFile(input_file) as zip_file:
-            hdu_list = []
             for info in zip_file.infolist():
                 if not info.filename.endswith('.xls'):
                     # Skip non-Excel files

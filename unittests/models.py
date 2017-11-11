@@ -94,26 +94,30 @@ class PolarimeterTest(models.Model):
     def get_download_url(self):
         return reverse('unittests:test_download', kwargs={'test_id': self.pk})
 
+    def get_json_url(self):
+        return reverse('unittests:test_details_json', kwargs={'test_id': self.pk})
+
     def get_delete_url(self):
         return reverse('unittests:test_delete', kwargs={'test_id': self.pk})
 
     def save(self, *args, **kwargs):
         if self.data_file:
+            # Remove weird characters from the description of the test type
             test_type = ''.join(filter(str.isalpha,
                                        self.test_type.description))
-            fits_file_name = ('{polname}_{date}_{testtype}.fits.gz'
+            hdf5_file_name = ('{polname}_{date}_{testtype}.h5'
                               .format(polname=self.polarimeter_name(),
                                       date=self.acquisition_date.strftime(
                                   '%Y-%m-%d'),
                                   testtype=test_type))
 
-            with NamedTemporaryFile(suffix='.fits.gz', delete=False) as temporary_file:
+            with NamedTemporaryFile(suffix='.h5', delete=False) as temporary_file:
                 tmp_file_name = temporary_file.name
                 convert_data_file_to_h5(
                     self.data_file.name, self.data_file, temporary_file)
 
             with open(tmp_file_name, 'rb') as temporary_file:
-                self.data_file = File(temporary_file, fits_file_name)
+                self.data_file = File(temporary_file, hdf5_file_name)
 
                 super(PolarimeterTest, self).save(*args, **kwargs)
 
@@ -292,7 +296,8 @@ class StabilityAnalysis(models.Model):
     oof_alpha = models.FloatField(verbose_name='1/f noise slope')
     oof_knee_frequency_hz = models.FloatField(
         verbose_name='1/f knee frequency [Hz]')
-    wn_level_adu2_rhz = models.FloatField(verbose_name='white noise level [ADU^2]')
+    wn_level_adu2_rhz = models.FloatField(
+        verbose_name='white noise level [ADU^2]')
     sampling_frequency_hz = models.FloatField(
         verbose_name='sampling frequency [Hz]', default=25.0)
 

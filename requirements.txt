@@ -1,6 +1,6 @@
 django
 simplejson
 decouple
-astropy
+h5py
 numpy
 xlrd

@@ -100,6 +100,10 @@ class PolarimeterTest(models.Model):
     def get_delete_url(self):
         return reverse('unittests:test_delete', kwargs={'test_id': self.pk})
 
+    @property
+    def get_file_size_in_kb(self) -> int:
+        return int(self.data_file.size / 1024)
+
     def save(self, *args, **kwargs):
         if self.data_file:
             # Remove weird characters from the description of the test type

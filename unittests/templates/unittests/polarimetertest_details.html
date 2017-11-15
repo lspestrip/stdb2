@@ -21,9 +21,9 @@ LSPE/Strip DB: Details of test on STRIP{{test.polarimeter_number}}
                     <time datetime="{{test.acquisition_date|date:"Y-m-d"}}">{{test.acquisition_date|date:"l, F j, Y"}}</time>
                 </td></tr>
                 <tr><td>Band</td><td>{{test.band}}</td></tr>
-                <tr><td>Notes</td><td>{{test.notes|linebreaks}}</td></tr>
+                <tr><td>Notes</td><td>{% if test.notes %} {{test.notes|linebreaks}} {% else %} (None) {% endif %}</td></tr>
             </table>
-            <a href="{% url 'unittests:test_download' test.id %}">Download</a> the data file
+            <a href="{% url 'unittests:test_download' test.id %}">Data file ({{test.get_file_size_in_kb}} kB)</a>
         </div>
 
         <div class="one-half column">        

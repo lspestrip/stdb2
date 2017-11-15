@@ -1,10 +1,10 @@
-{%extends "unittests/base.html" %}
+{% extends parent_template|default:"base.html" %}
 
 {% block title %}
 LSPE/Strip DB: Add Tnoise result
 {% endblock %}
 
-{% block contents %}
+{% block content %}
 <h1>Add new noise temperature estimate</h1>
 
 <form method="POST" enctype="multipart/form-data">

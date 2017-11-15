@@ -1,6 +1,6 @@
-{% extends "unittests/base.html" %}
+{% extends parent_template|default:"base.html" %}
 
-{% block contents %}
+{% block content %}
 <form action="" method="post">
     {% csrf_token %}
     <p>Are you sure you want to delete "{{ object }}"?</p>

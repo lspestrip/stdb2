@@ -8,8 +8,10 @@ import os.path
 import simplejson as json
 
 from django.core.urlresolvers import reverse_lazy
+from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
+from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.generic import (
     CreateView,
@@ -59,6 +61,10 @@ class TestCreate(CreateView):
         form.fields['acquisition_date'].widget.format = '%Y-%m-%d'
         form.fields['acquisition_date'].input_formats = ['%Y-%m-%d']
         return form
+
+    @method_decorator(login_required)
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
 
 
 class TestDetails(View):
@@ -148,6 +154,10 @@ class TestDeleteView(DeleteView):
     model = PolarimeterTest
     success_url = reverse_lazy('unittests:test_list')
 
+    @method_decorator(login_required)
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
+
 
 class TestDownload(View):
     def get(self, request, test_id):
@@ -187,6 +197,10 @@ class AddMixin(View):
             'form': form,
         })
 
+    @method_decorator(login_required)
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
+
 
 class DeleteMixin(View):
     model = None
@@ -197,6 +211,10 @@ class DeleteMixin(View):
 
         cur_obj = get_object_or_404(PolarimeterTest, pk=test_id)
         return redirect(cur_obj)
+
+    @method_decorator(login_required)
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
 
 
 class AdcOffsetAddView(AddMixin):
@@ -213,7 +231,7 @@ class DetOutputAddView(AddMixin):
     template_name = 'unittests/detoutput_create.html'
 
 
-class DetOutputDeleteView(View):
+class DetOutputDeleteView(DeleteMixin):
     model = DetectorOutput
 
 

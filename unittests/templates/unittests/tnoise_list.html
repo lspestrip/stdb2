@@ -1,10 +1,10 @@
-{% extends "unittests/base.html" %}
+{% extends parent_template|default:"base.html" %}
 
 {% block title %}
 LSPE/Strip DB: List of tests
 {% endblock %}
 
-{% block contents %}
+{% block content %}
 <h1>Noise temperature estimates</h1>
 
 <p>Number of reports in the database: {{ tnoise_tests | length }}</p>

@@ -1,4 +1,4 @@
-{% extends "unittests/base.html" %}
+{% extends parent_template|default:"base.html" %}
 
 {% block title %}
 LSPE/Strip DB: Details of test on STRIP{{test.polarimeter_number}}
@@ -8,7 +8,7 @@ LSPE/Strip DB: Details of test on STRIP{{test.polarimeter_number}}
 <li><a href="{% url 'unittests:test_create' %}">Add test</a></li>
 {% endblock %}
 
-{% block contents %}
+{% block content %}
 <h1>STRIP{{test.polarimeter_number}} {{test.test_type}} test</h1>
 
 <div class="section general">

@@ -1,4 +1,4 @@
-{% extends "unittests/base.html" %}
+{% extends parent_template|default:"base.html" %}
 
 {% block title %}
 LSPE/Strip DB: List of tests
@@ -8,7 +8,7 @@ LSPE/Strip DB: List of tests
 <li><a href="{% url 'unittests:test_create' %}">Add test</a></li>
 {% endblock %}
 
-{% block contents %}
+{% block content %}
 <div class="row">
     <div class="one-half column" style="margin-top: 1em">
         <h1>Polarimetric unit tests</h1>

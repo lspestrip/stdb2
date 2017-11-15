@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 import os
 from decouple import config
 
+from django.core.urlresolvers import reverse_lazy
+
 from .log_filters import ManagementFilter
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -30,6 +32,9 @@ DEBUG = config('DEBUG', default=False, cast=bool)
 
 ALLOWED_HOSTS = []
 
+LOGIN_REDIRECT_URL = reverse_lazy('test-list')
+LOGIN_URL = reverse_lazy('user-auth:login')
+LOGOUT_URL = reverse_lazy('user-auth:logout')
 
 # Application definition
 
@@ -41,6 +46,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'user',
 ]
 
 MIDDLEWARE = [
@@ -49,6 +55,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -58,7 +65,9 @@ ROOT_URLCONF = 'stdb2.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [
+            os.path.join(BASE_DIR, 'templates'),
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -128,12 +137,12 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
 STATIC_URL = '/static/'
-
+STATICFILE_DIRS = (os.path.join(BASE_DIR, 'static'),)
 
 # Logging
 
 LOGGING = {
-    'version': '1.0',
+    'version': 1,
     'disable_existing_loggers': False,
     'filters': {
         'remove_migration_sql': {

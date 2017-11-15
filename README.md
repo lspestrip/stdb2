@@ -10,12 +10,9 @@ tests done in the cryogenic laboratory of the University of Milano Bicocca.
 
 ## Installation
 
-The program is written using Python3 and Django. It requires the following
-packages to be installed:
-
-- django
-- simplejson
-- decouple
+The program is written using Python3 and Django. The list of packages needed for
+the installation is listed in the file
+[requirements.txt](https://github.com/lspestrip/stdb2/blob/master/requirements.txt).
 
 If you are using [Anaconda Python](https://www.anaconda.com/) (as you should),
 you can install most of the packages above using `conda` from the command line

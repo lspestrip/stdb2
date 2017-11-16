@@ -1,11 +1,15 @@
 # -*- encoding: utf-8 -*-
 
 from django import forms
+from django.contrib.auth import get_user
 from .models import (
     PolarimeterTest,
     AdcOffset,
     DetectorOutput,
-    Temperatures
+    Temperatures,
+    BandpassAnalysis,
+    SpectralAnalysis,
+    NoiseTemperatureAnalysis,
 )
 
 
@@ -23,6 +27,17 @@ class TestForm(forms.ModelForm):
             'operators',
             'notes',
         ]
+
+    def save(self, request, commit=True):
+        obj = super().save(commit=False)
+        if not obj.pk:
+            obj.author = get_user(request)
+
+        if commit:
+            obj.save()
+            self.save_m2m()
+
+        return obj
 
 
 class AdcOffsetCreate(forms.ModelForm):
@@ -65,3 +80,24 @@ class TemperatureCreate(forms.ModelForm):
 class CreateFromJSON(forms.Form):
     json_text = forms.CharField(
         label='JSON record', widget=forms.Textarea, max_length=4096)
+
+
+class BandpassAnalysisCreate(forms.ModelForm):
+    class Meta:
+        model = BandpassAnalysis
+        # These fields will be filled automatically
+        exclude = ('test', 'author')
+
+
+class SpectralAnalysisCreate(forms.ModelForm):
+    class Meta:
+        model = SpectralAnalysis
+        # These fields will be filled automatically
+        exclude = ('test', 'author')
+
+
+class NoiseTemperatureAnalysisCreate(forms.ModelForm):
+    class Meta:
+        model = NoiseTemperatureAnalysis
+        # These fields will be filled automatically
+        exclude = ('test', 'author')

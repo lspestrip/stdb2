@@ -9,7 +9,7 @@ import simplejson as json
 
 from django.core.urlresolvers import reverse_lazy
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils.decorators import method_decorator
 from django.views import View
@@ -22,10 +22,12 @@ from .models import (
     PolarimeterTest,
     AdcOffset,
     DetectorOutput,
-    NoiseTemperatureAnalysis,
     Temperatures,
     dict_to_tnoise_analysis,
     dict_to_detector_output,
+    NoiseTemperatureAnalysis,
+    BandpassAnalysis,
+    SpectralAnalysis,
 )
 
 from .forms import (
@@ -34,6 +36,9 @@ from .forms import (
     DetOutputCreate,
     TemperatureCreate,
     CreateFromJSON,
+    BandpassAnalysisCreate,
+    SpectralAnalysisCreate,
+    NoiseTemperatureAnalysisCreate,
 )
 
 
@@ -49,7 +54,13 @@ class TestListView(View):
         return render(request, self.template, context)
 
 
-class TestCreate(CreateView):
+class FormValidMixin:
+    def form_valid(self, form):
+        self.object = form.save(self.request)
+        return HttpResponseRedirect(self.get_success_url())
+
+
+class TestCreate(FormValidMixin, CreateView):
     form_class = TestForm
     model = PolarimeterTest
     template_name = 'unittests/polarimetertest_create.html'
@@ -80,6 +91,8 @@ class TestDetails(View):
             'det_outputs': DetectorOutput.objects.filter(test=cur_test),
             'temperatures': Temperatures.objects.filter(test=cur_test),
             'tnoise_analyses': NoiseTemperatureAnalysis.objects.filter(test=cur_test),
+            'bandpass_analyses': BandpassAnalysis.objects.filter(test=cur_test),
+            'spectrum_analyses': SpectralAnalysis.objects.filter(test=cur_test),
             'operators': cur_test.operators.all(),
         })
 
@@ -156,7 +169,7 @@ class TestDeleteView(DeleteView):
 
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
-        return super().dispatch(request, *args, **kwargs)
+        return super(TestDeleteView, self).dispatch(request, *args, **kwargs)
 
 
 class TestDownload(View):
@@ -199,7 +212,7 @@ class AddMixin(View):
 
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
-        return super().dispatch(request, *args, **kwargs)
+        return super(AddMixin, self).dispatch(request, *args, **kwargs)
 
 
 class DeleteMixin(View):
@@ -214,7 +227,7 @@ class DeleteMixin(View):
 
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
-        return super().dispatch(request, *args, **kwargs)
+        return super(DeleteMixin, self).dispatch(request, *args, **kwargs)
 
 
 class AdcOffsetAddView(AddMixin):
@@ -280,7 +293,7 @@ class TemperatureDeleteView(DeleteMixin):
 
 
 class TnoiseListView(View):
-    template = 'unittests/tnoise_list.html'
+    template_name = 'unittests/tnoise_list.html'
 
     def get(self, request):
         'Show a list of the results of Tnoise tests'
@@ -291,16 +304,13 @@ class TnoiseListView(View):
         return render(request, self.template, context)
 
 
-class TnoiseAddView(View):
-    template = 'unittests/tnoise_create.html'
+class TnoiseAddView(AddMixin):
+    form_class = NoiseTemperatureAnalysisCreate
+    template_name = 'unittests/tnoise_create.html'
 
-    def get(self, request, test_id):
-        'Add a new estimate for the noise temperature of a polarimeter'
-
-        context = {
-            'test_id': test_id,
-        }
-        return render(request, self.template, context)
+    @method_decorator(login_required)
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
 
 
 class TnoiseAddFromJsonView(View):
@@ -346,3 +356,57 @@ class TnoiseAddFromJsonView(View):
             'test_id': test_id,
             'form': form,
         })
+
+
+class TnoiseDeleteView(DeleteMixin):
+    model = NoiseTemperatureAnalysis
+
+
+class SpectralAnalysisListView(View):
+    template = 'unittests/spectral_analysis_list.html'
+
+    def get(self, request):
+        'Show a list of the results of a spectral analysis'
+
+        context = {
+            'spectral_analysis_tests': NoiseTemperatureAnalysis.objects.all(),
+        }
+        return render(request, self.template, context)
+
+
+class SpectralAnalysisAddView(AddMixin):
+    form_class = SpectralAnalysisCreate
+    template_name = 'unittests/spectral_analysis_create.html'
+
+    @method_decorator(login_required)
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
+
+
+class SpectralAnalysisDeleteView(DeleteMixin):
+    model = SpectralAnalysis
+
+
+class BandpassAnalysisListView(View):
+    template = 'unittests/bandpass_analysis_list.html'
+
+    def get(self, request):
+        'Show a list of the results of a bandpass analysis'
+
+        context = {
+            'bandpass_analysis_tests': NoiseTemperatureAnalysis.objects.all(),
+        }
+        return render(request, self.template, context)
+
+
+class BandpassAnalysisAddView(AddMixin):
+    form_class = BandpassAnalysisCreate
+    template_name = 'unittests/bandpass_analysis_create.html'
+
+    @method_decorator(login_required)
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
+
+
+class BandpassAnalysisDeleteView(DeleteMixin):
+    model = BandpassAnalysis

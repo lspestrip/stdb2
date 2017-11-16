@@ -22,6 +22,7 @@ import os
 from tempfile import NamedTemporaryFile
 from typing import Dict, Any
 
+from django.conf import settings
 from django.db import models
 from django.core.urlresolvers import reverse
 from django.core.files import File
@@ -78,6 +79,9 @@ class PolarimeterTest(models.Model):
 
     test_type = models.ForeignKey(TestType, on_delete=models.CASCADE)
     operators = models.ManyToManyField(Operator, related_name='tests')
+    author = models.ForeignKey(
+        settings.AUTH_USER_MODEL, related_name='tests_owned')
+    creation_date = models.DateField(auto_now_add=True)
 
     def __str__(self):
         return 'STRIP{0}, {1}'.format(
@@ -85,6 +89,7 @@ class PolarimeterTest(models.Model):
             self.acquisition_date.strftime('%Y-%M-%D')
         )
 
+    @property
     def polarimeter_name(self):
         return 'STRIP{0:02d}'.format(self.polarimeter_number)
 
@@ -110,15 +115,15 @@ class PolarimeterTest(models.Model):
             test_type = ''.join(filter(str.isalpha,
                                        self.test_type.description))
             hdf5_file_name = ('{polname}_{date}_{testtype}.h5'
-                              .format(polname=self.polarimeter_name(),
+                              .format(polname=self.polarimeter_name,
                                       date=self.acquisition_date.strftime(
-                                  '%Y-%m-%d'),
-                                  testtype=test_type))
+                                          '%Y-%m-%d'),
+                                      testtype=test_type))
 
             with NamedTemporaryFile(suffix='.h5', delete=False) as temporary_file:
                 tmp_file_name = temporary_file.name
                 convert_data_file_to_h5(
-                    self.data_file.name, self.data_file, temporary_file)
+                    self.data_file.name, self.data_file, temporary_file.name)
 
             with open(tmp_file_name, 'rb') as temporary_file:
                 self.data_file = File(temporary_file, hdf5_file_name)
@@ -268,10 +273,13 @@ class NoiseTemperatureAnalysis(models.Model):
                                    verbose_name='last commit hash of the analysis code')
     analysis_date = models.DateTimeField('date when the analysis was done')
 
+    author = models.ForeignKey(
+        settings.AUTH_USER_MODEL, related_name='tnoise_owned')
+
     def __str__(self):
         return ('Tnoise={0} for {1} ({2})'
                 .format(self.noise_temperature,
-                        self.test.polarimeter_name()))
+                        self.test.polarimeter_name))
 
     class Meta:
         verbose_name = 'noise temperature and gain estimates'
@@ -292,16 +300,20 @@ def dict_to_tnoise_analysis(data: Dict[str, Any]) -> NoiseTemperatureAnalysis:
     )
 
 
-class StabilityAnalysis(models.Model):
+class SpectralAnalysis(models.Model):
     'Results of the analysis of a long-acquisition test'
 
     test = models.ForeignKey(to=PolarimeterTest, on_delete=models.CASCADE)
 
     oof_alpha = models.FloatField(verbose_name='1/f noise slope')
+    oof_alpha_err = models.FloatField(verbose_name='error on 1/f noise slope')
     oof_knee_frequency_hz = models.FloatField(
         verbose_name='1/f knee frequency [Hz]')
+    oof_knee_frequency_err = models.FloatField(
+        verbose_name='error on 1/f knee frequency')
     wn_level_adu2_rhz = models.FloatField(
         verbose_name='white noise level [ADU^2]')
+    wn_level_err = models.FloatField(verbose_name='error on white noise level')
     sampling_frequency_hz = models.FloatField(
         verbose_name='sampling frequency [Hz]', default=25.0)
 
@@ -311,8 +323,39 @@ class StabilityAnalysis(models.Model):
                                    verbose_name='last commit hash of the analysis code')
     analysis_date = models.DateTimeField('date when the analysis was done')
 
+    author = models.ForeignKey(
+        settings.AUTH_USER_MODEL, related_name='bandpass_owned')
+
     def __str__(self):
-        return self.test.polarimeter_name()
+        return self.test.polarimeter_name
+
+    class Meta:
+        verbose_name = 'noise analysis for tests done in stable conditions'
+
+
+class BandpassAnalysis(models.Model):
+    'Results of the analysis of a bandpass test'
+
+    test = models.ForeignKey(to=PolarimeterTest, on_delete=models.CASCADE)
+
+    central_frequency_ghz = models.FloatField(
+        verbose_name='central frequency [GHz]')
+    central_frequency_err = models.FloatField(
+        verbose_name='error on central frequency')
+    bandwidth_ghz = models.FloatField(verbose_name='bandwidth [GHz]')
+    bandwidth_err = models.FloatField(verbose_name='error on bandwidth')
+
+    code_version = models.CharField(max_length=12,
+                                    verbose_name='version number of the analysis code')
+    code_commit = models.CharField(max_length=40,
+                                   verbose_name='last commit hash of the analysis code')
+    analysis_date = models.DateTimeField('date when the analysis was done')
+
+    author = models.ForeignKey(
+        settings.AUTH_USER_MODEL, related_name='spectrum_owned')
+
+    def __str__(self):
+        return self.test.polarimeter_name
 
     class Meta:
         verbose_name = 'noise analysis for tests done in stable conditions'

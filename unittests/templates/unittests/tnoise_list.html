@@ -10,15 +10,23 @@ LSPE/Strip DB: List of tests
 <p>Number of reports in the database: {{ tnoise_tests | length }}</p>
 <table>
     <thead>
-        <th>Analysis</th>
-        <th>Acqusition date</th>
+        <th>Polarimeter</th>
+        <th>Average gain</th>
+        <th>Cross-gain</th>
+        <th>Noise temperature</th>
+        <th>Analysis date</th>
     </thead>
-    {% for cur in tnoise_tests %}
-    <tr>
-        <td>{{ cur.noise_temperature }}</a></td>
-        <td>{{ cur.analysis_date }}</td>
-        <td>🗙</td>
-    </tr>
-    {% endfor %}
+    <tbody>
+        {% for cur in tnoise_tests %}
+        <tr>
+            <td>{{ cur.test.polarimeter_name }}</td>
+            <td>{{ cur.polarimeter_gain }}±{{ cur.polarimeter_gain_err }}</a></td>
+            <td>{{ cur.gain_product }}±{{ cur.gain_product_err }}</td>
+            <td>{{ cur.noise_temperature }}±{{ cur.noise_temperature_err }}</td>
+            <td>{{ cur.analysis_date }}</td>
+            <td>🗙</td>
+        </tr>
+        {% endfor %}
+    </tbody>
 </table>
 {% endblock %}

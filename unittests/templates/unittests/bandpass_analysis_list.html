@@ -1,0 +1,30 @@
+{% extends parent_template|default:"base.html" %}
+
+{% block title %}
+LSPE/Strip DB: List of bandpass analysis results
+{% endblock %}
+
+{% block content %}
+<h1>Bandpass analysis results</h1>
+
+<p>Number of reports in the database: {{ bandpass_analysis_tests | length }}</p>
+<table>
+    <thead>
+        <th>Polarimeter</th>            
+        <th>Central frequency [GHz]</th>
+        <th>Bandwidth [GHz]</th>
+        <th>Analysis date</th>
+    </thead>
+    <tbody>
+        {% for cur in bandpass_analysis_tests %}
+        <tr>
+            <td>{{ cur.test.polarimeter_name }}</td>
+            <td>{{ cur.central_frequency_ghz }}±{{ cur.central_frequency_err }}</a></td>
+            <td>{{ cur.bandwidth_ghz }}±>{{ cur.bandwidth_err }}</td>
+            <td>{{ cur.analysis_date }}</td>            
+            <td>🗙</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

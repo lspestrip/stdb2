@@ -145,6 +145,7 @@ LSPE/Strip DB: Details of test on STRIP{{test.polarimeter_number}}
 
 <div class="section reports">        
     <h3>Reports</h3>
+
     <h5>Noise temperatures</h5>
 
     {% if tnoise_analyses %}
@@ -159,6 +160,34 @@ LSPE/Strip DB: Details of test on STRIP{{test.polarimeter_number}}
         <li><a href="{% url 'unittests:tnoise_create' test.id %}">Add new</a></li>
         <li><a href="{% url 'unittests:tnoise_create_json' test.id %}">Import a JSON file</a></li>
     </ul>
-</div>
+
+    <h5>Bandpasses</h5>
+
+    {% if bandpass_analyses %}
+    <table class="data-table" id="bandpass-table">
+        {% for analysis in bandpass_analyses %}
+        <tr><td>{{analysis}}</td></tr>
+        {% endfor %}
+    </table>
+    {% endif %}
+
+    <ul class="data-table-actions">
+        <li><a href="{% url 'unittests:bandpass_create' test.id %}">Add new</a></li>
+    </ul>    
+
+    <h5>Spectrum</h5>
+    
+        {% if spectrum_analyses %}
+        <table class="data-table" id="spectrum-table">
+            {% for analysis in spectrum_analyses %}
+            <tr><td>{{analysis}}</td></tr>
+            {% endfor %}
+        </table>
+        {% endif %}
+    
+        <ul class="data-table-actions">
+            <li><a href="{% url 'unittests:spectrum_create' test.id %}">Add new</a></li>
+        </ul>    
+    </div>
 
 {% endblock %}

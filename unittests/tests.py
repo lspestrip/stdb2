@@ -19,7 +19,7 @@ from .models import (
     Biases,
     Temperatures,
     NoiseTemperatureAnalysis,
-    StabilityAnalysis,
+    SpectralAnalysis,
 )
 
 
@@ -262,7 +262,7 @@ def populate_database():
     )
     tnoise.save()
 
-    stability = StabilityAnalysis(
+    stability = SpectralAnalysis(
         test=test,
         oof_alpha=1.0,
         oof_knee_frequency_hz=0.010,

@@ -1,0 +1,32 @@
+{% extends parent_template|default:"base.html" %}
+
+{% block title %}
+LSPE/Strip DB: List of spectral analysis results
+{% endblock %}
+
+{% block content %}
+<h1>Spectral analysis results</h1>
+
+<p>Number of reports in the database: {{ spectral_analysis_tests | length }}</p>
+<table>
+    <thead>
+        <th>Polarimeter</th>
+        <th>Alpha</th>
+        <th>fknee [Hz]</th>
+        <th>White noise [ADU^2/Hz]</th>
+        <th>Analysis date</th>
+    </thead>
+    <tbody>
+        {% for cur in spectral_analysis_tests %}
+        <tr>
+            <td>{{ cur.test.polarimeter_name }}</td>
+            <td>{{ cur.oof_alpha }}±{{ cur.oof_alpha_err }}</a></td>
+            <td>{{ cur.oof_knee_frequency_hz }}±{{ cur.oof_knee_frequency_err }}</td>
+            <td>{{ cur.wn_level_adu2_rhz }}±{{ cur.wn_level_err }}</td>
+            <td>{{ cur.analysis_date }}</td>
+            <td>🗙</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

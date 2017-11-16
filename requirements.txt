@@ -3,5 +3,4 @@ simplejson
 python-decouple
 h5py
 numpy
-typing
 xlrd

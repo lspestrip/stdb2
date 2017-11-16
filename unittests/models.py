@@ -20,7 +20,6 @@ database.
 
 import os
 from tempfile import NamedTemporaryFile
-from typing import Dict, Any
 
 from django.conf import settings
 from django.db import models
@@ -106,7 +105,7 @@ class PolarimeterTest(models.Model):
         return reverse('unittests:test_delete', kwargs={'test_id': self.pk})
 
     @property
-    def get_file_size_in_kb(self) -> int:
+    def get_file_size_in_kb(self):
         return int(self.data_file.size / 1024)
 
     def save(self, *args, **kwargs):
@@ -182,7 +181,7 @@ class DetectorOutput(models.Model):
         verbose_name = 'average output of the four detectors'
 
 
-def dict_to_detector_output(data: Dict[str, Any]) -> DetectorOutput:
+def dict_to_detector_output(data):
     return DetectorOutput(
         pwr0_adu=data['detector_offsets']['PWR0_adu'],
         pwr1_adu=data['detector_offsets']['PWR1_adu'],
@@ -285,7 +284,7 @@ class NoiseTemperatureAnalysis(models.Model):
         verbose_name = 'noise temperature and gain estimates'
 
 
-def dict_to_tnoise_analysis(data: Dict[str, Any]) -> NoiseTemperatureAnalysis:
+def dict_to_tnoise_analysis(data):
     return NoiseTemperatureAnalysis(
         polarimeter_gain=data['average_gain']['mean'],
         polarimeter_gain_err=data['average_gain']['std'],

@@ -5,7 +5,6 @@ from io import BytesIO
 import os.path
 import re
 from zipfile import ZipFile
-from typing import Any, Dict
 
 import h5py
 import numpy as np
@@ -65,7 +64,7 @@ def convert_text_file_to_h5(input_file, output_file):
         data['freq_Hz'] = rawdata[:, 12]
 
 
-def read_worksheet_table(wks: xlrd.book.Book) -> Dict[str, Any]:
+def read_worksheet_table(wks):
     '''Read a table of numbers from an Excel file saved by Keithley.
 
     This function reads the first worksheet in the Excel file passed as
@@ -87,7 +86,7 @@ def read_worksheet_table(wks: xlrd.book.Book) -> Dict[str, Any]:
     return result
 
 
-def read_worksheet_settings(wks: xlrd.book.Book) -> Dict[str, Any]:
+def read_worksheet_settings(wks):
     sheet = wks.sheet_by_name('Settings')
     result = OrderedDict()
     for cur_row in range(sheet.nrows):
@@ -114,14 +113,14 @@ def read_worksheet_settings(wks: xlrd.book.Book) -> Dict[str, Any]:
     return result
 
 
-def hygenize_name(name: str) -> str:
+def hygenize_name(name):
     'Return a name which is suitable for HDF5 column/keyword names'
 
     # Remove unwanted character and clip to the first 8 characters
     return ''.join([ch for ch in name.upper() if not ch in (' ', '+', '-', '(', ')')])[:8]
 
 
-def unit_from_name(name: str) -> str:
+def unit_from_name(name):
     'Return a reasonable measure unit for a column in the Excel file'
 
     if 'DrainI' in name:

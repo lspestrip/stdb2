@@ -83,6 +83,8 @@ TEMPLATES = [
 WSGI_APPLICATION = 'stdb2.wsgi.application'
 
 MEDIA_ROOT = config('MEDIA_ROOT', default=os.path.join(BASE_DIR, 'data_files'))
+STATIC_ROOT = config('STATIC_ROOT', default=os.path.join(
+    BASE_DIR, 'deployed_static'))
 
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases

@@ -323,7 +323,7 @@ class SpectralAnalysis(models.Model):
     analysis_date = models.DateTimeField('date when the analysis was done')
 
     author = models.ForeignKey(
-        settings.AUTH_USER_MODEL, related_name='bandpass_owned')
+        settings.AUTH_USER_MODEL, related_name='spectral_owned')
 
     def __str__(self):
         return self.test.polarimeter_name
@@ -351,7 +351,7 @@ class BandpassAnalysis(models.Model):
     analysis_date = models.DateTimeField('date when the analysis was done')
 
     author = models.ForeignKey(
-        settings.AUTH_USER_MODEL, related_name='spectrum_owned')
+        settings.AUTH_USER_MODEL, related_name='bandpass_owned')
 
     def __str__(self):
         return self.test.polarimeter_name

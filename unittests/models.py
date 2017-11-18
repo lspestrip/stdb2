@@ -18,6 +18,7 @@ housekeeping temperatures, and so on is available and ready to be put in the
 database.
 '''
 
+import logging
 import os
 from tempfile import NamedTemporaryFile
 
@@ -26,6 +27,9 @@ from django.db import models
 from django.core.urlresolvers import reverse
 from django.core.files import File
 from .file_conversions import convert_data_file_to_h5
+
+# Get an instance of a logger
+LOGGER = logging.getLogger(__name__)
 
 
 class TestType(models.Model):
@@ -118,22 +122,22 @@ class PolarimeterTest(models.Model):
                                       date=self.acquisition_date.strftime(
                                           '%Y-%m-%d'),
                                       testtype=test_type))
-            log.debug('going to create a temporary HDF5 file in "%s"',
-                      hdf5_file_name)
+            LOGGER.debug('going to create a temporary HDF5 file in "%s"',
+                         hdf5_file_name)
             with NamedTemporaryFile(suffix='.h5', delete=False) as temporary_file:
                 tmp_file_name = temporary_file.name
                 convert_data_file_to_h5(
                     self.data_file.name, self.data_file, temporary_file.name)
 
-            log.debug('importing HDF5 file "%s" into the database',
-                      hdf5_file_name)
+            LOGGER.debug('importing HDF5 file "%s" into the database',
+                         hdf5_file_name)
             with open(tmp_file_name, 'rb') as temporary_file:
                 self.data_file = File(temporary_file, hdf5_file_name)
 
                 super(PolarimeterTest, self).save(*args, **kwargs)
 
             os.remove(tmp_file_name)
-            log.debug(
+            LOGGER.debug(
                 'HDF5 file "%s" imported in the database and removed', hdf5_file_name)
         else:
             super(PolarimeterTest, self).save(*args, **kwargs)

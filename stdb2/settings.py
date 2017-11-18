@@ -143,6 +143,8 @@ STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
 
 # Logging
 
+LOG_FILE_PATH = config('LOG_FILE_PATH', default=BASE_DIR)
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -155,7 +157,14 @@ LOGGING = {
         'console': {
             'filters': ['remove_migration_sql'],
             'class': 'logging.StreamHandler',
-        }
+        },
+        'applogfile': {
+            'level': 'DEBUG',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': os.path.join(LOG_FILE_PATH, 'stdb2.log'),
+            'maxBytes': 1024 * 1024 * 15,  # 15MB
+            'backupCount': 10,
+        },
     },
     'formatters': {
         'verbose': {

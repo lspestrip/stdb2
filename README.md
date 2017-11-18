@@ -59,3 +59,17 @@ and `TestTye` (types of tests for which data have been acquired).
 
 Now it's time to run the site: disconnect from the `admin` page and go to
 http://127.0.0.1:8000/unittests. You can now start enjoying the site!
+
+
+## Running stdb2 with nginx and uWSGI
+
+A good tutorial to show how to run Django-based applications (like stdb2) is
+available in the [uWSGI
+documentation](http://uwsgi-docs.readthedocs.io/en/latest/tutorials/Django_and_nginx.html).
+
+
+## Logging
+
+By default, `stdb2` will write log messages into `stdb2.log`, within the base
+directory of the source code. You can customize the location of this file
+by setting the variable `LOG_FILE_PATH` in the configuration file `.env`.

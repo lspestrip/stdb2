@@ -303,6 +303,10 @@ def convert_zip_file_to_h5(input_file, output_file):
                     # Skip non-Excel files
                     continue
 
+                # Files in tests/data do not contain valid information
+                if 'tests' in info.filename and 'data' in info.filename:
+                    continue
+
                 dataset_name = None
                 for pattern, hduname in dataset_names.items():
                     if pattern in info.filename:

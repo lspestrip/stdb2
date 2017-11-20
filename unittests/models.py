@@ -89,8 +89,8 @@ class PolarimeterTest(models.Model):
     creation_date = models.DateField(auto_now_add=True)
 
     def __str__(self):
-        return 'STRIP{0} {1} ({2})'.format(
-            self.polarimeter_number,
+        return '{0} {1} ({2})'.format(
+            self.polarimeter_name,
             self.test_type,
             self.acquisition_date,
         )

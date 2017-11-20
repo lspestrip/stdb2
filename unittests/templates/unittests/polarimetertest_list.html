@@ -17,16 +17,20 @@ LSPE/Strip DB: List of tests
         {% if tests %}
         <table>
             <thead>
+                <th>Polarimeter</th>
                 <th>Test</th>
                 <th>Acqusition date</th>
             </thead>
-            {% for test in tests %}
-            <tr>
-                <td><a href="{% url 'unittests:test_details' test.id %}">{{ test.polarimeter_name }} {{ test.test_type }}</a></td>
-                <td>{{ test.acquisition_date }}</td>
-                <td><a href="{% url 'unittests:test_delete' test.id %}">🗙</a></td>
-            </tr>
-            {% endfor %}
+            <tbody>
+                {% for test in tests %}
+                <tr>
+                    <td>{{ test.polarimeter_name }}</a></td>
+                    <td><a href="{% url 'unittests:test_details' test.id %}">{{ test.test_type }}</a></td>
+                    <td>{{ test.acquisition_date }}</td>
+                    <td><a href="{% url 'unittests:test_delete' test.id %}">🗙</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
         </table>
         {% endif %}
     </div>

@@ -22,6 +22,7 @@ from .models import (
     PolarimeterTest,
     AdcOffset,
     DetectorOutput,
+    Biases,
     Temperatures,
     dict_to_tnoise_analysis,
     dict_to_detector_output,
@@ -34,6 +35,7 @@ from .forms import (
     TestForm,
     AdcOffsetCreate,
     DetOutputCreate,
+    BiasesCreate,
     TemperatureCreate,
     CreateFromJSON,
     BandpassAnalysisCreate,
@@ -89,6 +91,7 @@ class TestDetails(View):
             'test': cur_test,
             'adc_offsets': AdcOffset.objects.filter(test=cur_test),
             'det_outputs': DetectorOutput.objects.filter(test=cur_test),
+            'biases': Biases.objects.filter(test=cur_test).last(),
             'temperatures': Temperatures.objects.filter(test=cur_test),
             'tnoise_analyses': NoiseTemperatureAnalysis.objects.filter(test=cur_test),
             'bandpass_analyses': BandpassAnalysis.objects.filter(test=cur_test),
@@ -281,6 +284,15 @@ class DetOutputJsonView(View):
             'polarimeter_number': cur_test.polarimeter_number,
             'form': form,
         })
+
+
+class BiasesAddView(AddMixin):
+    form_class = BiasesCreate
+    template_name = 'unittests/adc_create.html'
+
+
+class BiasesDeleteView(DeleteMixin):
+    model = Biases
 
 
 class TemperatureAddView(AddMixin):

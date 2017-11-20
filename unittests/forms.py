@@ -6,6 +6,7 @@ from .models import (
     PolarimeterTest,
     AdcOffset,
     DetectorOutput,
+    Biases,
     Temperatures,
     BandpassAnalysis,
     SpectralAnalysis,
@@ -60,6 +61,12 @@ class DetOutputCreate(forms.ModelForm):
             'pwr2_adu',
             'pwr3_adu',
         ]
+
+
+class BiasesCreate(forms.ModelForm):
+    class Meta:
+        model = Biases
+        exclude = ('test',)
 
 
 class TemperatureCreate(forms.ModelForm):

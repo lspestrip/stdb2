@@ -201,36 +201,36 @@ def dict_to_detector_output(data):
 
 
 class Biases(models.Model):
-    'Biases used in the six HEMTs of a polarimeter'
+    'Biases used to polarize the HEMTs'
 
     test = models.ForeignKey(to=PolarimeterTest, on_delete=models.CASCADE)
 
-    h0_vdrain = models.FloatField(verbose_name='H0 Vdrain [V]')
-    h0_idrain = models.FloatField(verbose_name='H0 Idrain [mA]')
-    h0_vgate = models.FloatField(verbose_name='H0 Vgate [mV]')
+    drain_voltage_ha1_V = models.FloatField(verbose_name='H0 drain voltage [V]')
+    drain_current_ha1_mA = models.FloatField(verbose_name='H0 drain current [mA]')
+    gate_voltage_ha1_mV = models.FloatField(verbose_name='H0 gate voltage [mV]')
 
-    h1_vdrain = models.FloatField(verbose_name='H1 Vdrain [V]')
-    h1_idrain = models.FloatField(verbose_name='H1 Idrain [mA]')
-    h1_vgate = models.FloatField(verbose_name='H1 Vgate [mV]')
+    drain_voltage_hb1_V = models.FloatField(verbose_name='H1 drain voltage [V]')
+    drain_current_hb1_mA = models.FloatField(verbose_name='H1 drain current [mA]')
+    gate_voltage_hb1_mV = models.FloatField(verbose_name='H1 gate voltage [mV]')
 
-    h2_vdrain = models.FloatField(verbose_name='H2 Vdrain [V]')
-    h2_idrain = models.FloatField(verbose_name='H2 Idrain [mA]')
-    h2_vgate = models.FloatField(verbose_name='H2 Vgate [mV]')
+    drain_voltage_ha2_V = models.FloatField(verbose_name='H2 drain voltage [V]')
+    drain_current_ha2_mA = models.FloatField(verbose_name='H2 drain current [mA]')
+    gate_voltage_ha2_mV = models.FloatField(verbose_name='H2 gate voltage [mV]')
 
-    h3_vdrain = models.FloatField(verbose_name='H3 Vdrain [V]')
-    h3_idrain = models.FloatField(verbose_name='H3 Idrain [mA]')
-    h3_vgate = models.FloatField(verbose_name='H3 Vgate [mV]')
+    drain_voltage_hb2_V = models.FloatField(verbose_name='H3 drain voltage [V]')
+    drain_current_hb2_mA = models.FloatField(verbose_name='H3 drain current [mA]')
+    gate_voltage_hb2_mV = models.FloatField(verbose_name='H3 gate voltage [mV]')
 
-    h4_vdrain = models.FloatField(verbose_name='H4 Vdrain [V]')
-    h4_idrain = models.FloatField(verbose_name='H4 Idrain [mA]')
-    h4_vgate = models.FloatField(verbose_name='H4 Vgate [mV]')
+    drain_voltage_ha3_V = models.FloatField(verbose_name='H4 drain voltage [V]')
+    drain_current_ha3_mA = models.FloatField(verbose_name='H4 drain current [mA]')
+    gate_voltage_ha3_mV = models.FloatField(verbose_name='H4 gate voltage [mV]')
 
-    h5_vdrain = models.FloatField(verbose_name='H5 Vdrain [V]')
-    h5_idrain = models.FloatField(verbose_name='H5 Idrain [mA]')
-    h5_vgate = models.FloatField(verbose_name='H5 Vgate [mV]')
+    drain_voltage_hb3_V = models.FloatField(verbose_name='H5 drain voltage [V]')
+    drain_current_hb3_mA = models.FloatField(verbose_name='H5 drain current [mA]')
+    gate_voltage_hb3_mV = models.FloatField(verbose_name='H5 gate voltage [mV]')
 
     class Meta:
-        verbose_name = 'biases used in the six HEMTs'
+        verbose_name = 'HEMT polarization biases'
 
 
 class Temperatures(models.Model):

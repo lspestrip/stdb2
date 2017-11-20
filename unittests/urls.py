@@ -22,6 +22,8 @@ urlpatterns = [
         views.DetOutputAddView.as_view(), name='detoutput_create'),
     url(r'^tests/(?P<test_id>\d+)/newdetoutputjson$',
         views.DetOutputJsonView.as_view(), name='detoutput_create_json'),
+    url(r'^tests/(?P<test_id>\d+)/newbiases$',
+        views.BiasesAddView.as_view(), name='biases_create'),
     url(r'^tests/(?P<test_id>\d+)/newtemperature$',
         views.TemperatureAddView.as_view(), name='temperature_create'),
 
@@ -29,6 +31,8 @@ urlpatterns = [
         views.AdcOffsetDeleteView.as_view(), name='adc_delete'),
     url(r'^tests/(?P<test_id>\d+)/detoutput/(?P<obj_id>\d+)/delete$',
         views.DetOutputDeleteView.as_view(), name='detoutput_delete'),
+    url(r'^tests/(?P<test_id>\d+)/biases/(?P<obj_id>\d+)/delete$',
+        views.BiasesDeleteView.as_view(), name='biases_delete'),
     url(r'^tests/(?P<test_id>\d+)/temperature/(?P<obj_id>\d+)/delete$',
         views.TemperatureDeleteView.as_view(), name='temperature_delete'),
 

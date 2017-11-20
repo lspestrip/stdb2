@@ -40,7 +40,7 @@ LSPE/Strip DB: Details of test on STRIP{{test.polarimeter_number}}
     </div>
 </div>
 
-<div class="section outputs">
+<div class="section housekeepings1">
     <div class="row">
         <div class="one-half column">
             <h5>ADC offsets</h5>
@@ -105,42 +105,107 @@ LSPE/Strip DB: Details of test on STRIP{{test.polarimeter_number}}
     </div>
 </div>
 
-<div class="section temperatures">
-    <h5>Temperatures</h5>
+<div class="section housekeepings2">
+    <div class="row">
+        <div class="one-half column">
+            <h5>HEMT biases</h5>
 
-    {% if temperatures %}
-    <table class="data-table" id="temperature-table">
-        <thead>
-            <th>T<sub>A1</sub> [K]</th>
-            <th>T<sub>A2</sub> [K]</th>
-            <th>T<sub>B1</sub> [K]</th>
-            <th>T<sub>B2</sub> [K]</th>
-            <th>T<sub>pol1</sub> [K]</th>
-            <th>T<sub>pol2</sub> [K]</th>
-            <th>T<sub>cross1</sub> [K]</th>
-            <th>T<sub>cross2</sub> [K]</th>
-        </thead>
-        <tbody>
-            {% for temp in temperatures %}
-            <tr>
-                <td>{{temp.t_load_a_1}}</td>
-                <td>{{temp.t_load_a_2}}</td>
-                <td>{{temp.t_load_b_1}}</td>
-                <td>{{temp.t_load_b_2}}</td>
-                <td>{{temp.t_polarimeter_1}}</td>
-                <td>{{temp.t_polarimeter_2}}</td>
-                <td>{{temp.t_cross_guide_1}}</td>
-                <td>{{temp.t_cross_guide_2}}</td>
-                <td><a href="{% url 'unittests:temperature_delete' test.id temp.id %}">🗙</a></td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    {% endif %}
+            {% if biases %}
+            <table class="data-table" id="bias-table">
+                <thead>
+                    <th>HEMT</th>
+                    <th>V<sub>d</sub> [V]</th>
+                    <th>I<sub>d</sub> [mA]</th>
+                    <th>V<sub>g</sub> [mV]</th>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>H0 (HA1)</td>
+                        <td>{{biases.drain_voltage_ha1_V}}</td>
+                        <td>{{biases.drain_current_ha1_mA}}</td>
+                        <td>{{biases.gate_voltage_ha1_mV}}</td>
+                    </tr>
+                    <tr>
+                        <td>H1 (HB1)</td>
+                        <td>{{biases.drain_voltage_hb1_V}}</td>
+                        <td>{{biases.drain_current_hb1_mA}}</td>
+                        <td>{{biases.gate_voltage_hb1_mV}}</td>
+                    </tr>
+                    <tr>
+                        <td>H2 (HA2)</td>
+                        <td>{{biases.drain_voltage_ha2_V}}</td>
+                        <td>{{biases.drain_current_ha2_mA}}</td>
+                        <td>{{biases.gate_voltage_ha2_mV}}</td>
+                    </tr>
+                    <tr>
+                        <td>H3 (HB2)</td>
+                        <td>{{biases.drain_voltage_hb2_V}}</td>
+                        <td>{{biases.drain_current_hb2_mA}}</td>
+                        <td>{{biases.gate_voltage_hb2_mV}}</td>
+                    </tr>
+                    <tr>
+                        <td>H4 (HA3)</td>
+                        <td>{{biases.drain_voltage_ha3_V}}</td>
+                        <td>{{biases.drain_current_ha3_mA}}</td>
+                        <td>{{biases.gate_voltage_ha3_mV}}</td>
+                    </tr>
+                    <tr>
+                        <td>H5 (HB3)</td>
+                        <td>{{biases.drain_voltage_hb3_V}}</td>
+                        <td>{{biases.drain_current_hb3_mA}}</td>
+                        <td>{{biases.gate_voltage_hb3_mV}}</td>
+                    </tr>
+                </tbody>
+            </table>
+            <ul class="data-table-actions">
+                    <a href="{% url 'unittests:biases_delete' test.id biases.id %}">Delete</a>
+            </ul>
 
-    <ul class="data-table-actions">
-        <a href="{% url 'unittests:temperature_create' test.id %}">Add new</a>
-    </ul>
+            {% else %}
+            <ul class="data-table-actions">
+                <a href="{% url 'unittests:biases_create' test.id %}">Add new</a>
+            </ul>
+            {% endif %}
+        </div>
+
+        <div class="one-half column">
+            <h5>Temperatures</h5>
+
+            {% if temperatures %}
+            <table class="data-table" id="temperature-table">
+                <thead>
+                    <th>T<sub>A1</sub> [K]</th>
+                    <th>T<sub>A2</sub> [K]</th>
+                    <th>T<sub>B1</sub> [K]</th>
+                    <th>T<sub>B2</sub> [K]</th>
+                    <th>T<sub>pol1</sub> [K]</th>
+                    <th>T<sub>pol2</sub> [K]</th>
+                    <th>T<sub>cross1</sub> [K]</th>
+                    <th>T<sub>cross2</sub> [K]</th>
+                </thead>
+                <tbody>
+                    {% for temp in temperatures %}
+                    <tr>
+                        <td>{{temp.t_load_a_1}}</td>
+                        <td>{{temp.t_load_a_2}}</td>
+                        <td>{{temp.t_load_b_1}}</td>
+                        <td>{{temp.t_load_b_2}}</td>
+                        <td>{{temp.t_polarimeter_1}}</td>
+                        <td>{{temp.t_polarimeter_2}}</td>
+                        <td>{{temp.t_cross_guide_1}}</td>
+                        <td>{{temp.t_cross_guide_2}}</td>
+                        <td><a href="{% url 'unittests:temperature_delete' test.id temp.id %}">🗙</a></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% endif %}
+
+            <ul class="data-table-actions">
+                <a href="{% url 'unittests:temperature_create' test.id %}">Add new</a>
+            </ul>
+        </div>
+    </div>
 </div>
 
 <div class="section reports">        

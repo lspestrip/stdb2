@@ -79,7 +79,7 @@ class PolarimeterTest(models.Model):
     data_file = models.FileField(max_length=1024, upload_to='unit_test_data/')
     notes = models.TextField(verbose_name='Notes', blank=True)
     phsw_state = models.CharField(
-        max_length=12, default='0000', choices=PHSW_STATES)
+        max_length=12, default='N/A', choices=PHSW_STATES)
     band = models.CharField(max_length=1, choices=BAND_CHOICES)
 
     test_type = models.ForeignKey(TestType, on_delete=models.CASCADE)

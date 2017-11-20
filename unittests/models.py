@@ -75,7 +75,7 @@ class PolarimeterTest(models.Model):
         verbose_name='Number of the polarimeter')
     cryogenic = models.BooleanField(verbose_name='Cryogenic test')
     acquisition_date = models.DateField(
-        verbose_name='Date of acquisition (YY-MM-DD)')
+        verbose_name='Date of acquisition (YYYY-MM-DD)')
     data_file = models.FileField(max_length=1024, upload_to='unit_test_data/')
     notes = models.TextField(verbose_name='Notes', blank=True)
     phsw_state = models.CharField(

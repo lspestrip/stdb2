@@ -13,7 +13,7 @@ urlpatterns = [
     url(r'^tests/(?P<test_id>\d+)/download/$',
         views.TestDownload.as_view(), name='test_download'),
     url(r'^tests/create$', views.TestCreate.as_view(), name='test_create'),
-    url(r'^tests/(?P<test_id>\d+)/delete$',
+    url(r'^tests/(?P<pk>\d+)/delete$',
         views.TestDeleteView.as_view(), name='test_delete'),
 
     url(r'^tests/(?P<test_id>\d+)/newadcoffset$',

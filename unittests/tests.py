@@ -2,7 +2,9 @@ from datetime import date, datetime
 import os.path
 from tempfile import TemporaryDirectory
 
+from django.contrib.auth import get_user_model
 from django.core.files import File
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.utils.timezone import make_aware
 from django.test import TestCase
 import h5py
@@ -20,6 +22,7 @@ from .models import (
     Temperatures,
     NoiseTemperatureAnalysis,
     SpectralAnalysis,
+    BandpassAnalysis,
 )
 
 
@@ -166,20 +169,26 @@ class TestNewExcelFileConversion(FileConvMixin):
 
 
 def populate_database():
+    SiteUser = get_user_model()
+    user = SiteUser.objects.create_user(
+        'johndoe', 'johndoe@myself.com', 'iseedeadpeople')
+
     test_type_1 = TestType(description='1/f')
     test_type_1.save()
 
-    test = PolarimeterTest(
-        polarimeter_number=1,
-        cryogenic=True,
-        acquisition_date=date(year=2017, month=10, day=1),
-        notes='',
-        data_file=File(os.path.join(os.path.dirname(__file__),
-                                    '..', 'test_data', 'datafile.txt')),
-        test_type=test_type_1
-    )
-
-    test.save()
+    datafile_path = os.path.join(os.path.dirname(__file__),
+                                 '..', 'testdata', 'datafile.txt')
+    with open(datafile_path, 'rb') as data_file:
+        test = PolarimeterTest(
+            polarimeter_number=1,
+            cryogenic=True,
+            acquisition_date=date(year=2017, month=10, day=1),
+            notes='',
+            data_file=SimpleUploadedFile('datafile.txt', data_file.read()),
+            test_type=test_type_1,
+            author=user
+        )
+        test.save()
 
     operator_1 = Operator(name='Abraham Lincoln')
     operator_1.save()
@@ -259,21 +268,40 @@ def populate_database():
         code_commit='0123456789abcdef',
         analysis_date=make_aware(datetime(year=2017, month=10,
                                           day=1, hour=1, minute=2, second=3)),
+        author=user
     )
     tnoise.save()
 
-    stability = SpectralAnalysis(
+    spectrum = SpectralAnalysis(
         test=test,
         oof_alpha=1.0,
+        oof_alpha_err=0.1,
         oof_knee_frequency_hz=0.010,
+        oof_knee_frequency_err=0.001,
         wn_level_adu2_rhz=0.3,
+        wn_level_err=0.05,
         sampling_frequency_hz=25.0,
         code_version='0.2',
         code_commit='fedcba9876543210',
         analysis_date=make_aware(datetime(year=2016, month=9, day=2,
                                           hour=2, minute=4, second=5)),
+        author=user
     )
-    stability.save()
+    spectrum.save()
+
+    bandpass = BandpassAnalysis(
+        test=test,
+        central_frequency_ghz=41.0,
+        central_frequency_err=0.7,
+        bandwidth_ghz=8.0,
+        bandwidth_err=0.5,
+        code_version='0.3',
+        code_commit='aaaaa0011223344',
+        analysis_date=make_aware(datetime(year=2015, month=8, day=1,
+                                          hour=21, minute=8, second=4)),
+        author=user
+    )
+    bandpass.save()
 
 
 class TestBasicFunctionality(TestCase):
@@ -293,7 +321,7 @@ class TestDatabaseAccess(TestCase):
         self.assertTrue(test_obj)
         self.assertTrue(len(test_obj.all()) == 1)
         self.assertTrue(len(test_obj[0].operators.all()) == 2)
-        self.assertEqual(test_obj[0].polarimeter_name(), 'STRIP01')
+        self.assertEqual(test_obj[0].polarimeter_name, 'STRIP01')
 
     def testUrls(self):
         test_obj = PolarimeterTest.objects.filter(polarimeter_number=1)[0]
@@ -302,3 +330,12 @@ class TestDatabaseAccess(TestCase):
         self.assertNotEqual(test_obj.get_download_url(), '')
         self.assertNotEqual(test_obj.get_delete_url(), '')
         self.assertNotEqual(test_obj.get_json_url(), '')
+
+        response = self.client.get(test_obj.get_absolute_url())
+        self.assertTemplateUsed(
+            response, 'unittests/polarimetertest_details.html')
+
+    def testPolarimeterTestForms(self):
+        response = self.client.get('/unittests/')
+        self.assertTemplateUsed(
+            response, 'unittests/polarimetertest_list.html')

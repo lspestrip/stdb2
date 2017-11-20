@@ -286,7 +286,7 @@ class NoiseTemperatureAnalysis(models.Model):
         settings.AUTH_USER_MODEL, related_name='tnoise_owned')
 
     def __str__(self):
-        return ('Tnoise={0} for {1} ({2})'
+        return ('Tnoise={0} for {1}'
                 .format(self.noise_temperature,
                         self.test.polarimeter_name))
 

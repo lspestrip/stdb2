@@ -4,6 +4,7 @@ from collections import OrderedDict
 from io import BytesIO
 import os.path
 import re
+from shutil import copyfileobj
 from zipfile import ZipFile
 
 import h5py
@@ -330,6 +331,9 @@ def convert_data_file_to_h5(data_file_name, data_file, output_file):
             convert_text_file_to_h5(input_file, output_file)
         elif file_ext == '.zip':
             convert_zip_file_to_h5(input_file, output_file)
+        elif file_ext in ['.h5', '.hdf5']:
+            # No conversion is needed
+            copyfileobj(data_file, output_file)
         else:
             raise ValueError('extension "{0}" not recognized'.format(file_ext))
 

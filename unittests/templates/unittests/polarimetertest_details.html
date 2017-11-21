@@ -13,29 +13,22 @@ LSPE/Strip DB: Details of test on STRIP{{test.polarimeter_number}}
 
 <div class="section general">
     <div class="row">
-        <div class="one-half column">
+        <div class="column">
             <h5>General information</h5>
             <table>
-                <tr><td>Cryogenic?</td><td>{{test.cryogenic}}</td></tr>
                 <tr><td>Acquisition date</td><td>
                     <time datetime="{{test.acquisition_date|date:"Y-m-d"}}">{{test.acquisition_date|date:"l, F j, Y"}}</time>
                 </td></tr>
                 <tr><td>Band</td><td>{{test.band}}</td></tr>
+                <tr><td>Cryogenic?</td><td>{{test.cryogenic|yesno|capfirst}}</td></tr>
+                <td>Operators</td><td>{{ operators|join:", " }}</td>
                 <tr><td>Notes</td><td>{% if test.notes %} {{test.notes|linebreaks}} {% else %} (None) {% endif %}</td></tr>
+                <tr><td>Author</td><td>{{test.author}}</td></tr>
+                <tr><td>Date of creation</td><td>
+                    <time datetime="{{test.creation_date|date:"Y-m-d"}}">{{test.creation_date|date:"l, F j, Y"}}</time>
+                </td></tr>
             </table>
-            <a href="{% url 'unittests:test_download' test.id %}">Data file ({{test.get_file_size_in_kb}} kB)</a>
-        </div>
-
-        <div class="one-half column">        
-            <h5>Operators</h5>
-        
-            {% if operators %}
-            <ul id="operators-table">
-                {% for op in operators %}
-                <li>{{op.name}}</li>
-                {% endfor %}
-            </ul>
-            {% endif %}
+            <a href="{% url 'unittests:test_download' test.id %}">Data file ({{test.data_file.size|filesizeformat}})</a>
         </div>
     </div>
 </div>

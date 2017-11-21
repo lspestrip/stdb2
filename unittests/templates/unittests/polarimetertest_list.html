@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load staticfiles %}
 
 {% block title %}
 LSPE/Strip DB: List of tests
@@ -10,7 +11,7 @@ LSPE/Strip DB: List of tests
 
 {% block content %}
 <div class="row">
-    <div class="one-half column" style="margin-top: 1em">
+    <div class="column" style="margin-top: 1em">
         <h1>Polarimetric unit tests</h1>
         <p>Number of tests in the database: {{ tests | length }}</p>
 
@@ -19,7 +20,9 @@ LSPE/Strip DB: List of tests
             <thead>
                 <th>Polarimeter</th>
                 <th>Test</th>
-                <th>Acqusition date</th>
+                <th>Acquisition date</th>
+                <th>Record</th>
+                <th>Actions</th>
             </thead>
             <tbody>
                 {% for test in tests %}
@@ -27,7 +30,8 @@ LSPE/Strip DB: List of tests
                     <td>{{ test.polarimeter_name }}</a></td>
                     <td><a href="{% url 'unittests:test_details' test.id %}">{{ test.test_type }}</a></td>
                     <td>{{ test.acquisition_date }}</td>
-                    <td><a href="{% url 'unittests:test_delete' test.id %}">🗙</a></td>
+                    <td>Created by <i>{{ test.author }}</i> on {{ test.creation_date }} </td>
+                    <td><a href="{% url 'unittests:test_delete' test.id %}"><img src="{% static 'site/delete.svg' %}" width="32" height="32"/></a></td>
                 </tr>
                 {% endfor %}
             </tbody>

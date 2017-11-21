@@ -4,6 +4,17 @@
 LSPE/Strip DB: Add new test
 {% endblock %}
 
+{% block head %}
+<script>
+    $( function() {
+        $("#id_acquisition_date").datepicker({
+            showButtonPanel: true,
+            dateFormat: "yy-mm-dd"
+        });
+    } );
+</script>
+{% endblock %}
+
 {% block content %}
 <h2>Add new test</h2>
 <form method="POST" enctype="multipart/form-data">

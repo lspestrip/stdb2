@@ -73,3 +73,13 @@ documentation](http://uwsgi-docs.readthedocs.io/en/latest/tutorials/Django_and_n
 By default, `stdb2` will write log messages into `stdb2.log`, within the base
 directory of the source code. You can customize the location of this file
 by setting the variable `LOG_FILE_PATH` in the configuration file `.env`.
+
+
+## Utilities
+
+The base directory contains a standalone program, `convert_to_hdf5.py`, which
+can be used to convert data files into HDF5 files from the command line. Run
+
+    convert_to_hdf5.py -h
+
+to get the full help.

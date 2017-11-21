@@ -276,7 +276,7 @@ class DetOutputJsonView(View):
                         "PWR2_adu": 3.0,
                         "PWR3_adu": 4.0
                     }
-                })
+                }, indent=4)
         })
 
         return render(request, 'unittests/detoutput.html', {
@@ -361,7 +361,7 @@ class TnoiseAddFromJsonView(View):
                     "striptun_version": "1.0",
                     "latest_git_commit": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
                     "date": "2017-01-01"
-                })
+                }, indent=4)
         })
 
         return render(request, 'unittests/tnoise_create.html', {

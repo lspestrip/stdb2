@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load staticfiles %}
 
 {% block title %}
 LSPE/Strip DB: Details of test on STRIP{{test.polarimeter_number}}
@@ -53,7 +54,9 @@ LSPE/Strip DB: Details of test on STRIP{{test.polarimeter_number}}
                         <td>{{ofs.pwr1_adu}}</td>
                         <td>{{ofs.pwr2_adu}}</td>
                         <td>{{ofs.pwr3_adu}}</td>
-                        <td><a href="{% url 'unittests:adc_delete' test.id ofs.id %}">🗙</a></td>
+                        <td><a href="{% url 'unittests:adc_delete' test.id ofs.id %}">
+                            <img src="{% static 'site/delete.svg' %}" width="32" height="32"/>
+                        </a></td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -83,7 +86,9 @@ LSPE/Strip DB: Details of test on STRIP{{test.polarimeter_number}}
                             <td>{{out.pwr1_adu}}</td>
                             <td>{{out.pwr2_adu}}</td>
                             <td>{{out.pwr3_adu}}</td>
-                            <td><a href="{% url 'unittests:detoutput_delete' test.id out.id %}">🗙</a></td>
+                            <td><a href="{% url 'unittests:detoutput_delete' test.id out.id %}">
+                                <img src="{% static 'site/delete.svg' %}" width="32" height="32"/>
+                            </a></td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -187,7 +192,9 @@ LSPE/Strip DB: Details of test on STRIP{{test.polarimeter_number}}
                         <td>{{temp.t_polarimeter_2}}</td>
                         <td>{{temp.t_cross_guide_1}}</td>
                         <td>{{temp.t_cross_guide_2}}</td>
-                        <td><a href="{% url 'unittests:temperature_delete' test.id temp.id %}">🗙</a></td>
+                        <td><a href="{% url 'unittests:temperature_delete' test.id temp.id %}">
+                            <img src="{% static 'site/delete.svg' %}" width="32" height="32"/>
+                        </a></td>
                     </tr>
                     {% endfor %}
                 </tbody>

@@ -279,7 +279,7 @@ class DetOutputJsonView(View):
                 }, indent=4)
         })
 
-        return render(request, 'unittests/detoutput.html', {
+        return render(request, 'unittests/detoutput_create.html', {
             'test_id': test_id,
             'polarimeter_number': cur_test.polarimeter_number,
             'form': form,

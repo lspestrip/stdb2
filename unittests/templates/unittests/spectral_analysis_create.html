@@ -9,9 +9,9 @@ LSPE/Strip DB: Add spectral analysis results
 
 <form method="POST" enctype="multipart/form-data">
     {% csrf_token %}
-    <table id="spectral-analysis-create">
+    <div id="spectral-analysis-create">
         {{ form.as_p }}
-    </table>
+    </div>
 
     <input type="submit" value="Create"/>
 </form>

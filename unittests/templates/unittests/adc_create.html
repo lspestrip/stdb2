@@ -7,9 +7,9 @@ LSPE/Strip DB: Add ADC offsets
 {% block content %}
 <form method="POST" enctype="multipart/form-data">
     {% csrf_token %}
-    <table id="add-adc-offsets">
+    <div id="add-adc-offsets">
         {{ form.as_p }}
-    </table>
+    </div>
 
     <input type="submit" value="Add ADC offsets to STRIP{{polarimeter_number}} test"/>
 </form>

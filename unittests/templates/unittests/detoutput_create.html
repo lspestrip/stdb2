@@ -7,9 +7,9 @@ LSPE/Strip DB: Add detector outputs
 {% block content %}
 <form method="POST" enctype="multipart/form-data">
     {% csrf_token %}
-    <table id="add-det-outputs">
+    <div id="add-det-outputs">
         {{ form.as_p }}
-    </table>
+    </div>
 
     <input type="submit" value="Add detector outputs to STRIP{{polarimeter_number}} test"/>
 </form>

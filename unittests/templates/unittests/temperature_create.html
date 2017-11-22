@@ -7,9 +7,9 @@ LSPE/Strip DB: Add temperatures
 {% block content %}
 <form method="POST" enctype="multipart/form-data">
     {% csrf_token %}
-    <table id="add-temperatures">
+    <div id="add-temperatures">
         {{ form.as_p }}
-    </table>
+    </div>
 
     <input type="submit" value="Add set of temperatures to STRIP{{polarimeter_number}} test"/>
 </form>

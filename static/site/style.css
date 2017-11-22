@@ -1,3 +1,13 @@
 div#action-bar > ul {
     list-style-type: none;
 }
+
+textarea {
+    min-width: 20em;
+    min-height: 18em;
+}
+
+#id_operators {
+    min-width: 15em;
+    min-height: 10em;
+}

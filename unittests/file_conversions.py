@@ -76,6 +76,8 @@ def read_worksheet_table(wks):
     sheet = wks.sheet_by_index(0)
     result = OrderedDict()
     nrows = sheet.nrows
+
+    maxrows = 0
     for cur_col in range(sheet.ncols):
         name = sheet.cell(0, cur_col).value
         if len(name) >= len('START') and name[:5] == 'START':
@@ -83,8 +85,12 @@ def read_worksheet_table(wks):
             break
         result[name] = np.array([sheet.cell(i, cur_col).value
                                  for i in range(1, nrows)])
+        maxrows = max(maxrows, len(result[name]))
 
-    return result
+    if maxrows > 0:
+        return result
+    else:
+        return None
 
 
 def read_worksheet_settings(wks):
@@ -155,6 +161,15 @@ def convert_excel_file_to_h5(input_file, h5_file, dataset_name):
     with xlrd.open_workbook(file_contents=input_file.read()) as workbook:
         settings = read_worksheet_settings(workbook)
         datatable = read_worksheet_table(workbook)
+
+        # The new Keithley has the nasty habit to save Excel files with no data,
+        # and these file share the *same filename* as the files containing
+        # actual data! But we cannot filter them by filename, because somebody
+        # had the great idea to save these empty files in the same subfolder
+        # where old Keithley saved actual data. So we are forced to open every
+        # file and check whether it contains data or not.
+        if not datatable:
+            return
 
     assert len(datatable.keys()) > 0, \
         'unexpected format for Excel file "{0}", no rows of data'.format(
@@ -299,12 +314,8 @@ def convert_zip_file_to_h5(input_file, output_file):
     with h5py.File(output_file, 'w') as h5_file:
         with ZipFile(input_file) as zip_file:
             for info in zip_file.infolist():
-                if not info.filename.endswith('.xls'):
+                if (not info.filename.endswith('.xls')) or (info.filename.endswith('.mr.xls')):
                     # Skip non-Excel files
-                    continue
-
-                # Files in tests/data do not contain valid information
-                if 'tests' in info.filename and 'data' in info.filename:
                     continue
 
                 dataset_name = None

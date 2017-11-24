@@ -47,23 +47,13 @@ class TestForm(forms.ModelForm):
 class AdcOffsetCreate(forms.ModelForm):
     class Meta:
         model = AdcOffset
-        fields = [
-            'pwr0_adu',
-            'pwr1_adu',
-            'pwr2_adu',
-            'pwr3_adu',
-        ]
+        exclude = ('test',)
 
 
 class DetOutputCreate(forms.ModelForm):
     class Meta:
         model = DetectorOutput
-        fields = [
-            'pwr0_adu',
-            'pwr1_adu',
-            'pwr2_adu',
-            'pwr3_adu',
-        ]
+        exclude = ('test',)
 
 
 class BiasesCreate(forms.ModelForm):

@@ -152,17 +152,17 @@ class AdcOffset(models.Model):
     'Offset configuration used for the four ADCs'
 
     test = models.ForeignKey(to=PolarimeterTest, on_delete=models.CASCADE)
-    pwr0_adu = models.IntegerField()
-    pwr1_adu = models.IntegerField()
-    pwr2_adu = models.IntegerField()
-    pwr3_adu = models.IntegerField()
+    q1_adu = models.IntegerField()
+    u1_adu = models.IntegerField()
+    u2_adu = models.IntegerField()
+    q2_adu = models.IntegerField()
 
     def __str__(self):
         return 'PWR0={0} ADU, PWR1={1} ADU, PWR2={2} ADU, PWR3={3} ADU'.format(
-            self.pwr0_adu,
-            self.pwr1_adu,
-            self.pwr2_adu,
-            self.pwr3_adu
+            self.q1_adu,
+            self.u1_adu,
+            self.u2_adu,
+            self.q2_adu
         )
 
     class Meta:
@@ -176,10 +176,10 @@ def dict_to_adc_offset_list(data):
         offsets = [offsets]
 
     return [AdcOffset(
-        pwr0_adu=x['pwr0_adu'],
-        pwr1_adu=x['pwr1_adu'],
-        pwr2_adu=x['pwr2_adu'],
-        pwr3_adu=x['pwr3_adu'],
+        q1_adu=x['q1_adu'],
+        u1_adu=x['u1_adu'],
+        u2_adu=x['u2_adu'],
+        q2_adu=x['q2_adu'],
     ) for x in offsets]
 
 
@@ -187,17 +187,17 @@ class DetectorOutput(models.Model):
     'Average output of the four detectors'
 
     test = models.ForeignKey(to=PolarimeterTest, on_delete=models.CASCADE)
-    pwr0_adu = models.IntegerField()
-    pwr1_adu = models.IntegerField()
-    pwr2_adu = models.IntegerField()
-    pwr3_adu = models.IntegerField()
+    q1_adu = models.IntegerField()
+    u1_adu = models.IntegerField()
+    u2_adu = models.IntegerField()
+    q2_adu = models.IntegerField()
 
     def __str__(self):
         return 'PWR0={0} ADU, PWR1={1} ADU, PWR2={2} ADU, PWR3={3} ADU'.format(
-            self.pwr0_adu,
-            self.pwr1_adu,
-            self.pwr2_adu,
-            self.pwr3_adu
+            self.q1_adu,
+            self.u1_adu,
+            self.u2_adu,
+            self.q2_adu
         )
 
     class Meta:
@@ -211,10 +211,10 @@ def dict_to_detector_output_list(data):
         outputs = [outputs]
 
     return [DetectorOutput(
-        pwr0_adu=x['pwr0_adu'],
-        pwr1_adu=x['pwr1_adu'],
-        pwr2_adu=x['pwr2_adu'],
-        pwr3_adu=x['pwr3_adu'],
+        q1_adu=x['q1_adu'],
+        u1_adu=x['u1_adu'],
+        u2_adu=x['u2_adu'],
+        q2_adu=x['q2_adu'],
     ) for x in outputs]
 
 
@@ -267,6 +267,30 @@ class Biases(models.Model):
 
     class Meta:
         verbose_name = 'HEMT polarization biases'
+
+
+def dict_to_biases(data):
+    biases = data['hemt_biases']
+    return Biases(
+        drain_voltage_ha1_V=biases['drain_voltage_ha1_V'],
+        drain_current_ha1_mA=biases['drain_current_ha1_mA'],
+        gate_voltage_ha1_mV=biases['gate_voltage_ha1_mV'],
+        drain_voltage_hb1_V=biases['drain_voltage_hb1_V'],
+        drain_current_hb1_mA=biases['drain_current_hb1_mA'],
+        gate_voltage_hb1_mV=biases['gate_voltage_hb1_mV'],
+        drain_voltage_ha2_V=biases['drain_voltage_ha2_V'],
+        drain_current_ha2_mA=biases['drain_current_ha2_mA'],
+        gate_voltage_ha2_mV=biases['gate_voltage_ha2_mV'],
+        drain_voltage_hb2_V=biases['drain_voltage_hb2_V'],
+        drain_current_hb2_mA=biases['drain_current_hb2_mA'],
+        gate_voltage_hb2_mV=biases['gate_voltage_hb2_mV'],
+        drain_voltage_ha3_V=biases['drain_voltage_ha3_V'],
+        drain_current_ha3_mA=biases['drain_current_ha3_mA'],
+        gate_voltage_ha3_mV=biases['gate_voltage_ha3_mV'],
+        drain_voltage_hb3_V=biases['drain_voltage_hb3_V'],
+        drain_current_hb3_mA=biases['drain_current_hb3_mA'],
+        gate_voltage_hb3_mV=biases['gate_voltage_hb3_mV'],
+    )
 
 
 class Temperatures(models.Model):

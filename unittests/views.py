@@ -24,9 +24,10 @@ from .models import (
     DetectorOutput,
     Biases,
     Temperatures,
-    dict_to_tnoise_analysis,
     dict_to_adc_offset_list,
     dict_to_detector_output_list,
+    dict_to_biases,
+    dict_to_tnoise_analysis,
     NoiseTemperatureAnalysis,
     BandpassAnalysis,
     SpectralAnalysis,
@@ -109,19 +110,19 @@ class TestDetailsJson(View):
         adc_offsets = []
         for ofs in AdcOffset.objects.filter(test=cur_test):
             adc_offsets.append({
-                'pwr0_adu': ofs.pwr0_adu,
-                'pwr1_adu': ofs.pwr1_adu,
-                'pwr2_adu': ofs.pwr2_adu,
-                'pwr3_adu': ofs.pwr3_adu,
+                'q1_adu': ofs.q1_adu,
+                'u1_adu': ofs.u1_adu,
+                'u2_adu': ofs.u2_adu,
+                'q2_adu': ofs.q2_adu,
             })
 
         det_outputs = []
         for out in DetectorOutput.objects.filter(test=cur_test):
             det_outputs.append({
-                'pwr0_adu': out.pwr0_adu,
-                'pwr1_adu': out.pwr1_adu,
-                'pwr2_adu': out.pwr2_adu,
-                'pwr3_adu': out.pwr3_adu,
+                'q1_adu': out.q1_adu,
+                'u1_adu': out.u1_adu,
+                'u2_adu': out.u2_adu,
+                'q2_adu': out.q2_adu,
             })
 
         hemt_biases = {}
@@ -258,7 +259,7 @@ class DeleteMixin(View):
 
 class AdcOffsetAddView(AddMixin):
     form_class = AdcOffsetCreate
-    template_name = 'unittests/adc_create.html'
+    template_name = 'unittests/test_hk_entry_create.html'
 
 
 class AdcOffsetDeleteView(DeleteMixin):
@@ -286,15 +287,16 @@ class AdcOffsetJsonView(View):
             'json_text': json.dumps(
                 {
                     "adc_offsets": [{
-                        "pwr0_adu": 1.0,
-                        "pwr1_adu": 2.0,
-                        "pwr2_adu": 3.0,
-                        "pwr3_adu": 4.0
+                        "q1_adu": 1.0,
+                        "u1_adu": 2.0,
+                        "u2_adu": 3.0,
+                        "q2_adu": 4.0
                     }],
                 }, indent=4)
         })
 
-        return render(request, 'unittests/adc_create.html', {
+        return render(request, 'unittests/test_hk_entry_create.html', {
+            'page_title': 'Import ADC offsets',
             'test_id': test_id,
             'polarimeter_number': cur_test.polarimeter_number,
             'form': form,
@@ -303,7 +305,7 @@ class AdcOffsetJsonView(View):
 
 class DetOutputAddView(AddMixin):
     form_class = DetOutputCreate
-    template_name = 'unittests/detoutput_create.html'
+    template_name = 'unittests/test_hk_entry_create.html'
 
 
 class DetOutputDeleteView(DeleteMixin):
@@ -331,15 +333,16 @@ class DetOutputJsonView(View):
             'json_text': json.dumps(
                 {
                     "detector_offsets": [{
-                        "pwr0_adu": 1.0,
-                        "pwr1_adu": 2.0,
-                        "pwr2_adu": 3.0,
-                        "pwr3_adu": 4.0
+                        "q1_adu": 1.0,
+                        "u1_adu": 2.0,
+                        "u2_adu": 3.0,
+                        "q2_adu": 4.0
                     }]
                 }, indent=4)
         })
 
-        return render(request, 'unittests/detoutput_create.html', {
+        return render(request, 'unittests/test_hk_entry_create.html', {
+            'page_title': 'Import detector outputs',
             'test_id': test_id,
             'polarimeter_number': cur_test.polarimeter_number,
             'form': form,
@@ -348,11 +351,61 @@ class DetOutputJsonView(View):
 
 class BiasesAddView(AddMixin):
     form_class = BiasesCreate
-    template_name = 'unittests/adc_create.html'
+    template_name = 'unittests/test_hk_entry_create.html'
 
 
 class BiasesDeleteView(DeleteMixin):
     model = Biases
+
+
+class BiasesJsonView(View):
+    def post(self, request, test_id):
+        'Import the HEMT biases for a test from a JSON record'
+
+        cur_test = get_object_or_404(PolarimeterTest, pk=test_id)
+        form = CreateFromJSON(request.POST)
+        if form.is_valid():
+            data = json.loads(form.cleaned_data['json_text'])
+            new_biases = dict_to_biases(data)
+            new_biases.test = cur_test
+            new_biases.save()
+
+            return redirect(cur_test)
+
+    def get(self, request, test_id):
+        cur_test = get_object_or_404(PolarimeterTest, pk=test_id)
+        form = CreateFromJSON(initial={
+            'json_text': json.dumps(
+                {
+                    "hemt_biases": {
+                        "drain_voltage_ha1_V": 1.0,
+                        "drain_current_ha1_mA": 2.0,
+                        "gate_voltage_ha1_mV": 3.0,
+                        "drain_voltage_hb1_V": 4.0,
+                        "drain_current_hb1_mA": 5.0,
+                        "gate_voltage_hb1_mV": 6.0,
+                        "drain_voltage_ha2_V": 7.0,
+                        "drain_current_ha2_mA": 8.0,
+                        "gate_voltage_ha2_mV": 9.0,
+                        "drain_voltage_hb2_V": 10.0,
+                        "drain_current_hb2_mA": 11.0,
+                        "gate_voltage_hb2_mV": 12.0,
+                        "drain_voltage_ha3_V": 13.0,
+                        "drain_current_ha3_mA": 14.0,
+                        "gate_voltage_ha3_mV": 15.0,
+                        "drain_voltage_hb3_V": 16.0,
+                        "drain_current_hb3_mA": 17.0,
+                        "gate_voltage_hb3_mV": 18.0
+                    },
+                }, indent=4)
+        })
+
+        return render(request, 'unittests/test_hk_entry_create.html', {
+            'page_title': 'Import HEMT biases',
+            'test_id': test_id,
+            'polarimeter_number': cur_test.polarimeter_number,
+            'form': form,
+        })
 
 
 class TemperatureAddView(AddMixin):

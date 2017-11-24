@@ -163,7 +163,8 @@ LSPE/Strip DB: Details of test on STRIP{{test.polarimeter_number}}
 
             {% else %}
             <ul class="data-table-actions">
-                <a href="{% url 'unittests:biases_create' test.id %}">Add new</a>
+                <li><a href="{% url 'unittests:biases_create' test.id %}">Add new</a></li>
+                <li><a href="{% url 'unittests:biases_create_json' test.id %}">Import a JSON file</a></li>
             </ul>
             {% endif %}
         </div>

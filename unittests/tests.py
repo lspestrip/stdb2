@@ -203,19 +203,19 @@ def populate_database():
 
     adc_ofs = AdcOffset(
         test=test,
-        pwr0_adu=1.0,
-        pwr1_adu=2.0,
-        pwr2_adu=3.0,
-        pwr3_adu=4.0
+        q1_adu=1.0,
+        u1_adu=2.0,
+        u2_adu=3.0,
+        q2_adu=4.0
     )
     adc_ofs.save()
 
     det_output = DetectorOutput(
         test=test,
-        pwr0_adu=10.0,
-        pwr1_adu=20.0,
-        pwr2_adu=20.0,
-        pwr3_adu=30.0
+        q1_adu=10.0,
+        u1_adu=20.0,
+        u2_adu=30.0,
+        q2_adu=40.0
     )
     det_output.save()
 

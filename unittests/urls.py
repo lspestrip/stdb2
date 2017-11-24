@@ -26,6 +26,8 @@ urlpatterns = [
         views.DetOutputJsonView.as_view(), name='detoutput_create_json'),
     url(r'^tests/(?P<test_id>\d+)/newbiases$',
         views.BiasesAddView.as_view(), name='biases_create'),
+    url(r'^tests/(?P<test_id>\d+)/newbiases/json$',
+        views.BiasesJsonView.as_view(), name='biases_create_json'),
     url(r'^tests/(?P<test_id>\d+)/newtemperature$',
         views.TemperatureAddView.as_view(), name='temperature_create'),
 

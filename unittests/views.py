@@ -25,7 +25,8 @@ from .models import (
     Biases,
     Temperatures,
     dict_to_tnoise_analysis,
-    dict_to_detector_output,
+    dict_to_adc_offset_list,
+    dict_to_detector_output_list,
     NoiseTemperatureAnalysis,
     BandpassAnalysis,
     SpectralAnalysis,
@@ -264,6 +265,42 @@ class AdcOffsetDeleteView(DeleteMixin):
     model = AdcOffset
 
 
+class AdcOffsetJsonView(View):
+    def post(self, request, test_id):
+        'Import the level of the ADC offsets for a test from a JSON record'
+
+        cur_test = get_object_or_404(PolarimeterTest, pk=test_id)
+        form = CreateFromJSON(request.POST)
+        if form.is_valid():
+            data = json.loads(form.cleaned_data['json_text'])
+            new_offsets = dict_to_adc_offset_list(data)
+            for ofs in new_offsets:
+                ofs.test = cur_test
+                ofs.save()
+
+            return redirect(cur_test)
+
+    def get(self, request, test_id):
+        cur_test = get_object_or_404(PolarimeterTest, pk=test_id)
+        form = CreateFromJSON(initial={
+            'json_text': json.dumps(
+                {
+                    "adc_offsets": [{
+                        "pwr0_adu": 1.0,
+                        "pwr1_adu": 2.0,
+                        "pwr2_adu": 3.0,
+                        "pwr3_adu": 4.0
+                    }],
+                }, indent=4)
+        })
+
+        return render(request, 'unittests/adc_create.html', {
+            'test_id': test_id,
+            'polarimeter_number': cur_test.polarimeter_number,
+            'form': form,
+        })
+
+
 class DetOutputAddView(AddMixin):
     form_class = DetOutputCreate
     template_name = 'unittests/detoutput_create.html'
@@ -281,9 +318,10 @@ class DetOutputJsonView(View):
         form = CreateFromJSON(request.POST)
         if form.is_valid():
             data = json.loads(form.cleaned_data['json_text'])
-            new_output = dict_to_detector_output(data)
-            new_output.test = cur_test
-            new_output.save()
+            new_output_list = dict_to_detector_output_list(data)
+            for new_output in new_output_list:
+                new_output.test = cur_test
+                new_output.save()
 
             return redirect(cur_test)
 
@@ -292,12 +330,12 @@ class DetOutputJsonView(View):
         form = CreateFromJSON(initial={
             'json_text': json.dumps(
                 {
-                    "detector_offsets": {
-                        "PWR0_adu": 1.0,
-                        "PWR1_adu": 2.0,
-                        "PWR2_adu": 3.0,
-                        "PWR3_adu": 4.0
-                    }
+                    "detector_offsets": [{
+                        "pwr0_adu": 1.0,
+                        "pwr1_adu": 2.0,
+                        "pwr2_adu": 3.0,
+                        "pwr3_adu": 4.0
+                    }]
                 }, indent=4)
         })
 

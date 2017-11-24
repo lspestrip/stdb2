@@ -169,6 +169,20 @@ class AdcOffset(models.Model):
         verbose_name = 'values of the four ADC offsets'
 
 
+def dict_to_adc_offset_list(data):
+    offsets = data['adc_offsets']
+    if type(offsets) is dict:
+        # We have just one set of outputs, so let's build a list with one element
+        offsets = [offsets]
+
+    return [AdcOffset(
+        pwr0_adu=x['pwr0_adu'],
+        pwr1_adu=x['pwr1_adu'],
+        pwr2_adu=x['pwr2_adu'],
+        pwr3_adu=x['pwr3_adu'],
+    ) for x in offsets]
+
+
 class DetectorOutput(models.Model):
     'Average output of the four detectors'
 
@@ -190,13 +204,18 @@ class DetectorOutput(models.Model):
         verbose_name = 'average output of the four detectors'
 
 
-def dict_to_detector_output(data):
-    return DetectorOutput(
-        pwr0_adu=data['detector_offsets']['PWR0_adu'],
-        pwr1_adu=data['detector_offsets']['PWR1_adu'],
-        pwr2_adu=data['detector_offsets']['PWR2_adu'],
-        pwr3_adu=data['detector_offsets']['PWR3_adu'],
-    )
+def dict_to_detector_output_list(data):
+    outputs = data['detector_outputs']
+    if type(outputs) is dict:
+        # We have just one set of outputs, so let's build a list with one element
+        outputs = [outputs]
+
+    return [DetectorOutput(
+        pwr0_adu=x['pwr0_adu'],
+        pwr1_adu=x['pwr1_adu'],
+        pwr2_adu=x['pwr2_adu'],
+        pwr3_adu=x['pwr3_adu'],
+    ) for x in outputs]
 
 
 class Biases(models.Model):

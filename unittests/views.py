@@ -83,10 +83,10 @@ class TestCreate(FormValidMixin, CreateView):
 class TestDetails(View):
     template_name = 'unittests/polarimetertest_details.html'
 
-    def get(self, request, test_id):
+    def get(self, request, pk):
         'Show details about a test'
 
-        cur_test = get_object_or_404(PolarimeterTest, pk=test_id)
+        cur_test = get_object_or_404(PolarimeterTest, pk=pk)
         return render(request, self.template_name, {
             'test': cur_test,
             'adc_offsets': AdcOffset.objects.filter(test=cur_test),
@@ -101,10 +101,10 @@ class TestDetails(View):
 
 
 class TestDetailsJson(View):
-    def get(self, request, test_id):
+    def get(self, request, pk):
         'Return a JSON object containing the details of the test'
 
-        cur_test = get_object_or_404(PolarimeterTest, pk=test_id)
+        cur_test = get_object_or_404(PolarimeterTest, pk=pk)
         adc_offsets = []
         for ofs in AdcOffset.objects.filter(test=cur_test):
             adc_offsets.append({
@@ -176,10 +176,10 @@ class TestDeleteView(DeleteView):
 
 
 class TestDownload(View):
-    def get(self, request, test_id):
+    def get(self, request, pk):
         'Allow the user to download the data file for a test'
 
-        cur_test = get_object_or_404(PolarimeterTest, pk=test_id)
+        cur_test = get_object_or_404(PolarimeterTest, pk=pk)
         data_file = cur_test.data_file
         data_file.open()
         data = data_file.read()
@@ -193,8 +193,8 @@ class AddMixin(View):
     form_class = None
     template_name = ''
 
-    def post(self, request, test_id):
-        cur_test = get_object_or_404(PolarimeterTest, pk=test_id)
+    def post(self, request, pk):
+        cur_test = get_object_or_404(PolarimeterTest, pk=pk)
         form = self.form_class(request.POST)
         if form.is_valid():
             new_offsets = form.save(commit=False)
@@ -263,7 +263,7 @@ class DetOutputJsonView(View):
             new_output.test = cur_test
             new_output.save()
 
-            return redirect('unittests:test_details', kwargs={'test_id': test_id})
+            return redirect(cur_test)
 
     def get(self, request, test_id):
         cur_test = get_object_or_404(PolarimeterTest, pk=test_id)
@@ -339,7 +339,7 @@ class TnoiseAddFromJsonView(View):
             new_analysis.test = cur_test
             new_analysis.save()
 
-            return redirect('unittests:test_details', kwargs={'test_id': test_id})
+            return redirect(cur_test)
 
     def get(self, request, test_id):
         form = CreateFromJSON(initial={

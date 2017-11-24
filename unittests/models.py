@@ -100,13 +100,13 @@ class PolarimeterTest(models.Model):
         return 'STRIP{0:02d}'.format(self.polarimeter_number)
 
     def get_absolute_url(self):
-        return reverse('unittests:test_details', kwargs={'test_id': self.pk})
+        return reverse('unittests:test_details', kwargs={'pk': self.pk})
 
     def get_download_url(self):
-        return reverse('unittests:test_download', kwargs={'test_id': self.pk})
+        return reverse('unittests:test_download', kwargs={'pk': self.pk})
 
     def get_json_url(self):
-        return reverse('unittests:test_details_json', kwargs={'test_id': self.pk})
+        return reverse('unittests:test_details_json', kwargs={'pk': self.pk})
 
     def get_delete_url(self):
         return reverse('unittests:test_delete', kwargs={'pk': self.pk})

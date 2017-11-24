@@ -6,11 +6,11 @@ from . import views
 
 urlpatterns = [
     url(r'^$', views.TestListView.as_view(), name='test_list'),
-    url(r'^tests/(?P<test_id>\d+)/$',
+    url(r'^tests/(?P<pk>\d+)/$',
         views.TestDetails.as_view(), name='test_details'),
-    url(r'^tests/(?P<test_id>\d+)/json/$',
+    url(r'^tests/(?P<pk>\d+)/json/$',
         views.TestDetailsJson.as_view(), name='test_details_json'),
-    url(r'^tests/(?P<test_id>\d+)/download/$',
+    url(r'^tests/(?P<pk>\d+)/download/$',
         views.TestDownload.as_view(), name='test_download'),
     url(r'^tests/create$', views.TestCreate.as_view(), name='test_create'),
     url(r'^tests/(?P<pk>\d+)/delete$',

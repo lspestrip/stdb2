@@ -17,15 +17,15 @@ LSPE/Strip DB: Details of test on STRIP{{test.polarimeter_number}}
         <div class="column">
             <h5>General information</h5>
             <table>
-                <tr><td>Acquisition date</td><td>
+                <tr><td><b>Acquisition date</b></td><td>
                     <time datetime="{{test.acquisition_date|date:"Y-m-d"}}">{{test.acquisition_date|date:"l, F j, Y"}}</time>
                 </td></tr>
-                <tr><td>Band</td><td>{{test.band}}</td></tr>
-                <tr><td>Cryogenic?</td><td>{{test.cryogenic|yesno|capfirst}}</td></tr>
-                <td>Operators</td><td>{{ operators|join:", " }}</td>
-                <tr><td>Notes</td><td>{% if test.notes %} {{test.notes|linebreaks}} {% else %} (None) {% endif %}</td></tr>
-                <tr><td>Author</td><td>{{test.author}}</td></tr>
-                <tr><td>Date of creation</td><td>
+                <tr><td><b>Band</b></td><td>{{test.band}}</td></tr>
+                <tr><td><b>Cryogenic?</b></td><td>{{test.cryogenic|yesno|capfirst}}</td></tr>
+                <tr><td><b>Operators</b></td><td>{{ operators|join:", " }}</td></tr>
+                <tr><td><b>Notes</b></td><td>{% if test.notes %} {{test.notes|linebreaks}} {% else %} (None) {% endif %}</td></tr>
+                <tr><td><b>Author</b></td><td>{{test.author}}</td></tr>
+                <tr><td><b>Date of creation</b></td><td>
                     <time datetime="{{test.creation_date|date:"Y-m-d"}}">{{test.creation_date|date:"l, F j, Y"}}</time>
                 </td></tr>
             </table>

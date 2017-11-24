@@ -157,6 +157,7 @@ LOGGING = {
         'console': {
             'filters': ['remove_migration_sql'],
             'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
         },
         'applogfile': {
             'level': 'DEBUG',
@@ -164,25 +165,23 @@ LOGGING = {
             'filename': os.path.join(LOG_FILE_PATH, 'stdb2.log'),
             'maxBytes': 1024 * 1024 * 15,  # 15MB
             'backupCount': 10,
+            'formatter': 'verbose',
         },
     },
     'formatters': {
         'verbose': {
             'format': '[%(asctime)s] %(levelname)s [%(name)s:%(lineno)s] %(message)s',
-            'datefmt': '%Y-%b-%d %H:%M:%S'
         }
     },
     'loggers': {
         'django': {
             'handlers': ['console', 'applogfile'],
             'level': 'INFO',
-            'formatter': 'verbose',
             'propagate': True,
         },
         'unittests': {
             'handlers': ['console', 'applogfile'],
             'level': 'DEBUG',
-            'formatter': 'verbose',
             'propagate': True,
         }
     },

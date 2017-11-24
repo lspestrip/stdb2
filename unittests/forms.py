@@ -28,6 +28,9 @@ class TestForm(forms.ModelForm):
             'operators',
             'notes',
         ]
+        labels = {
+            'data_file': 'Data file (either .txt, .zip, .h5 or .hdf5)',
+        }
 
     def save(self, request, commit=True):
         obj = super().save(commit=False)

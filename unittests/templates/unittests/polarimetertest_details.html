@@ -29,7 +29,7 @@ LSPE/Strip DB: Details of test on STRIP{{test.polarimeter_number}}
                     <time datetime="{{test.creation_date|date:"Y-m-d"}}">{{test.creation_date|date:"l, F j, Y"}}</time>
                 </td></tr>
             </table>
-            <a href="{% url 'unittests:test_download' test.id %}">Data file ({{test.data_file.size|filesizeformat}})</a>
+            <p><a href="{% url 'unittests:test_download' test.id %}">Download data file</a>  ({{test.data_file.size|filesizeformat}})</p>
         </div>
     </div>
 </div>

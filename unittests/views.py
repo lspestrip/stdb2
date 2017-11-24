@@ -123,6 +123,27 @@ class TestDetailsJson(View):
                 'pwr3_adu': out.pwr3_adu,
             })
 
+        hemt_biases = {}
+        for biases in Biases.objects.filter(test=cur_test):
+            hemt_biases['drain_voltage_ha1_V'] = biases.drain_voltage_ha1_V
+            hemt_biases['drain_current_ha1_mA'] = biases.drain_current_ha1_mA
+            hemt_biases['gate_voltage_ha1_mV'] = biases.gate_voltage_ha1_mV
+            hemt_biases['drain_voltage_hb1_V'] = biases.drain_voltage_hb1_V
+            hemt_biases['drain_current_hb1_mA'] = biases.drain_current_hb1_mA
+            hemt_biases['gate_voltage_hb1_mV'] = biases.gate_voltage_hb1_mV
+            hemt_biases['drain_voltage_ha2_V'] = biases.drain_voltage_ha2_V
+            hemt_biases['drain_current_ha2_mA'] = biases.drain_current_ha2_mA
+            hemt_biases['gate_voltage_ha2_mV'] = biases.gate_voltage_ha2_mV
+            hemt_biases['drain_voltage_hb2_V'] = biases.drain_voltage_hb2_V
+            hemt_biases['drain_current_hb2_mA'] = biases.drain_current_hb2_mA
+            hemt_biases['gate_voltage_hb2_mV'] = biases.gate_voltage_hb2_mV
+            hemt_biases['drain_voltage_ha3_V'] = biases.drain_voltage_ha3_V
+            hemt_biases['drain_current_ha3_mA'] = biases.drain_current_ha3_mA
+            hemt_biases['gate_voltage_ha3_mV'] = biases.gate_voltage_ha3_mV
+            hemt_biases['drain_voltage_hb3_V'] = biases.drain_voltage_hb3_V
+            hemt_biases['drain_current_hb3_mA'] = biases.drain_current_hb3_mA
+            hemt_biases['gate_voltage_hb3_mV'] = biases.gate_voltage_hb3_mV
+
         temperatures = []
         for temp in Temperatures.objects.filter(test=cur_test):
             temperatures.append({
@@ -160,6 +181,7 @@ class TestDetailsJson(View):
             'test_type': str(cur_test.test_type),
             'adc_offsets': adc_offsets,
             'detector_outputs': det_outputs,
+            'hemt_biases': hemt_biases,
             'temperatures': temperatures,
             'operators': [x.name for x in cur_test.operators.all()],
         }

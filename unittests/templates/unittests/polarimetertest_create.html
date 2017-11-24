@@ -4,17 +4,6 @@
 LSPE/Strip DB: Add new test
 {% endblock %}
 
-{% block head %}
-<script>
-    $( function() {
-        $("#id_acquisition_date").datepicker({
-            showButtonPanel: true,
-            dateFormat: "yy-mm-dd"
-        });
-    } );
-</script>
-{% endblock %}
-
 {% block content %}
 <h2>Add new test</h2>
 <form method="POST" enctype="multipart/form-data">
@@ -25,5 +14,38 @@ LSPE/Strip DB: Add new test
 
     <input type="submit" value="Add new test"/>
 </form>
+
+<script>
+    $( function() {
+        $("#id_acquisition_date").datepicker({
+            showButtonPanel: true,
+            dateFormat: "yy-mm-dd"
+        });
+    } );
+
+    var data_file_obj = document.getElementById('id_data_file');
+    console.log(`data_file_obj = ${data_file_obj}`);
+    data_file_obj.addEventListener('change', handleFiles, false);
+
+    function handleFiles(ev) {
+        if (! ev) var ev = window.event;
+
+        var selected_file = data_file_obj.files[0];
+        if (! selected_file) return;
+
+        /* Update the «Notes» text */
+        var file_size_kb = Math.round(selected_file.size / 1024);
+        $('#id_notes').text(`The source data file was «${selected_file.name}» (${file_size_kb} kB)`);
+
+        date_match = selected_file.name.match(/SCI\d{6}/i);
+        if (date_match) {
+            var year = 2000 + parseInt(date_match[0].substring(3, 5));
+            var month = parseInt(date_match[0].substring(5, 7));
+            var day = parseInt(date_match[0].substring(7, 9));
+
+            $('#id_acquisition_date').datepicker('setDate', `${year}-${month}-${day}`)
+        }
+    }
+</script>
 
 {% endblock %}

@@ -265,7 +265,7 @@ def convert_excel_file_to_h5(input_file, h5_file, dataset_name):
             dataset.attrs[hygenize_name(key)] = value
 
 
-def convert_zip_file_to_h5(input_file, output_file):
+def convert_zip_file_to_h5(input_file, output_file_path):
     '''Convert the Excel files in a ZIP file into one HDF5 file
 
     The Excel files must have been saved using the Keithley machine, either the
@@ -273,7 +273,7 @@ def convert_zip_file_to_h5(input_file, output_file):
     files.
 
     The parameter "input_file" must be a file-like object, which will be treated
-    as a ZIP archive. The HDF5 file will be named after "output_file".
+    as a ZIP archive. The HDF5 file will be named after "output_file_path".
     '''
 
     # To check the correspondences between the (two!) notations used in
@@ -315,7 +315,7 @@ def convert_zip_file_to_h5(input_file, output_file):
         'V2_PS2/tests/data/Ir_vs_Vr': 'PSB2/IRVR', 'Ir_vs_Vr_V2_PS2': 'PSB2/IRVR',
     }
 
-    with h5py.File(output_file, 'w') as h5_file:
+    with h5py.File(output_file_path, 'w') as h5_file:
         with ZipFile(input_file) as zip_file:
             for info in zip_file.infolist():
                 if (not info.filename.endswith('.xls')) or (info.filename.endswith('.mr.xls')):
@@ -356,7 +356,13 @@ def convert_data_file_to_h5(data_file_name, data_file, output_file):
             # No conversion is needed
             LOGGER.debug('file "%s" is an HDF5 file, no conversion is necessary',
                          data_file_name)
-            copyfileobj(data_file, output_file)
+
+            if type(output_file) is str:
+                with open(output_file, "wb") as dest_file:
+                    copyfileobj(input_file, dest_file)
+            else:
+                # Tread "output_file" as a file-like object
+                copyfileobj(data_file, output_file)
         else:
             raise ValueError('extension "{0}" not recognized'.format(file_ext))
 

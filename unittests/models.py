@@ -137,7 +137,8 @@ class PolarimeterTest(models.Model):
 
             os.remove(tmp_file_name)
             LOGGER.debug(
-                'HDF5 file "%s" imported in the database and removed', hdf5_file_name)
+                'HDF5 file "%s" imported in the database and removed, new file is "%s"',
+                hdf5_file_name, self.data_file.name)
         else:
             super(PolarimeterTest, self).save(*args, **kwargs)
 

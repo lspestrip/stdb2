@@ -2,6 +2,7 @@
 
 from collections import OrderedDict
 from io import BytesIO
+import logging
 import os.path
 import re
 from shutil import copyfileobj
@@ -12,6 +13,9 @@ import numpy as np
 import xlrd
 
 SAMPLING_FREQUENCY = 25.0
+
+# Get an instance of a logger
+LOGGER = logging.getLogger(__name__)
 
 
 def convert_text_file_to_h5(input_file, output_file):
@@ -343,11 +347,15 @@ def convert_data_file_to_h5(data_file_name, data_file, output_file):
     with BytesIO(data_file.read()) as input_file:
         file_ext = file_ext.lower()
         if file_ext == '.txt':
+            LOGGER.debug('file "%s" is a text file', data_file_name)
             convert_text_file_to_h5(input_file, output_file)
         elif file_ext == '.zip':
+            LOGGER.debug('file "%s" is a ZIP file', data_file_name)
             convert_zip_file_to_h5(input_file, output_file)
         elif file_ext in ['.h5', '.hdf5']:
             # No conversion is needed
+            LOGGER.debug('file "%s" is an HDF5 file, no conversion is necessary',
+                         data_file_name)
             copyfileobj(data_file, output_file)
         else:
             raise ValueError('extension "{0}" not recognized'.format(file_ext))

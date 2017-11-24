@@ -174,9 +174,16 @@ LOGGING = {
     },
     'loggers': {
         'django': {
-            'handlers': ['console'],
+            'handlers': ['console', 'applogfile'],
+            'level': 'INFO',
+            'formatter': 'verbose',
+            'propagate': True,
+        },
+        'unittests': {
+            'handlers': ['console', 'applogfile'],
             'level': 'DEBUG',
             'formatter': 'verbose',
+            'propagate': True,
         }
     },
 }

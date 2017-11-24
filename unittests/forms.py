@@ -18,13 +18,13 @@ class TestForm(forms.ModelForm):
     class Meta:
         model = PolarimeterTest
         fields = [
+            'data_file',
             'polarimeter_number',
             'band',
             'acquisition_date',
             'cryogenic',
             'phsw_state',
             'test_type',
-            'data_file',
             'operators',
             'notes',
         ]

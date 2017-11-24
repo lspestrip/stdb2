@@ -83,10 +83,10 @@ class TestCreate(FormValidMixin, CreateView):
 class TestDetails(View):
     template_name = 'unittests/polarimetertest_details.html'
 
-    def get(self, request, pk):
+    def get(self, request, test_id):
         'Show details about a test'
 
-        cur_test = get_object_or_404(PolarimeterTest, pk=pk)
+        cur_test = get_object_or_404(PolarimeterTest, pk=test_id)
         return render(request, self.template_name, {
             'test': cur_test,
             'adc_offsets': AdcOffset.objects.filter(test=cur_test),
@@ -101,10 +101,10 @@ class TestDetails(View):
 
 
 class TestDetailsJson(View):
-    def get(self, request, pk):
+    def get(self, request, test_id):
         'Return a JSON object containing the details of the test'
 
-        cur_test = get_object_or_404(PolarimeterTest, pk=pk)
+        cur_test = get_object_or_404(PolarimeterTest, pk=test_id)
         adc_offsets = []
         for ofs in AdcOffset.objects.filter(test=cur_test):
             adc_offsets.append({
@@ -176,10 +176,10 @@ class TestDeleteView(DeleteView):
 
 
 class TestDownload(View):
-    def get(self, request, pk):
+    def get(self, request, test_id):
         'Allow the user to download the data file for a test'
 
-        cur_test = get_object_or_404(PolarimeterTest, pk=pk)
+        cur_test = get_object_or_404(PolarimeterTest, pk=test_id)
         data_file = cur_test.data_file
         data_file.open()
         data = data_file.read()
@@ -193,8 +193,8 @@ class AddMixin(View):
     form_class = None
     template_name = ''
 
-    def post(self, request, pk):
-        cur_test = get_object_or_404(PolarimeterTest, pk=pk)
+    def post(self, request, test_id):
+        cur_test = get_object_or_404(PolarimeterTest, pk=test_id)
         form = self.form_class(request.POST)
         if form.is_valid():
             new_offsets = form.save(commit=False)

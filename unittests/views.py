@@ -183,7 +183,7 @@ class TestDownload(View):
         data_file = cur_test.data_file
         data_file.open()
         data = data_file.read()
-        resp = HttpResponse(data, content_type='application/x-hdf5')
+        resp = HttpResponse(data, content_type='application/hdf5')
         resp['Content-Disposition'] = 'attachment; filename="{0}"'.format(
             os.path.basename(data_file.name))
         return resp

@@ -51,10 +51,10 @@ LSPE/Strip DB: Details of test on STRIP{{test.polarimeter_number}}
                 <tbody>
                     {% for ofs in adc_offsets %}
                     <tr>
-                        <td>{{ofs.pwr0_adu}}</td>
-                        <td>{{ofs.pwr1_adu}}</td>
-                        <td>{{ofs.pwr2_adu}}</td>
-                        <td>{{ofs.pwr3_adu}}</td>
+                        <td>{{ofs.q1_adu}}</td>
+                        <td>{{ofs.u1_adu}}</td>
+                        <td>{{ofs.u2_adu}}</td>
+                        <td>{{ofs.q2_adu}}</td>
                         <td><a href="{% url 'unittests:adc_delete' test.id ofs.id %}">
                             <img src="{% static 'site/delete.svg' %}" width="32" height="32"/>
                         </a></td>
@@ -84,10 +84,10 @@ LSPE/Strip DB: Details of test on STRIP{{test.polarimeter_number}}
                     <tbody>
                         {% for out in det_outputs %}
                         <tr>
-                            <td>{{out.pwr0_adu}}</td>
-                            <td>{{out.pwr1_adu}}</td>
-                            <td>{{out.pwr2_adu}}</td>
-                            <td>{{out.pwr3_adu}}</td>
+                            <td>{{out.q1_adu}}</td>
+                            <td>{{out.u1_adu}}</td>
+                            <td>{{out.u2_adu}}</td>
+                            <td>{{out.q2_adu}}</td>
                             <td><a href="{% url 'unittests:detoutput_delete' test.id out.id %}">
                                 <img src="{% static 'site/delete.svg' %}" width="32" height="32"/>
                             </a></td>

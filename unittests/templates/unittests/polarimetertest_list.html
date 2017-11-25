@@ -16,7 +16,8 @@ LSPE/Strip DB: List of tests
         <p>Number of tests in the database: {{ tests | length }}</p>
 
         {% if tests %}
-        <table>
+        <input type="text" id="polarimeter-test-filter" onkeyup="filterPolarimeterTable()" placeholder="Filter…">
+        <table id="polarimeter-test-table">
             <thead>
                 <th>Polarimeter</th>
                 <th>Test</th>
@@ -24,7 +25,7 @@ LSPE/Strip DB: List of tests
                 <th>Record</th>
                 <th>Actions</th>
             </thead>
-            <tbody>
+            <tbody id="polarimeter-test-table-body">
                 {% for test in tests %}
                 <tr>
                     <td>{{ test.polarimeter_name }}</a></td>
@@ -42,4 +43,50 @@ LSPE/Strip DB: List of tests
     </div>
 </div>
 
+<script>
+    /* This is like "split", but it does not leave empty strings in the array */
+    function splitAtSpaces(str) {
+        return str.split(" ").filter(function (x) { return x != "" })
+    }
+
+    function filterPolarimeterTable() {
+        var test_table = document.getElementById("polarimeter-test-table-body");
+        var rows = test_table.getElementsByTagName("tr");
+
+        var filter_field = document.getElementById("polarimeter-test-filter");
+        var filters = splitAtSpaces(filter_field.value.toUpperCase());
+        if (filters.length == 0) {
+            /* No filter: make all rows visible */
+            for (rowidx = 0; rowidx < rows.length; rowidx++) {
+                rows[rowidx].style.display = "";
+            }
+
+            return;
+        }
+
+        for (rowidx = 0; rowidx < rows.length; rowidx++) {
+            cell = rows[rowidx].getElementsByTagName("td");
+            if (! cell) continue;
+
+            var found = false;
+
+            cellloop:
+            for (cellidx = 0; cellidx < cell.length; cellidx++) {
+                /* We might have more than one word to search, so we must loop over them */
+                for (filtidx = 0; filtidx < filters.length; filtidx++) {
+                    /* Note that this way of filtering joins filter words using AND */
+                    if (cell[cellidx].innerHTML.toUpperCase().indexOf(filters[filtidx]) > -1) {
+                        found = true;
+                        break cellloop;
+                    }
+                }
+            }
+            if (found) {
+                rows[rowidx].style.display = "";
+            } else {
+                rows[rowidx].style.display = "none";
+            }
+        }
+    }
+</script>
 {% endblock %}

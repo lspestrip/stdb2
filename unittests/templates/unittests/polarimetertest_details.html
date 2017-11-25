@@ -18,7 +18,9 @@ LSPE/Strip DB: Details of test on STRIP{{test.polarimeter_number}}
             <h5>General information</h5>
 
             {% if test.pwr_plot %}
-            <p><img id='pwrplot' src="{% url 'unittests:test_pwr_plot' test.id %}"/></p>
+            <div id='pwrplot-div'>
+                <img id='pwrplot' src="{% url 'unittests:test_pwr_plot' test.id %}"/>
+            </div>
             {% endif %}
 
             <table>

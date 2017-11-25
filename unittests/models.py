@@ -83,7 +83,7 @@ def create_pwr_plot(hdf5_file_name, dpi=80):
     with h5py.File(hdf5_file_name, 'r') as h5_file:
         if not 'time_series' in h5_file:
             # Do not attempt to make plots from a file containing Keithley data
-            return
+            return None
 
         dataset = h5_file['time_series']
         time = dataset['time_s']
@@ -174,8 +174,10 @@ class PolarimeterTest(models.Model):
                          hdf5_file_name)
             with open(tmp_file_name, 'rb') as temporary_file:
                 self.data_file = File(temporary_file, hdf5_file_name)
-                self.pwr_plot.save(base_file_name + '.png',
-                                   image_file, save=False)
+
+                if image_file:
+                    self.pwr_plot.save(base_file_name + '.png',
+                                       image_file, save=False)
 
                 super(PolarimeterTest, self).save(*args, **kwargs)
 

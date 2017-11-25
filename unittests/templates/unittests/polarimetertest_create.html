@@ -37,6 +37,7 @@ LSPE/Strip DB: Add new test
         var file_size_kb = Math.round(selected_file.size / 1024);
         $('#id_notes').text(`The source data file was «${selected_file.name}» (${file_size_kb} kB)`);
 
+        /* Update the «Acquisition date» field */
         date_match = selected_file.name.match(/SCI\d{6}/i);
         if (date_match) {
             var year = 2000 + parseInt(date_match[0].substring(3, 5));
@@ -44,6 +45,13 @@ LSPE/Strip DB: Add new test
             var day = parseInt(date_match[0].substring(7, 9));
 
             $('#id_acquisition_date').datepicker('setDate', `${year}-${month}-${day}`)
+        }
+
+        /* Update the «Polarimeter number» field */
+        polnum_match = selected_file.name.match(/STRIP\d{2}/i);
+        if (polnum_match) {
+            var polnum = parseInt(polnum_match[0].substring(5, 7));
+            $('#id_polarimeter_number').val(polnum);
         }
     }
 </script>

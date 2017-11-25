@@ -38,6 +38,9 @@ uploaded tests will be saved. Be sure to pick a directory outside the Git
 repository of the code, otherwise you might inadvertently fill your repository
 with lots of data!
 
+**Important:** you must manually create two subdirectories within `MEDIA_ROOT`:
+`unit_test_data` and `plots`.
+
 Once you have your fully tailored `.env` file, it's time to create the database.
 From the `stdb2` directory run the following commands:
 

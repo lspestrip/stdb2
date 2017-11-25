@@ -10,6 +10,8 @@ urlpatterns = [
         views.TestDetails.as_view(), name='test_details'),
     url(r'^tests/(?P<test_id>\d+)/json/$',
         views.TestDetailsJson.as_view(), name='test_details_json'),
+    url(r'^tests/(?P<test_id>\d+)/plot/$',
+        views.TestPwrPlot.as_view(), name='test_pwr_plot'),
     url(r'^tests/(?P<test_id>\d+)/download/$',
         views.TestDownload.as_view(), name='test_download'),
     url(r'^tests/create$', views.TestCreate.as_view(), name='test_create'),

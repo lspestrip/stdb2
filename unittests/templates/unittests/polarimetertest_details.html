@@ -16,6 +16,11 @@ LSPE/Strip DB: Details of test on STRIP{{test.polarimeter_number}}
     <div class="row">
         <div class="column">
             <h5>General information</h5>
+
+            {% if test.pwr_plot %}
+            <p><img id='pwrplot' src="{% url 'unittests:test_pwr_plot' test.id %}"/></p>
+            {% endif %}
+
             <table>
                 <tr><td><b>Acquisition date</b></td><td>
                     <time datetime="{{test.acquisition_date|date:"Y-m-d"}}">{{test.acquisition_date|date:"l, F j, Y"}}</time>

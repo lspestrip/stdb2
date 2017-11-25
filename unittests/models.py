@@ -18,6 +18,7 @@ housekeeping temperatures, and so on is available and ready to be put in the
 database.
 '''
 
+from io import BytesIO
 import logging
 import os
 from tempfile import NamedTemporaryFile
@@ -26,7 +27,14 @@ from django.conf import settings
 from django.db import models
 from django.core.urlresolvers import reverse
 from django.core.files import File
+from django.core.files.base import ContentFile
+import h5py
+import matplotlib as mpl
+
 from .file_conversions import convert_data_file_to_h5
+
+mpl.use('Agg')
+import matplotlib.pylab as plt
 
 # Get an instance of a logger
 LOGGER = logging.getLogger(__name__)
@@ -68,6 +76,35 @@ PHSW_STATES = (
 )
 
 
+def create_pwr_plot(hdf5_file_name, dpi=80):
+    'Plot PWR data from an HDF5 file into an image'
+
+    plt.figure(figsize=(512 / dpi, 384 / dpi), dpi=dpi)
+    with h5py.File(hdf5_file_name, 'r') as h5_file:
+        if not 'time_series' in h5_file:
+            # Do not attempt to make plots from a file containing Keithley data
+            return
+
+        dataset = h5_file['time_series']
+        time = dataset['time_s']
+
+        for idx, detector in enumerate(['Q1', 'U1', 'U2', 'Q2']):
+            column = 'pwr_{0}_ADU'.format(detector)
+            pwr_name = 'PWR{0}'.format(idx)
+            plt.plot(
+                time, dataset[column], label='{0} ({1})'.format(pwr_name, detector))
+
+    plt.xlabel('Time [s]')
+    plt.ylabel('Output [ADU]')
+    plt.legend()
+
+    # Save the image
+    buffer = BytesIO()
+    plt.savefig(buffer, format='png', bbox_inches='tight', dpi=dpi)
+
+    return ContentFile(buffer.getvalue())
+
+
 class PolarimeterTest(models.Model):
     'A dedicated test done on one polarimeter'
 
@@ -81,6 +118,9 @@ class PolarimeterTest(models.Model):
     phsw_state = models.CharField(
         max_length=12, default='N/A', choices=PHSW_STATES)
     band = models.CharField(max_length=1, choices=BAND_CHOICES)
+
+    pwr_plot = models.ImageField(
+        max_length=1024, upload_to='plots/', blank=True)
 
     test_type = models.ForeignKey(TestType, on_delete=models.CASCADE)
     operators = models.ManyToManyField(Operator, related_name='tests')
@@ -116,22 +156,26 @@ class PolarimeterTest(models.Model):
             # Remove weird characters from the description of the test type
             test_type = ''.join(filter(str.isalpha,
                                        self.test_type.description))
-            hdf5_file_name = ('{polname}_{date}_{testtype}.h5'
+            base_file_name = ('{polname}_{date}_{testtype}'
                               .format(polname=self.polarimeter_name,
                                       date=self.acquisition_date.strftime(
                                           '%Y-%m-%d'),
                                       testtype=test_type))
+            hdf5_file_name = base_file_name + '.h5'
             LOGGER.debug('going to create a temporary HDF5 file in "%s"',
                          hdf5_file_name)
             with NamedTemporaryFile(suffix='.h5', delete=False) as temporary_file:
                 tmp_file_name = temporary_file.name
                 convert_data_file_to_h5(
                     self.data_file.name, self.data_file, temporary_file.name)
+                image_file = create_pwr_plot(temporary_file.name)
 
             LOGGER.debug('importing HDF5 file "%s" into the database',
                          hdf5_file_name)
             with open(tmp_file_name, 'rb') as temporary_file:
                 self.data_file = File(temporary_file, hdf5_file_name)
+                self.pwr_plot.save(base_file_name + '.png',
+                                   image_file, save=False)
 
                 super(PolarimeterTest, self).save(*args, **kwargs)
 

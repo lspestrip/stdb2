@@ -2,5 +2,7 @@ django
 simplejson
 python-decouple
 h5py
+matplotlib
 numpy
+Pillow
 xlrd

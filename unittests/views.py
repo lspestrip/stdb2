@@ -213,6 +213,20 @@ class TestDownload(View):
         return resp
 
 
+class TestPwrPlot(View):
+    def get(self, request, test_id):
+        'Send a plot of the data'
+
+        cur_test = get_object_or_404(PolarimeterTest, pk=test_id)
+        image_file = cur_test.pwr_plot
+        image_file.open()
+        data = image_file.read()
+        resp = HttpResponse(data, content_type='image/png')
+        resp['Content-Disposition'] = 'attachment; filename="{0}"'.format(
+            os.path.basename(image_file.name))
+        return resp
+
+
 class AddMixin(View):
     form_class = None
     template_name = ''

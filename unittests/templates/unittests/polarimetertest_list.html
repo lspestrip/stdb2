@@ -74,7 +74,7 @@ LSPE/Strip DB: List of tests
             for (cellidx = 0; cellidx < cell.length; cellidx++) {
                 /* We might have more than one word to search, so we must loop over them */
                 for (filtidx = 0; filtidx < filters.length; filtidx++) {
-                    /* Note that this way of filtering joins filter words using AND */
+                    /* Note that this way of filtering joins filter words using OR */
                     if (cell[cellidx].innerHTML.toUpperCase().indexOf(filters[filtidx]) > -1) {
                         found = true;
                         break cellloop;

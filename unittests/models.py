@@ -25,6 +25,7 @@ from tempfile import NamedTemporaryFile
 
 from django.conf import settings
 from django.db import models
+from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.core.files import File
 from django.core.files.base import ContentFile
@@ -103,6 +104,26 @@ def create_pwr_plot(hdf5_file_name, dpi=80):
     plt.savefig(buffer, format='png', bbox_inches='tight', dpi=dpi)
 
     return ContentFile(buffer.getvalue())
+
+
+def update_hdf5_test_file_attrs(file_name, poltest):
+    'Update HDF5 file attributes with information from a PolarimeterTest obj'
+
+    if settings.HTTP_HOST and settings.HTTP_HOST != '':
+        abs_url = ''.join([settings.HTTP_HOST,
+                           poltest.get_absolute_url()])
+    else:
+        abs_url = poltest.get_absolute_url()
+
+    with h5py.File(file_name, 'r+') as h5_file:
+        for key, value in [('url', abs_url),
+                           ('polarimeter', poltest.polarimeter_name),
+                           ('cryogenic', poltest.cryogenic),
+                           ('acquisition_date',
+                            poltest.acquisition_date.strftime('%Y-%m-%d')),
+                           ('band', poltest.band),
+                           ('test_type', str(poltest.test_type))]:
+            h5_file.attrs[key] = value
 
 
 class PolarimeterTest(models.Model):
@@ -185,6 +206,11 @@ class PolarimeterTest(models.Model):
             LOGGER.debug(
                 'HDF5 file "%s" imported in the database and removed, new file is "%s"',
                 hdf5_file_name, self.data_file.name)
+
+            update_hdf5_test_file_attrs(os.path.join(
+                settings.MEDIA_ROOT, self.data_file.name), self)
+            LOGGER.debug('metadata for file "%s" have been updated',
+                         self.data_file.name)
         else:
             super(PolarimeterTest, self).save(*args, **kwargs)
 

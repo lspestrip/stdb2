@@ -50,11 +50,11 @@ urlpatterns = [
     url(r'^tests/(?P<test_id>\d+)/tnoise/(?P<obj_id>\d+)/delete$',
         views.TnoiseDeleteView.as_view(), name='tnoise_delete'),
 
-    url(r'^bandwidth/$', views.BandpassAnalysisListView.as_view(),
+    url(r'^bandpass/$', views.BandpassAnalysisListView.as_view(),
         name='bandpass_list'),
-    url(r'^bandwidth/add/(?P<test_id>\d+)$',
+    url(r'^bandpass/add/(?P<test_id>\d+)$',
         views.BandpassAnalysisAddView.as_view(), name='bandpass_create'),
-    url(r'^tests/(?P<test_id>\d+)/bandwidth/(?P<obj_id>\d+)/delete$',
+    url(r'^tests/(?P<test_id>\d+)/bandpass/(?P<obj_id>\d+)/delete$',
         views.BandpassAnalysisDeleteView.as_view(), name='bandpass_delete'),
 
     url(r'^spectrum/$', views.SpectralAnalysisListView.as_view(), name='spectrum_list'),

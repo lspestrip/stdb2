@@ -54,7 +54,10 @@
         {% block action_bar %}
         <div id="action-bar">
           <ul>
-            <li><a href="{% url 'unittests:test_list' %}">List of tests</a></li>
+            <li><a href="{% url 'unittests:test_list' %}">Polarimetric tests</a></li>
+            <li><a href="{% url 'unittests:bandpass_list' %}">Bandpass reports</a></li>
+            <li><a href="{% url 'unittests:tnoise_list' %}">Noise temperature reports</a></li>
+            <li><a href="{% url 'unittests:spectrum_list' %}">Spectral analysis reports</a></li>
             {% block action_bar_buttons %}
             {% endblock %}
           </ul>

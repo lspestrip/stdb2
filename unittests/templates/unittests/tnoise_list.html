@@ -5,15 +5,15 @@ LSPE/Strip DB: List of tests
 {% endblock %}
 
 {% block content %}
-<h1>Noise temperature estimates</h1>
+<h2>Noise temperature estimates</h2>
 
 <p>Number of reports in the database: {{ tnoise_tests | length }}</p>
 <table>
     <thead>
         <th>Polarimeter</th>
-        <th>Average gain</th>
-        <th>Cross-gain</th>
-        <th>Noise temperature</th>
+        <th>Average gain [K/ADU]</th>
+        <th>Cross-gain [K/ADU]</th>
+        <th>Noise temperature [K]</th>
         <th>Analysis date</th>
     </thead>
     <tbody>
@@ -23,8 +23,7 @@ LSPE/Strip DB: List of tests
             <td>{{ cur.average_gain }}±{{ cur.average_gain_err }}</a></td>
             <td>{{ cur.cross_gain }}±{{ cur.cross_gain_err }}</td>
             <td>{{ cur.noise_temperature }}±{{ cur.noise_temperature_err }}</td>
-            <td>{{ cur.analysis_date }}</td>
-            <td>🗙</td>
+            <td><time datetime="{{cur.analysis_date|date:"Y-m-d"}}">{{cur.analysis_date|date:"l, F j, Y"}}</time></td>
         </tr>
         {% endfor %}
     </tbody>

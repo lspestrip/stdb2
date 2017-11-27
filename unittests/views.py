@@ -260,6 +260,14 @@ class AddMixin(View):
 
 
 class AddMixinWithRequest(AddMixin):
+    def get_form(self, form_class=None):
+        form = super(TestCreate, self).get_form(form_class)
+        form.fields['analysis_date'].widget.attrs.update(
+            {'class': 'datepicker'})
+        form.fields['analysis_date'].widget.format = '%Y-%m-%d'
+        form.fields['analysis_date'].input_formats = ['%Y-%m-%d']
+        return form
+
     def save_form_without_commit(self, form, request):
         return form.save(request, commit=False)
 
@@ -440,7 +448,7 @@ class TemperatureDeleteView(DeleteMixin):
 
 
 class TnoiseListView(View):
-    template_name = 'unittests/tnoise_list.html'
+    template = 'unittests/tnoise_list.html'
 
     def get(self, request):
         'Show a list of the results of Tnoise tests'
@@ -516,7 +524,7 @@ class SpectralAnalysisListView(View):
         'Show a list of the results of a spectral analysis'
 
         context = {
-            'spectral_analysis_tests': NoiseTemperatureAnalysis.objects.all(),
+            'spectral_analysis_tests': SpectralAnalysis.objects.all(),
         }
         return render(request, self.template, context)
 
@@ -541,7 +549,7 @@ class BandpassAnalysisListView(View):
         'Show a list of the results of a bandpass analysis'
 
         context = {
-            'bandpass_analysis_tests': NoiseTemperatureAnalysis.objects.all(),
+            'bandpass_analysis_tests': BandpassAnalysis.objects.all(),
         }
         return render(request, self.template, context)
 

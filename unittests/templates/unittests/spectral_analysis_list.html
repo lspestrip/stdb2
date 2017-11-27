@@ -5,15 +5,17 @@ LSPE/Strip DB: List of spectral analysis results
 {% endblock %}
 
 {% block content %}
-<h1>Spectral analysis results</h1>
+<h2>Spectral analysis results</h2>
 
 <p>Number of reports in the database: {{ spectral_analysis_tests | length }}</p>
+
+{% if spectral_analysis_tests %}
 <table>
     <thead>
         <th>Polarimeter</th>
-        <th>Alpha</th>
-        <th>fknee [Hz]</th>
-        <th>White noise [ADU^2/Hz]</th>
+        <th>&alpha;</th>
+        <th>f<sub>knee</sub> [Hz]</th>
+        <th>White noise [ADU<sup>2</sup>/Hz]</th>
         <th>Analysis date</th>
     </thead>
     <tbody>
@@ -23,10 +25,11 @@ LSPE/Strip DB: List of spectral analysis results
             <td>{{ cur.oof_alpha }}±{{ cur.oof_alpha_err }}</a></td>
             <td>{{ cur.oof_knee_frequency_hz }}±{{ cur.oof_knee_frequency_err }}</td>
             <td>{{ cur.wn_level_adu2_rhz }}±{{ cur.wn_level_err }}</td>
-            <td>{{ cur.analysis_date }}</td>
-            <td>🗙</td>
+            <td><time datetime="{{cur.analysis_date|date:"Y-m-d"}}">{{cur.analysis_date|date:"l, F j, Y"}}</time></td>
         </tr>
         {% endfor %}
     </tbody>
 </table>
+{% endif %}
+
 {% endblock %}

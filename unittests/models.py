@@ -33,6 +33,7 @@ import h5py
 import matplotlib as mpl
 
 from .file_conversions import convert_data_file_to_h5
+from .validators import validate_report_file_ext
 
 mpl.use('Agg')
 import matplotlib.pylab as plt
@@ -397,11 +398,11 @@ class NoiseTemperatureAnalysis(models.Model):
 
     test = models.ForeignKey(to=PolarimeterTest, on_delete=models.CASCADE)
 
-    polarimeter_gain = models.FloatField()
-    polarimeter_gain_err = models.FloatField()
+    average_gain = models.FloatField()
+    average_gain_err = models.FloatField()
 
-    gain_product = models.FloatField()
-    gain_product_err = models.FloatField()
+    cross_gain = models.FloatField()
+    cross_gain_err = models.FloatField()
 
     noise_temperature = models.FloatField()
     noise_temperature_err = models.FloatField()
@@ -413,6 +414,9 @@ class NoiseTemperatureAnalysis(models.Model):
     code_commit = models.CharField(max_length=40,
                                    verbose_name='last commit hash of the analysis code')
     analysis_date = models.DateTimeField('date when the analysis was done')
+    report_file = models.FileField(
+        verbose_name='Report', upload_to='reports/',
+        validators=[validate_report_file_ext], blank=True)
 
     author = models.ForeignKey(
         settings.AUTH_USER_MODEL, related_name='tnoise_owned')
@@ -428,10 +432,10 @@ class NoiseTemperatureAnalysis(models.Model):
 
 def dict_to_tnoise_analysis(data):
     return NoiseTemperatureAnalysis(
-        polarimeter_gain=data['average_gain']['mean'],
-        polarimeter_gain_err=data['average_gain']['std'],
-        gain_product=data['gain_prod']['mean'],
-        gain_product_err=data['gain_prod']['std'],
+        average_gain=data['average_gain']['mean'],
+        average_gain_err=data['average_gain']['std'],
+        cross_gain=data['gain_prod']['mean'],
+        cross_gain_err=data['gain_prod']['std'],
         noise_temperature=data['tnoise']['mean'],
         noise_temperature_err=data['tnoise']['std'],
         estimation_method=data['estimation_method'],
@@ -458,11 +462,16 @@ class SpectralAnalysis(models.Model):
     sampling_frequency_hz = models.FloatField(
         verbose_name='sampling frequency [Hz]', default=25.0)
 
+    estimation_method = models.CharField(max_length=24, blank=True)
+
     code_version = models.CharField(max_length=12,
                                     verbose_name='version number of the analysis code')
     code_commit = models.CharField(max_length=40,
                                    verbose_name='last commit hash of the analysis code')
     analysis_date = models.DateTimeField('date when the analysis was done')
+    report_file = models.FileField(
+        verbose_name='Report', upload_to='reports/',
+        validators=[validate_report_file_ext], blank=True)
 
     author = models.ForeignKey(
         settings.AUTH_USER_MODEL, related_name='spectral_owned')
@@ -486,11 +495,16 @@ class BandpassAnalysis(models.Model):
     bandwidth_ghz = models.FloatField(verbose_name='bandwidth [GHz]')
     bandwidth_err = models.FloatField(verbose_name='error on bandwidth')
 
+    estimation_method = models.CharField(max_length=24, blank=True)
+
     code_version = models.CharField(max_length=12,
                                     verbose_name='version number of the analysis code')
     code_commit = models.CharField(max_length=40,
                                    verbose_name='last commit hash of the analysis code')
     analysis_date = models.DateTimeField('date when the analysis was done')
+    report_file = models.FileField(
+        verbose_name='Report', upload_to='reports/',
+        validators=[validate_report_file_ext], blank=True)
 
     author = models.ForeignKey(
         settings.AUTH_USER_MODEL, related_name='bandpass_owned')

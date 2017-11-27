@@ -225,9 +225,27 @@ LSPE/Strip DB: Details of test on STRIP{{test.polarimeter_number}}
 
     {% if tnoise_analyses %}
     <table class="data-table" id="tnoise-table">
-        {% for analysis in tnoise_analyses %}
-        <tr><td>{{analysis}}</td></tr>
-        {% endfor %}
+        <thead>
+            <th>Method</th>
+            <th>Noise temperature</th>
+            <th>Average gain</th>
+            <th>Cross gain</th>
+        </thead>
+        <tbody>
+            {% for analysis in tnoise_analyses %}
+            <tr>
+                <td>{{analysis.estimation_method}}</td>
+                <td>({{analysis.noise_temperature}}&plusmn;{{analysis.noise_temperature_err}}) K</td>
+                <td>({{analysis.average_gain}}&plusmn;{{analysis.average_gain_err}}) K/ADU</td>
+                <td>({{analysis.cross_gain}}&plusmn;{{analysis.cross_gain_err}}) K/ADU</td>
+                <td>
+                    <a href="{% url 'unittests:tnoise_delete' test.id analysis.id %}">
+                        <img src="{% static 'site/delete.svg' %}" width="32" height="32"/>
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
     </table>
     {% endif %}
 
@@ -240,9 +258,26 @@ LSPE/Strip DB: Details of test on STRIP{{test.polarimeter_number}}
 
     {% if bandpass_analyses %}
     <table class="data-table" id="bandpass-table">
-        {% for analysis in bandpass_analyses %}
-        <tr><td>{{analysis}}</td></tr>
-        {% endfor %}
+        <thead>
+            <th>Method</th>
+            <th>Central frequency</th>
+            <th>Bandwidth</th>
+            <th>Actions</th>
+        </thead>
+        <tbody>
+            {% for analysis in bandpass_analyses %}
+            <tr>
+                <td>{{analysis.estimation_method}}</td>
+                <td>({{analysis.central_frequency_ghz}}&plusmn;{{analysis.central_frequency_err}}) GHz</td>
+                <td>({{analysis.bandwidth_ghz}}&plusmn;{{analysis.bandwidth_err}}) GHz</td>
+                <td>
+                    <a href="{% url 'unittests:bandpass_delete' test.id analysis.id %}">
+                        <img src="{% static 'site/delete.svg' %}" width="32" height="32"/>
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
     </table>
     {% endif %}
 
@@ -252,17 +287,36 @@ LSPE/Strip DB: Details of test on STRIP{{test.polarimeter_number}}
 
     <h5>Spectrum</h5>
     
-        {% if spectrum_analyses %}
-        <table class="data-table" id="spectrum-table">
+    <table class="data-table" id="spectrum-table">
+        <thead>
+            <th>Method</th>
+            <th>&alpha;</th>
+            <th>f<sub>knee</sub></th>
+            <th>White noise</th>
+            <th>f<sub>samp</sub></th>
+            <th>Actions</th>
+        </thead>
+        <tbody>
             {% for analysis in spectrum_analyses %}
-            <tr><td>{{analysis}}</td></tr>
+            <tr>
+                <td>{{analysis.estimation_method}}</td>
+                <td>({{analysis.oof_alpha}}&plusmn;{{analysis.oof_alpha_err}})</td>
+                <td>({{analysis.oof_knee_frequency}}&plusmn;{{analysis.oof_knee_frequency_err}}) Hz</td>
+                <td>({{analysis.wn_level}}&plusmn;{{analysis.wn_level_err}}) ADU<sup>2</sup>/&radic;Hz</td>
+                <td>({{analysis.sampling_frequency_hz}} Hz</td>
+                <td>
+                    <a href="{% url 'unittests:spectrum_delete' test.id analysis.id %}">
+                        <img src="{% static 'site/delete.svg' %}" width="32" height="32"/>
+                    </a>
+                </td>
+            </tr>
             {% endfor %}
-        </table>
-        {% endif %}
+        </tbody>
+    </table>
     
-        <ul class="data-table-actions">
-            <li><a href="{% url 'unittests:spectrum_create' test.id %}">Add new</a></li>
-        </ul>    
-    </div>
+    <ul class="data-table-actions">
+        <li><a href="{% url 'unittests:spectrum_create' test.id %}">Add new</a></li>
+    </ul>    
+</div>
 
 {% endblock %}

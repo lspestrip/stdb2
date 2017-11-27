@@ -14,7 +14,20 @@ from .models import (
 )
 
 
-class TestForm(forms.ModelForm):
+class AddAuthoredObjMixin(forms.ModelForm):
+    def save(self, request, commit=True):
+        obj = super().save(commit=False)
+        if not obj.pk:
+            obj.author = get_user(request)
+
+        if commit:
+            obj.save()
+            self.save_m2m()
+
+        return obj
+
+
+class TestForm(AddAuthoredObjMixin):
     class Meta:
         model = PolarimeterTest
         fields = [
@@ -31,17 +44,6 @@ class TestForm(forms.ModelForm):
         labels = {
             'data_file': 'Data file (either .txt, .zip, .h5 or .hdf5)',
         }
-
-    def save(self, request, commit=True):
-        obj = super().save(commit=False)
-        if not obj.pk:
-            obj.author = get_user(request)
-
-        if commit:
-            obj.save()
-            self.save_m2m()
-
-        return obj
 
 
 class AdcOffsetCreate(forms.ModelForm):
@@ -82,21 +84,21 @@ class CreateFromJSON(forms.Form):
         label='JSON record', widget=forms.Textarea, max_length=4096)
 
 
-class BandpassAnalysisCreate(forms.ModelForm):
+class BandpassAnalysisCreate(AddAuthoredObjMixin):
     class Meta:
         model = BandpassAnalysis
         # These fields will be filled automatically
         exclude = ('test', 'author')
 
 
-class SpectralAnalysisCreate(forms.ModelForm):
+class SpectralAnalysisCreate(AddAuthoredObjMixin):
     class Meta:
         model = SpectralAnalysis
         # These fields will be filled automatically
         exclude = ('test', 'author')
 
 
-class NoiseTemperatureAnalysisCreate(forms.ModelForm):
+class NoiseTemperatureAnalysisCreate(AddAuthoredObjMixin):
     class Meta:
         model = NoiseTemperatureAnalysis
         # These fields will be filled automatically

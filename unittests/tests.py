@@ -257,10 +257,10 @@ def populate_database():
 
     tnoise = NoiseTemperatureAnalysis(
         test=test,
-        polarimeter_gain=1.0,
-        polarimeter_gain_err=2.0,
-        gain_product=1000.0,
-        gain_product_err=1000.0,
+        average_gain=1.0,
+        average_gain_err=2.0,
+        cross_gain=1000.0,
+        cross_gain_err=1000.0,
         noise_temperature=30.0,
         noise_temperature_err=10.0,
         estimation_method='nonlinear',

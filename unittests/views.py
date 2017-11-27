@@ -162,11 +162,11 @@ class TestDetailsJson(View):
         tnoise_analyses = []
         for analysis in NoiseTemperatureAnalysis.objects.filter(test=cur_test):
             tnoise_analyses.append({
-                'polarimeter_gain': analysis.polarimeter_gain,
-                'polarimeter_gain_err': analysis.polarimeter_gain_err,
+                'average_gain': analysis.average_gain,
+                'average_gain_err': analysis.average_gain_err,
 
-                'gain_product': analysis.gain_product,
-                'gain_product_err': analysis.gain_product_err,
+                'cross_gain': analysis.cross_gain,
+                'cross_gain_err': analysis.cross_gain_err,
 
                 'noise_temperature': analysis.noise_temperature,
                 'noise_temperature_err': analysis.noise_temperature_err,
@@ -231,13 +231,16 @@ class AddMixin(View):
     form_class = None
     template_name = ''
 
+    def save_form_without_commit(self, form, request):
+        return form.save(commit=False)
+
     def post(self, request, test_id):
         cur_test = get_object_or_404(PolarimeterTest, pk=test_id)
         form = self.form_class(request.POST)
         if form.is_valid():
-            new_offsets = form.save(commit=False)
-            new_offsets.test = cur_test
-            new_offsets.save()
+            new_obj = self.save_form_without_commit(form, request)
+            new_obj.test = cur_test
+            new_obj.save()
 
             return redirect(cur_test)
 
@@ -254,6 +257,11 @@ class AddMixin(View):
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
         return super(AddMixin, self).dispatch(request, *args, **kwargs)
+
+
+class AddMixinWithRequest(AddMixin):
+    def save_form_without_commit(self, form, request):
+        return form.save(request, commit=False)
 
 
 class DeleteMixin(View):
@@ -443,7 +451,7 @@ class TnoiseListView(View):
         return render(request, self.template, context)
 
 
-class TnoiseAddView(AddMixin):
+class TnoiseAddView(AddMixinWithRequest):
     form_class = NoiseTemperatureAnalysisCreate
     template_name = 'unittests/tnoise_create.html'
 
@@ -513,7 +521,7 @@ class SpectralAnalysisListView(View):
         return render(request, self.template, context)
 
 
-class SpectralAnalysisAddView(AddMixin):
+class SpectralAnalysisAddView(AddMixinWithRequest):
     form_class = SpectralAnalysisCreate
     template_name = 'unittests/spectral_analysis_create.html'
 
@@ -538,7 +546,7 @@ class BandpassAnalysisListView(View):
         return render(request, self.template, context)
 
 
-class BandpassAnalysisAddView(AddMixin):
+class BandpassAnalysisAddView(AddMixinWithRequest):
     form_class = BandpassAnalysisCreate
     template_name = 'unittests/bandpass_analysis_create.html'
 

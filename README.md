@@ -38,8 +38,13 @@ uploaded tests will be saved. Be sure to pick a directory outside the Git
 repository of the code, otherwise you might inadvertently fill your repository
 with lots of data!
 
-**Important:** you must manually create two subdirectories within `MEDIA_ROOT`:
-`unit_test_data` and `plots`.
+**Important:** you must manually create the following subdirectories within `MEDIA_ROOT`:
+
+1. `unit_test_data` (HDF5 files will be saved here);
+
+1. `plots` (PNG plots of time streams will be saved here);
+
+1. `reports` (any report attached to the results of an analysis will be saved here).
 
 Once you have your fully tailored `.env` file, it's time to create the database.
 From the `stdb2` directory run the following commands:

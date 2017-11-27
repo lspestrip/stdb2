@@ -47,19 +47,19 @@ urlpatterns = [
         views.TnoiseAddView.as_view(), name='tnoise_create'),
     url(r'^tnoise/add/(?P<test_id>\d+)/json$',
         views.TnoiseAddFromJsonView.as_view(), name='tnoise_create_json'),
-    url(r'^tnoise/(?P<test_id>\d+)/delete$',
+    url(r'^tests/(?P<test_id>\d+)/tnoise/(?P<obj_id>\d+)/delete$',
         views.TnoiseDeleteView.as_view(), name='tnoise_delete'),
 
     url(r'^bandwidth/$', views.BandpassAnalysisListView.as_view(),
         name='bandpass_list'),
     url(r'^bandwidth/add/(?P<test_id>\d+)$',
         views.BandpassAnalysisAddView.as_view(), name='bandpass_create'),
-    url(r'^bandwidth/(?P<test_id>\d+)/delete$',
+    url(r'^tests/(?P<test_id>\d+)/bandwidth/(?P<obj_id>\d+)/delete$',
         views.BandpassAnalysisDeleteView.as_view(), name='bandpass_delete'),
 
     url(r'^spectrum/$', views.SpectralAnalysisListView.as_view(), name='spectrum_list'),
     url(r'^spectrum/add/(?P<test_id>\d+)$',
         views.SpectralAnalysisAddView.as_view(), name='spectrum_create'),
-    url(r'^spectrum/(?P<test_id>\d+)/delete$',
+    url(r'^tests/(?P<test_id>\d+)/spectrum/(?P<obj_id>\d+)/delete$',
         views.SpectralAnalysisDeleteView.as_view(), name='spectrum_delete'),
 ]

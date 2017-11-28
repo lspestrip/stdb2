@@ -225,10 +225,10 @@ class AdcOffset(models.Model):
     'Offset configuration used for the four ADCs'
 
     test = models.ForeignKey(to=PolarimeterTest, on_delete=models.CASCADE)
-    q1_adu = models.IntegerField()
-    u1_adu = models.IntegerField()
-    u2_adu = models.IntegerField()
-    q2_adu = models.IntegerField()
+    q1_adu = models.IntegerField(verbose='PWR0 (Q1) offset [ADU]')
+    u1_adu = models.IntegerField(verbose='PWR1 (U1) offset [ADU]')
+    u2_adu = models.IntegerField(verbose='PWR2 (U2) offset [ADU]')
+    q2_adu = models.IntegerField(verbose='PWR3 (Q2) offset [ADU]')
 
     def __str__(self):
         return 'PWR0={0} ADU, PWR1={1} ADU, PWR2={2} ADU, PWR3={3} ADU'.format(
@@ -260,10 +260,10 @@ class DetectorOutput(models.Model):
     'Average output of the four detectors'
 
     test = models.ForeignKey(to=PolarimeterTest, on_delete=models.CASCADE)
-    q1_adu = models.IntegerField()
-    u1_adu = models.IntegerField()
-    u2_adu = models.IntegerField()
-    q2_adu = models.IntegerField()
+    q1_adu = models.IntegerField(verbose='PW0 (Q1)')
+    u1_adu = models.IntegerField(verbose='PW1 (U1)')
+    u2_adu = models.IntegerField(verbose='PW2 (U2)')
+    q2_adu = models.IntegerField(verbose='PW3 (Q2)')
 
     def __str__(self):
         return 'PWR0={0} ADU, PWR1={1} ADU, PWR2={2} ADU, PWR3={3} ADU'.format(
@@ -371,17 +371,17 @@ class Temperatures(models.Model):
 
     test = models.ForeignKey(to=PolarimeterTest, on_delete=models.CASCADE)
 
-    t_load_a_1 = models.FloatField(verbose_name='Tload_A1 [K]')
-    t_load_a_2 = models.FloatField(verbose_name='Tload_A2 [K]')
+    t_load_a_1 = models.FloatField(verbose_name='Tload<sub>A1</sub> [K]')
+    t_load_a_2 = models.FloatField(verbose_name='Tload<sub>A2</sub> [K]')
 
-    t_load_b_1 = models.FloatField(verbose_name='Tload_B1 [K]')
-    t_load_b_2 = models.FloatField(verbose_name='Tload_B2 [K]')
+    t_load_b_1 = models.FloatField(verbose_name='Tload<sub>B1</sub> [K]')
+    t_load_b_2 = models.FloatField(verbose_name='Tload<sub>B2</sub> [K]')
 
-    t_cross_guide_1 = models.FloatField(verbose_name='Tcross1 [K]')
-    t_cross_guide_2 = models.FloatField(verbose_name='Tcross2 [K]')
+    t_cross_guide_1 = models.FloatField(verbose_name='T<sub>Cross1</sub> [K]')
+    t_cross_guide_2 = models.FloatField(verbose_name='T<sub>Cross2</sub> [K]')
 
-    t_polarimeter_1 = models.FloatField(verbose_name='Tpolarimeter1 [K]')
-    t_polarimeter_2 = models.FloatField(verbose_name='Tpolarimeter2 [K]')
+    t_polarimeter_1 = models.FloatField(verbose_name='T<sub>Pol1</sub> [K]')
+    t_polarimeter_2 = models.FloatField(verbose_name='T<sub>Pol2</sub> [K]')
 
     def __str__(self):
         return (

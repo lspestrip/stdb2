@@ -213,6 +213,7 @@ LSPE/Strip DB: Details of test on STRIP{{test.polarimeter_number}}
 
             <ul class="data-table-actions">
                 <a href="{% url 'unittests:temperature_create' test.id %}">Add new</a>
+                <li><a href="{% url 'unittests:temperature_create_json' test.id %}">Import a JSON file</a></li>
             </ul>
         </div>
     </div>

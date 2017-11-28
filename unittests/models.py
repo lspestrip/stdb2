@@ -393,6 +393,24 @@ class Temperatures(models.Model):
         verbose_name = 'temperatures of the cryochamber'
 
 
+def dict_to_temperature_set_list(data):
+    temperatures = data['temperatures']
+    if isinstance(temperatures, dict):
+        # We have just one set of outputs, so let's build a list with one element
+        temperatures = [temperatures]
+
+    return [Temperatures(
+        t_load_a_1=x['t_load_a_1_K'],
+        t_load_a_2=x['t_load_a_2_K'],
+        t_load_b_1=x['t_load_b_1_K'],
+        t_load_b_2=x['t_load_b_2_K'],
+        t_polarimeter_1=x['t_polarimeter_1_K'],
+        t_polarimeter_2=x['t_polarimeter_2_K'],
+        t_cross_guide_1=x['t_cross_guide_1_K'],
+        t_cross_guide_2=x['t_cross_guide_2_K'],
+    ) for x in temperatures]
+
+
 class NoiseTemperatureAnalysis(models.Model):
     'Result of a noise temperature analysis'
 

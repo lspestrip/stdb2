@@ -32,6 +32,8 @@ urlpatterns = [
         views.BiasesJsonView.as_view(), name='biases_create_json'),
     url(r'^tests/(?P<test_id>\d+)/newtemperature$',
         views.TemperatureAddView.as_view(), name='temperature_create'),
+    url(r'^tests/(?P<test_id>\d+)/temperature/json$',
+        views.TemperatureJsonView.as_view(), name='temperature_create_json'),
 
     url(r'^tests/(?P<test_id>\d+)/AdcOffset/(?P<obj_id>\d+)/delete$',
         views.AdcOffsetDeleteView.as_view(), name='adc_delete'),

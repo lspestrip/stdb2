@@ -27,6 +27,7 @@ from .models import (
     dict_to_adc_offset_list,
     dict_to_detector_output_list,
     dict_to_biases,
+    dict_to_temperature_set_list,
     dict_to_tnoise_analysis,
     NoiseTemperatureAnalysis,
     BandpassAnalysis,
@@ -445,6 +446,47 @@ class TemperatureAddView(AddMixin):
 
 class TemperatureDeleteView(DeleteMixin):
     model = Temperatures
+
+
+class TemperatureJsonView(View):
+    def post(self, request, test_id):
+        'Import the set of temperatures for a test from a JSON record'
+
+        cur_test = get_object_or_404(PolarimeterTest, pk=test_id)
+        form = CreateFromJSON(request.POST)
+        if form.is_valid():
+            data = json.loads(form.cleaned_data['json_text'])
+            temperature_set_list = dict_to_temperature_set_list(data)
+            for temperature_set in temperature_set_list:
+                temperature_set.test = cur_test
+                temperature_set.save()
+
+            return redirect(cur_test)
+
+    def get(self, request, test_id):
+        cur_test = get_object_or_404(PolarimeterTest, pk=test_id)
+        form = CreateFromJSON(initial={
+            'json_text': json.dumps(
+                {
+                    "temperatures": [{
+                        "t_load_a_1_K": 1.0,
+                        "t_load_a_2_K": 2.0,
+                        "t_load_b_1_K": 3.0,
+                        "t_load_b_2_K": 4.0,
+                        "t_polarimeter_1_K": 5.0,
+                        "t_polarimeter_2_K": 6.0,
+                        "t_cross_guide_1_K": 7.0,
+                        "t_cross_guide_2_K": 8.0,
+                    }]
+                }, indent=4)
+        })
+
+        return render(request, 'unittests/test_hk_entry_create.html', {
+            'page_title': 'Import detector outputs',
+            'test_id': test_id,
+            'polarimeter_number': cur_test.polarimeter_number,
+            'form': form,
+        })
 
 
 class TnoiseListView(View):

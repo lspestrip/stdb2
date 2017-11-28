@@ -4,5 +4,6 @@ python-decouple
 h5py
 matplotlib
 numpy
+pandas
 Pillow
 xlrd

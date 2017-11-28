@@ -10,6 +10,7 @@ from zipfile import ZipFile
 
 import h5py
 import numpy as np
+import pandas
 import xlrd
 
 SAMPLING_FREQUENCY = 25.0
@@ -26,11 +27,18 @@ def convert_text_file_to_h5(input_file, output_file):
     object).
     '''
 
+    column_names = ('pctime', 'phb', 'record',
+                    'dem_Q1_ADU', 'dem_U1_ADU', 'dem_U2_ADU', 'dem_Q2_ADU',
+                    'pwr_Q1_ADU', 'pwr_U1_ADU', 'pwr_U2_ADU', 'pwr_Q2_ADU',
+                    'rfpower_dB', 'freq_Hz')
+
     LOGGER.debug('going to load the text file')
-    rawdata = np.loadtxt(input_file, skiprows=1)
-    if rawdata.shape[1] != 13:
-        raise ValueError('the input file has {0} columns instead of 13'
-                         .format(data.shape[1]))
+    rawdata = pandas.read_csv(input_file, delim_whitespace=True,
+                              skiprows=1, names=column_names)
+    if len(rawdata.columns) != len(column_names):
+        raise ValueError('the input file has {0} columns instead of {1}'
+                         .format(len(rawdata.columns),
+                                 len(column_names)))
     LOGGER.debug('file read successfully')
 
     data_type = np.dtype([
@@ -57,20 +65,10 @@ def convert_text_file_to_h5(input_file, output_file):
             dtype=data_type, compression='gzip', shuffle=True)
 
         LOGGER.debug('file created, writing columns')
-        data['time_s'] = np.arange(rawdata.shape[0]) / SAMPLING_FREQUENCY
-        data['pctime'] = rawdata[:, 0]
-        data['phb'] = rawdata[:, 1]
-        data['record'] = rawdata[:, 2]
-        data['dem_Q1_ADU'] = rawdata[:, 3]
-        data['dem_U1_ADU'] = rawdata[:, 4]
-        data['dem_U2_ADU'] = rawdata[:, 5]
-        data['dem_Q2_ADU'] = rawdata[:, 6]
-        data['pwr_Q1_ADU'] = rawdata[:, 7]
-        data['pwr_U1_ADU'] = rawdata[:, 8]
-        data['pwr_U2_ADU'] = rawdata[:, 9]
-        data['pwr_Q2_ADU'] = rawdata[:, 10]
-        data['rfpower_dB'] = rawdata[:, 11]
-        data['freq_Hz'] = rawdata[:, 12]
+        data['time_s'] = np.arange(len(rawdata['pctime'])) / SAMPLING_FREQUENCY
+
+        for key in column_names:
+            data[key] = np.array(rawdata[key])
 
         LOGGER.debug('columns have been written in HDF5 file')
 

@@ -34,7 +34,7 @@ ALLOWED_HOSTS = config('ALLOWED_HOSTS', default=[])
 
 HTTP_HOST = config('HTTP_HOST', default='localhost')
 
-LOGIN_REDIRECT_URL = reverse_lazy('test-list')
+LOGIN_REDIRECT_URL = reverse_lazy('test_list')
 LOGIN_URL = reverse_lazy('user-auth:login')
 LOGOUT_URL = reverse_lazy('user-auth:logout')
 

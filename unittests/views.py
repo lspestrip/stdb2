@@ -149,26 +149,26 @@ class TestDetailsJson(View):
         temperatures = []
         for temp in Temperatures.objects.filter(test=cur_test):
             temperatures.append({
-                't_load_a_1': temp.t_load_a_1,
-                't_load_a_2': temp.t_load_a_2,
-                't_load_b_1': temp.t_load_b_1,
-                't_load_b_2': temp.t_load_b_2,
-                't_cross_guide_1': temp.t_cross_guide_1,
-                't_cross_guide_2': temp.t_cross_guide_2,
-                't_polarimeter_1': temp.t_polarimeter_1,
-                't_polarimeter_2': temp.t_polarimeter_2,
+                't_load_a_1_K': temp.t_load_a_1,
+                't_load_a_2_K': temp.t_load_a_2,
+                't_load_b_1_K': temp.t_load_b_1,
+                't_load_b_2_K': temp.t_load_b_2,
+                't_cross_guide_1_K': temp.t_cross_guide_1,
+                't_cross_guide_2_K': temp.t_cross_guide_2,
+                't_polarimeter_1_K': temp.t_polarimeter_1,
+                't_polarimeter_2_K': temp.t_polarimeter_2,
             })
 
         tnoise_analyses = []
         for analysis in NoiseTemperatureAnalysis.objects.filter(test=cur_test):
             tnoise_analyses.append({
-                'average_gain': analysis.average_gain,
+                'average_gain_K_over_ADU': analysis.average_gain,
                 'average_gain_err': analysis.average_gain_err,
 
-                'cross_gain': analysis.cross_gain,
+                'cross_gain_K_over_ADU': analysis.cross_gain,
                 'cross_gain_err': analysis.cross_gain_err,
 
-                'noise_temperature': analysis.noise_temperature,
+                'noise_temperature_K': analysis.noise_temperature,
                 'noise_temperature_err': analysis.noise_temperature_err,
             })
 

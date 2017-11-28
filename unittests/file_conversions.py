@@ -26,10 +26,12 @@ def convert_text_file_to_h5(input_file, output_file):
     object).
     '''
 
+    LOGGER.debug('going to load the text file')
     rawdata = np.loadtxt(input_file, skiprows=1)
     if rawdata.shape[1] != 13:
         raise ValueError('the input file has {0} columns instead of 13'
                          .format(data.shape[1]))
+    LOGGER.debug('file read successfully')
 
     data_type = np.dtype([
         ('time_s', np.float32),
@@ -48,11 +50,13 @@ def convert_text_file_to_h5(input_file, output_file):
         ('freq_Hz', np.float32)
     ])
 
+    LOGGER.debug('going to create the HDF5 file')
     with h5py.File(output_file, 'w') as h5_file:
         data = h5_file.create_dataset(
             'time_series', (rawdata.shape[0],),
             dtype=data_type, compression='gzip', shuffle=True)
 
+        LOGGER.debug('file created, writing columns')
         data['time_s'] = np.arange(rawdata.shape[0]) / SAMPLING_FREQUENCY
         data['pctime'] = rawdata[:, 0]
         data['phb'] = rawdata[:, 1]
@@ -67,6 +71,8 @@ def convert_text_file_to_h5(input_file, output_file):
         data['pwr_Q2_ADU'] = rawdata[:, 10]
         data['rfpower_dB'] = rawdata[:, 11]
         data['freq_Hz'] = rawdata[:, 12]
+
+        LOGGER.debug('columns have been written in HDF5 file')
 
 
 def read_worksheet_table(wks):

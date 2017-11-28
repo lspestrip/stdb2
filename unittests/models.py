@@ -171,7 +171,7 @@ class PolarimeterTest(models.Model):
         return reverse('unittests:test_details_json', kwargs={'test_id': self.pk})
 
     def get_delete_url(self):
-        return reverse('unittests:test_delete', kwargs={'test_id': self.pk})
+        return reverse('unittests:test_delete', kwargs={'pk': self.pk})
 
     def save(self, *args, **kwargs):
         if self.data_file:

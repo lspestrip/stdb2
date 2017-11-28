@@ -371,17 +371,17 @@ class Temperatures(models.Model):
 
     test = models.ForeignKey(to=PolarimeterTest, on_delete=models.CASCADE)
 
-    t_load_a_1 = models.FloatField(verbose_name='Tload<sub>A1</sub> [K]')
-    t_load_a_2 = models.FloatField(verbose_name='Tload<sub>A2</sub> [K]')
+    t_load_a_1 = models.FloatField(verbose_name='Tload_A1 [K]')
+    t_load_a_2 = models.FloatField(verbose_name='Tload_A2 [K]')
 
-    t_load_b_1 = models.FloatField(verbose_name='Tload<sub>B1</sub> [K]')
-    t_load_b_2 = models.FloatField(verbose_name='Tload<sub>B2</sub> [K]')
+    t_load_b_1 = models.FloatField(verbose_name='Tload_B1 [K]')
+    t_load_b_2 = models.FloatField(verbose_name='Tload_B2 [K]')
 
-    t_cross_guide_1 = models.FloatField(verbose_name='T<sub>Cross1</sub> [K]')
-    t_cross_guide_2 = models.FloatField(verbose_name='T<sub>Cross2</sub> [K]')
+    t_cross_guide_1 = models.FloatField(verbose_name='T_Cross1 [K]')
+    t_cross_guide_2 = models.FloatField(verbose_name='T_Cross2 [K]')
 
-    t_polarimeter_1 = models.FloatField(verbose_name='T<sub>Pol1</sub> [K]')
-    t_polarimeter_2 = models.FloatField(verbose_name='T<sub>Pol2</sub> [K]')
+    t_polarimeter_1 = models.FloatField(verbose_name='T_Pol1 [K]')
+    t_polarimeter_2 = models.FloatField(verbose_name='T_Pol2 [K]')
 
     def __str__(self):
         return (

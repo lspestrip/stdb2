@@ -20,9 +20,9 @@ LSPE/Strip DB: List of tests
         {% for cur in tnoise_tests %}
         <tr>
             <td>{{ cur.test.polarimeter_name }}</td>
-            <td>{{ cur.average_gain }}±{{ cur.average_gain_err }}</a></td>
-            <td>{{ cur.cross_gain }}±{{ cur.cross_gain_err }}</td>
-            <td>{{ cur.noise_temperature }}±{{ cur.noise_temperature_err }}</td>
+            <td>{{ cur.average_gain|floatformat:1 }}±{{ cur.average_gain_err|floatformat:1 }}</a></td>
+            <td>{{ cur.cross_gain|floatformat:1 }}±{{ cur.cross_gain_err|floatformat:1 }}</td>
+            <td>{{ cur.noise_temperature|floatformat:1 }}±{{ cur.noise_temperature_err|floatformat:1 }}</td>
             <td><time datetime="{{cur.analysis_date|date:"Y-m-d"}}">{{cur.analysis_date|date:"l, F j, Y"}}</time></td>
         </tr>
         {% endfor %}

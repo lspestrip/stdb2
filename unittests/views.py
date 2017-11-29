@@ -3,6 +3,7 @@
 '''Views of the "unittest" application
 '''
 
+import mimetypes
 import os.path
 
 import simplejson as json
@@ -10,7 +11,7 @@ import simplejson as json
 from django.contrib.auth import get_user
 from django.core.urlresolvers import reverse_lazy
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils.decorators import method_decorator
 from django.views import View
@@ -232,13 +233,18 @@ class TestPwrPlot(View):
 class AddMixin(View):
     form_class = None
     template_name = ''
+    load_files = False
 
     def save_form_without_commit(self, form, request):
         return form.save(commit=False)
 
     def post(self, request, test_id):
         cur_test = get_object_or_404(PolarimeterTest, pk=test_id)
-        form = self.form_class(request.POST)
+        if self.load_files:
+            form = self.form_class(request.POST, request.FILES)
+        else:
+            form = self.form_class(request.POST)
+
         if form.is_valid():
             new_obj = self.save_form_without_commit(form, request)
             new_obj.test = cur_test
@@ -262,8 +268,10 @@ class AddMixin(View):
 
 
 class AddMixinWithRequest(AddMixin):
+    load_files = True
+
     def get_form(self, form_class=None):
-        form = super(TestCreate, self).get_form(form_class)
+        form = super().get_form(form_class)
         form.fields['analysis_date'].widget.attrs.update(
             {'class': 'datepicker'})
         form.fields['analysis_date'].widget.format = '%Y-%m-%d'
@@ -502,8 +510,9 @@ class TnoiseListView(View):
         return render(request, self.template, context)
 
 
-class TnoiseAddView(AddMixinWithRequest):
+class TnoiseAddView(AddMixinWithRequest, CreateView):
     form_class = NoiseTemperatureAnalysisCreate
+    model = NoiseTemperatureAnalysis
     template_name = 'unittests/tnoise_create.html'
 
     @method_decorator(login_required)
@@ -561,6 +570,31 @@ class TnoiseDeleteView(DeleteMixin):
     model = NoiseTemperatureAnalysis
 
 
+class DownloadReportMixin(View):
+    model_class = None
+
+    def get(self, request, pk):
+        'Send a plot of the data'
+
+        cur_analysis = get_object_or_404(self.model_class, pk=pk)
+        data_file = cur_analysis.report_file
+        if data_file.name == '':
+            # No file to download
+            raise Http404
+
+        data_file.open()
+        data = data_file.read()
+        resp = HttpResponse(
+            data, content_type=mimetypes.guess_type(data_file.name))
+        resp['Content-Disposition'] = 'attachment; filename="{0}"'.format(
+            os.path.basename(data_file.name))
+        return resp
+
+
+class TnoiseReport(DownloadReportMixin, View):
+    model_class = NoiseTemperatureAnalysis
+
+
 class SpectralAnalysisListView(View):
     template = 'unittests/spectral_analysis_list.html'
 
@@ -586,6 +620,10 @@ class SpectralAnalysisDeleteView(DeleteMixin):
     model = SpectralAnalysis
 
 
+class SpectralAnalysisReport(DownloadReportMixin, View):
+    model_class = SpectralAnalysis
+
+
 class BandpassAnalysisListView(View):
     template = 'unittests/bandpass_analysis_list.html'
 
@@ -609,3 +647,7 @@ class BandpassAnalysisAddView(AddMixinWithRequest):
 
 class BandpassAnalysisDeleteView(DeleteMixin):
     model = BandpassAnalysis
+
+
+class BandpassAnalysisReport(DownloadReportMixin, View):
+    model_class = BandpassAnalysis

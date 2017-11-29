@@ -13,19 +13,31 @@ LSPE/Strip DB: List of spectral analysis results
 <table>
     <thead>
         <th>Polarimeter</th>
+        <th>Test</th>
         <th>&alpha;</th>
         <th>f<sub>knee</sub> [Hz]</th>
         <th>White noise [ADU<sup>2</sup>/Hz]</th>
         <th>Analysis date</th>
+        <th>Report</th>
     </thead>
     <tbody>
         {% for cur in spectral_analysis_tests %}
         <tr>
             <td>{{ cur.test.polarimeter_name }}</td>
-            <td>{{ cur.oof_alpha }}±{{ cur.oof_alpha_err }}</a></td>
-            <td>{{ cur.oof_knee_frequency_hz }}±{{ cur.oof_knee_frequency_err }}</td>
-            <td>{{ cur.wn_level_adu2_rhz }}±{{ cur.wn_level_err }}</td>
+            <td>
+                <a href="{% url 'unittests:test_details' cur.test.id %}">{{ cur.test.test_type }}</a>
+            </td>
+            <td>{{ cur.oof_alpha|floatformat:2 }}±{{ cur.oof_alpha_err|floatformat:2 }}</a></td>
+            <td>{{ cur.oof_knee_frequency_hz|floatformat:1 }}±{{ cur.oof_knee_frequency_err|floatformat:1 }}</td>
+            <td>{{ cur.wn_level_adu2_rhz|floatformat:1 }}±{{ cur.wn_level_err|floatformat:1 }}</td>
             <td><time datetime="{{cur.analysis_date|date:"Y-m-d"}}">{{cur.analysis_date|date:"l, F j, Y"}}</time></td>
+            <td>
+                {% if cur.report_file %}
+                    <a href="{% url 'unittests:spectrum_report' cur.id %}">Report</a>
+                {% else %}
+                    (None)
+                {% endif %}
+            </td>
         </tr>
         {% endfor %}
     </tbody>

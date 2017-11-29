@@ -11,19 +11,31 @@ LSPE/Strip DB: List of tests
 <table>
     <thead>
         <th>Polarimeter</th>
-        <th>Average gain [K/ADU]</th>
-        <th>Cross-gain [K/ADU]</th>
-        <th>Noise temperature [K]</th>
+        <th>Test</th>
+        <th>g<sup>2</sup><sub>mean</sub> [K/ADU]</th>
+        <th>g<sub>A</sub> g<sub>B</sub> [K/ADU]</th>
+        <th>T<sub>noise</sub> [K]</th>
         <th>Analysis date</th>
+        <th>Report</th>
     </thead>
     <tbody>
         {% for cur in tnoise_tests %}
         <tr>
             <td>{{ cur.test.polarimeter_name }}</td>
+            <td>
+                <a href="{% url 'unittests:test_details' cur.test.id %}">{{ cur.test.test_type }} (PHSW {{ cur.test.phsw_state }})</a>
+            </td>
             <td>{{ cur.average_gain|floatformat:1 }}±{{ cur.average_gain_err|floatformat:1 }}</a></td>
             <td>{{ cur.cross_gain|floatformat:1 }}±{{ cur.cross_gain_err|floatformat:1 }}</td>
             <td>{{ cur.noise_temperature|floatformat:1 }}±{{ cur.noise_temperature_err|floatformat:1 }}</td>
             <td><time datetime="{{cur.analysis_date|date:"Y-m-d"}}">{{cur.analysis_date|date:"l, F j, Y"}}</time></td>
+            <td>
+                {% if cur.report_file %}
+                    <a href="{% url 'unittests:tnoise_report' cur.id %}">Report</a>
+                {% else %}
+                    (None)
+                {% endif %}
+            </td>
         </tr>
         {% endfor %}
     </tbody>

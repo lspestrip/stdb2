@@ -10,18 +10,30 @@ LSPE/Strip DB: List of bandpass analysis results
 <p>Number of reports in the database: {{ bandpass_analysis_tests | length }}</p>
 <table>
     <thead>
-        <th>Polarimeter</th>            
+        <th>Polarimeter</th>
+        <th>Test</th>
         <th>Central frequency [GHz]</th>
         <th>Bandwidth [GHz]</th>
         <th>Analysis date</th>
+        <th>Report</th>
     </thead>
     <tbody>
         {% for cur in bandpass_analysis_tests %}
         <tr>
             <td>{{ cur.test.polarimeter_name }}</td>
-            <td>{{ cur.central_frequency_ghz }}±{{ cur.central_frequency_err }}</a></td>
-            <td>{{ cur.bandwidth_ghz }}±{{ cur.bandwidth_err }}</td>
+            <td>
+                <a href="{% url 'unittests:test_details' cur.test.id %}">{{ cur.test.test_type }} (PHSW {{ cur.test.phsw_state }})</a>
+            </td>
+            <td>{{ cur.central_frequency_ghz|floatformat:2 }}±{{ cur.central_frequency_err|floatformat:2 }}</a></td>
+            <td>{{ cur.bandwidth_ghz|floatformat:2 }}±{{ cur.bandwidth_err|floatformat:2 }}</td>
             <td><time datetime="{{cur.analysis_date|date:"Y-m-d"}}">{{cur.analysis_date|date:"l, F j, Y"}}</time></td>
+            <td>
+                {% if cur.report_file %}
+                    <a href="{% url 'unittests:spectrum_report' cur.id %}">Report</a>
+                {% else %}
+                    (None)
+                {% endif %}
+            </td>
         </tr>
         {% endfor %}
     </tbody>

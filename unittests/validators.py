@@ -13,7 +13,7 @@ VALID_REPORT_EXTENSIONS = [
 ]
 
 
-def validate_report_file_ext(file_name):
+def validate_report_file_ext(value):
     import os
 
     from django.core.exceptions import ValidationError

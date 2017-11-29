@@ -7,6 +7,7 @@ import os.path
 
 import simplejson as json
 
+from django.contrib.auth import get_user
 from django.core.urlresolvers import reverse_lazy
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect
@@ -522,6 +523,7 @@ class TnoiseAddFromJsonView(View):
             data = json.loads(form.cleaned_data['json_text'])
             new_analysis = dict_to_tnoise_analysis(data)
             new_analysis.test = cur_test
+            new_analysis.author = get_user(request)
             new_analysis.save()
 
             return redirect(cur_test)

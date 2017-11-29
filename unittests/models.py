@@ -456,10 +456,10 @@ def dict_to_tnoise_analysis(data):
         cross_gain_err=data['gain_prod']['std'],
         noise_temperature=data['tnoise']['mean'],
         noise_temperature_err=data['tnoise']['std'],
-        estimation_method=data['estimation_method'],
+        estimation_method=data['analysis_method'],
         code_version=data['striptun_version'],
         code_commit=data['latest_git_commit'],
-        analysis_date=data['date']
+        analysis_date=data['analysis_date']
     )
 
 

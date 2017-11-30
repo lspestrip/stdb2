@@ -175,7 +175,7 @@ LSPE/Strip DB: Details of test on STRIP{{test.polarimeter_number}}
                 </tbody>
             </table>
             <ul class="data-table-actions">
-                <a href="{% url 'unittests:biases_update' analysis.id %}">
+                <a href="{% url 'unittests:biases_update' test.id biases.id %}">
                     <img src="{% static 'site/edit.svgz' %}" width="32" height="32" alt="Edit"/>
                 </a>
                 <a href="{% url 'unittests:biases_delete' test.id biases.id %}">Delete</a>
@@ -258,7 +258,7 @@ LSPE/Strip DB: Details of test on STRIP{{test.polarimeter_number}}
                 <td>({{analysis.average_gain|floatformat:1}}&plusmn;{{analysis.average_gain_err|floatformat:1}}) K/ADU</td>
                 <td>({{analysis.cross_gain|floatformat:1}}&plusmn;{{analysis.cross_gain_err|floatformat:1}}) K/ADU</td>
                 <td>
-                    <a href="{% url 'unittests:tnoise_update' analysis.id %}">
+                    <a href="{% url 'unittests:tnoise_update' test.id analysis.id %}">
                         <img src="{% static 'site/edit.svgz' %}" width="32" height="32" alt="Edit"/>
                     </a>
                     <a href="{% url 'unittests:tnoise_delete' test.id analysis.id %}">
@@ -293,7 +293,7 @@ LSPE/Strip DB: Details of test on STRIP{{test.polarimeter_number}}
                 <td>({{analysis.central_frequency_ghz|floatformat:2}}&plusmn;{{analysis.central_frequency_err|floatformat:2}}) GHz</td>
                 <td>({{analysis.bandwidth_ghz|floatformat:2}}&plusmn;{{analysis.bandwidth_err|floatformat:2}}) GHz</td>
                 <td>
-                    <a href="{% url 'unittests:bandpass_update' analysis.id %}">
+                    <a href="{% url 'unittests:bandpass_update' test.id analysis.id %}">
                         <img src="{% static 'site/edit.svgz' %}" width="32" height="32" alt="Edit"/>
                     </a>
                     <a href="{% url 'unittests:bandpass_delete' test.id analysis.id %}">
@@ -331,7 +331,7 @@ LSPE/Strip DB: Details of test on STRIP{{test.polarimeter_number}}
                 <td>({{analysis.wn_level|floatformat:1}}&plusmn;{{analysis.wn_level_err|floatformat:1}}) ADU<sup>2</sup>/&radic;Hz</td>
                 <td>({{analysis.sampling_frequency_hz}} Hz</td>
                 <td>
-                    <a href="{% url 'unittests:spectrum_update' analysis.id %}">
+                    <a href="{% url 'unittests:spectrum_update' test.id analysis.id %}">
                         <img src="{% static 'site/edit.svgz' %}" width="32" height="32" alt="Edit"/>
                     </a>
                     <a href="{% url 'unittests:spectrum_delete' test.id analysis.id %}">

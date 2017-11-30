@@ -5,7 +5,7 @@ LSPE/Strip DB: Add spectral analysis results
 {% endblock %}
 
 {% block content %}
-<h1>Add new spectral analysis results</h1>
+<h1>Spectral analysis results</h1>
 
 <form method="POST" enctype="multipart/form-data">
     {% csrf_token %}
@@ -13,7 +13,7 @@ LSPE/Strip DB: Add spectral analysis results
         {{ form.as_p }}
     </div>
 
-    <input type="submit" value="Create"/>
+    <input type="submit" value="Submit"/>
 </form>
 
 {% endblock %}

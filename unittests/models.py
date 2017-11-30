@@ -238,6 +238,9 @@ class AdcOffset(models.Model):
             self.q2_adu
         )
 
+    def get_absolute_url(self):
+        return self.test.get_absolute_url()
+
     class Meta:
         verbose_name = 'values of the four ADC offsets'
 
@@ -272,6 +275,9 @@ class DetectorOutput(models.Model):
             self.u2_adu,
             self.q2_adu
         )
+
+    def get_absolute_url(self):
+        return self.test.get_absolute_url()
 
     class Meta:
         verbose_name = 'average output of the four detectors'
@@ -338,6 +344,9 @@ class Biases(models.Model):
     gate_voltage_hb3_mV = models.FloatField(
         verbose_name='H5 gate voltage [mV]')
 
+    def get_absolute_url(self):
+        return self.test.get_absolute_url()
+
     class Meta:
         verbose_name = 'HEMT polarization biases'
 
@@ -388,6 +397,9 @@ class Temperatures(models.Model):
             'TloadA = {0:.1f} K, TloadB = {1:.1f} K, Tcross = {2:.1f} K, Tpol = {3:.1f}'
             .format(self.t_load_a_1, self.t_load_b_1, self.t_cross_guide_1, self.t_polarimeter_1)
         )
+
+    def get_absolute_url(self):
+        return self.test.get_absolute_url()
 
     class Meta:
         verbose_name = 'temperatures of the cryochamber'
@@ -444,6 +456,9 @@ class NoiseTemperatureAnalysis(models.Model):
                 .format(self.noise_temperature,
                         self.test.polarimeter_name))
 
+    def get_absolute_url(self):
+        return reverse('unittests:tnoise_list')
+
     class Meta:
         verbose_name = 'noise temperature and gain estimates'
 
@@ -494,6 +509,9 @@ class SpectralAnalysis(models.Model):
     author = models.ForeignKey(
         settings.AUTH_USER_MODEL, related_name='spectral_owned')
 
+    def get_absolute_url(self):
+        return reverse('unittests:spectrum_list')
+
     def __str__(self):
         return self.test.polarimeter_name
 
@@ -526,6 +544,9 @@ class BandpassAnalysis(models.Model):
 
     author = models.ForeignKey(
         settings.AUTH_USER_MODEL, related_name='bandpass_owned')
+
+    def get_absolute_url(self):
+        return reverse('unittests:bandpass_list')
 
     def __str__(self):
         return self.test.polarimeter_name

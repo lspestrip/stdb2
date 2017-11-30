@@ -8,6 +8,8 @@ urlpatterns = [
     url(r'^$', views.TestListView.as_view(), name='test_list'),
     url(r'^tests/(?P<test_id>\d+)/$',
         views.TestDetails.as_view(), name='test_details'),
+    url(r'^tests/(?P<pk>\d+)/update$',
+        views.TestUpdate.as_view(), name='test_update'),
     url(r'^tests/(?P<test_id>\d+)/json/$',
         views.TestDetailsJson.as_view(), name='test_details_json'),
     url(r'^tests/(?P<test_id>\d+)/plot/$',
@@ -35,6 +37,15 @@ urlpatterns = [
     url(r'^tests/(?P<test_id>\d+)/temperature/json$',
         views.TemperatureJsonView.as_view(), name='temperature_create_json'),
 
+    url(r'^tests/(?P<test_id>\d+)/AdcOffset/(?P<pk>\d+)/update$',
+        views.AdcOffsetUpdateView.as_view(), name='adc_update'),
+    url(r'^tests/(?P<test_id>\d+)/detoutput/(?P<pk>\d+)/update$',
+        views.DetOutputUpdateView.as_view(), name='detoutput_update'),
+    url(r'^tests/(?P<test_id>\d+)/biases/(?P<pk>\d+)/update$',
+        views.BiasesUpdateView.as_view(), name='biases_update'),
+    url(r'^tests/(?P<test_id>\d+)/temperature/(?P<pk>\d+)/update$',
+        views.TemperatureUpdateView.as_view(), name='temperature_update'),
+
     url(r'^tests/(?P<test_id>\d+)/AdcOffset/(?P<obj_id>\d+)/delete$',
         views.AdcOffsetDeleteView.as_view(), name='adc_delete'),
     url(r'^tests/(?P<test_id>\d+)/detoutput/(?P<obj_id>\d+)/delete$',
@@ -50,6 +61,8 @@ urlpatterns = [
         views.TnoiseAddView.as_view(), name='tnoise_create'),
     url(r'^tnoise/add/(?P<test_id>\d+)/json$',
         views.TnoiseAddFromJsonView.as_view(), name='tnoise_create_json'),
+    url(r'^tests/(?P<pk>\d+)/tnoise/update$',
+        views.TnoiseUpdateView.as_view(), name='tnoise_update'),
     url(r'^tests/(?P<test_id>\d+)/tnoise/(?P<obj_id>\d+)/delete$',
         views.TnoiseDeleteView.as_view(), name='tnoise_delete'),
 
@@ -59,6 +72,8 @@ urlpatterns = [
         views.BandpassAnalysisReport.as_view(), name='bandpass_report'),
     url(r'^bandpass/add/(?P<test_id>\d+)$',
         views.BandpassAnalysisAddView.as_view(), name='bandpass_create'),
+    url(r'^tests/(?P<pk>\d+)/bandpass/update$',
+        views.BandpassAnalysisUpdateView.as_view(), name='bandpass_update'),
     url(r'^tests/(?P<test_id>\d+)/bandpass/(?P<obj_id>\d+)/delete$',
         views.BandpassAnalysisDeleteView.as_view(), name='bandpass_delete'),
 
@@ -67,6 +82,8 @@ urlpatterns = [
         views.SpectralAnalysisReport.as_view(), name='spectrum_report'),
     url(r'^spectrum/add/(?P<test_id>\d+)$',
         views.SpectralAnalysisAddView.as_view(), name='spectrum_create'),
+    url(r'^spectrum/(?P<pk>\d+)/update$',
+        views.SpectralAnalysisUpdateView.as_view(), name='spectrum_update'),
     url(r'^tests/(?P<test_id>\d+)/spectrum/(?P<obj_id>\d+)/delete$',
         views.SpectralAnalysisDeleteView.as_view(), name='spectrum_delete'),
 ]

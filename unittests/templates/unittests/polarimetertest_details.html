@@ -62,9 +62,14 @@ LSPE/Strip DB: Details of test on STRIP{{test.polarimeter_number}}
                         <td>{{ofs.u1_adu}}</td>
                         <td>{{ofs.u2_adu}}</td>
                         <td>{{ofs.q2_adu}}</td>
-                        <td><a href="{% url 'unittests:adc_delete' test.id ofs.id %}">
-                            <img src="{% static 'site/delete.svg' %}" width="32" height="32"/>
-                        </a></td>
+                        <td>
+                            <a href="{% url 'unittests:adc_update' test.id ofs.id %}">
+                                <img src="{% static 'site/edit.svgz' %}" width="32" height="32" alt="Edit"/>
+                            </a>
+                            <a href="{% url 'unittests:adc_delete' test.id ofs.id %}">
+                                <img src="{% static 'site/delete.svg' %}" width="32" height="32" alt="Delete"/>
+                            </a>
+                        </td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -95,9 +100,14 @@ LSPE/Strip DB: Details of test on STRIP{{test.polarimeter_number}}
                             <td>{{out.u1_adu}}</td>
                             <td>{{out.u2_adu}}</td>
                             <td>{{out.q2_adu}}</td>
-                            <td><a href="{% url 'unittests:detoutput_delete' test.id out.id %}">
-                                <img src="{% static 'site/delete.svg' %}" width="32" height="32"/>
-                            </a></td>
+                            <td>
+                                <a href="{% url 'unittests:detoutput_update' test.id out.id %}">
+                                    <img src="{% static 'site/edit.svgz' %}" width="32" height="32" alt="Edit"/>
+                                </a>
+                                <a href="{% url 'unittests:detoutput_delete' test.id out.id %}">
+                                    <img src="{% static 'site/delete.svg' %}" width="32" height="32" alt="Delete"/>
+                                </a>
+                            </td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -165,7 +175,10 @@ LSPE/Strip DB: Details of test on STRIP{{test.polarimeter_number}}
                 </tbody>
             </table>
             <ul class="data-table-actions">
-                    <a href="{% url 'unittests:biases_delete' test.id biases.id %}">Delete</a>
+                <a href="{% url 'unittests:biases_update' analysis.id %}">
+                    <img src="{% static 'site/edit.svgz' %}" width="32" height="32" alt="Edit"/>
+                </a>
+                <a href="{% url 'unittests:biases_delete' test.id biases.id %}">Delete</a>
             </ul>
 
             {% else %}
@@ -186,10 +199,10 @@ LSPE/Strip DB: Details of test on STRIP{{test.polarimeter_number}}
                     <th>T<sub>A2</sub> [K]</th>
                     <th>T<sub>B1</sub> [K]</th>
                     <th>T<sub>B2</sub> [K]</th>
-                    <th>T<sub>pol1</sub> [K]</th>
-                    <th>T<sub>pol2</sub> [K]</th>
-                    <th>T<sub>cross1</sub> [K]</th>
-                    <th>T<sub>cross2</sub> [K]</th>
+                    <th>T<sub>p1</sub> [K]</th>
+                    <th>T<sub>p2</sub> [K]</th>
+                    <th>T<sub>c1</sub> [K]</th>
+                    <th>T<sub>c2</sub> [K]</th>
                 </thead>
                 <tbody>
                     {% for temp in temperatures %}
@@ -202,9 +215,14 @@ LSPE/Strip DB: Details of test on STRIP{{test.polarimeter_number}}
                         <td>{{temp.t_polarimeter_2}}</td>
                         <td>{{temp.t_cross_guide_1}}</td>
                         <td>{{temp.t_cross_guide_2}}</td>
-                        <td><a href="{% url 'unittests:temperature_delete' test.id temp.id %}">
-                            <img src="{% static 'site/delete.svg' %}" width="32" height="32"/>
-                        </a></td>
+                        <td>
+                            <a href="{% url 'unittests:temperature_update' test.id temp.id %}">
+                                <img src="{% static 'site/edit.svgz' %}" width="32" height="32" alt="Edit"/>
+                            </a>
+                            <a href="{% url 'unittests:temperature_delete' test.id temp.id %}">
+                                <img src="{% static 'site/delete.svg' %}" width="32" height="32" alt="Delete"/>
+                            </a>
+                        </td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -240,8 +258,11 @@ LSPE/Strip DB: Details of test on STRIP{{test.polarimeter_number}}
                 <td>({{analysis.average_gain|floatformat:1}}&plusmn;{{analysis.average_gain_err|floatformat:1}}) K/ADU</td>
                 <td>({{analysis.cross_gain|floatformat:1}}&plusmn;{{analysis.cross_gain_err|floatformat:1}}) K/ADU</td>
                 <td>
+                    <a href="{% url 'unittests:tnoise_update' analysis.id %}">
+                        <img src="{% static 'site/edit.svgz' %}" width="32" height="32" alt="Edit"/>
+                    </a>
                     <a href="{% url 'unittests:tnoise_delete' test.id analysis.id %}">
-                        <img src="{% static 'site/delete.svg' %}" width="32" height="32"/>
+                        <img src="{% static 'site/delete.svg' %}" width="32" height="32" alt="Delete"/>
                     </a>
                 </td>
             </tr>
@@ -272,8 +293,11 @@ LSPE/Strip DB: Details of test on STRIP{{test.polarimeter_number}}
                 <td>({{analysis.central_frequency_ghz|floatformat:2}}&plusmn;{{analysis.central_frequency_err|floatformat:2}}) GHz</td>
                 <td>({{analysis.bandwidth_ghz|floatformat:2}}&plusmn;{{analysis.bandwidth_err|floatformat:2}}) GHz</td>
                 <td>
+                    <a href="{% url 'unittests:bandpass_update' analysis.id %}">
+                        <img src="{% static 'site/edit.svgz' %}" width="32" height="32" alt="Edit"/>
+                    </a>
                     <a href="{% url 'unittests:bandpass_delete' test.id analysis.id %}">
-                        <img src="{% static 'site/delete.svg' %}" width="32" height="32"/>
+                        <img src="{% static 'site/delete.svg' %}" width="32" height="32" alt="Delete"/>
                     </a>
                 </td>
             </tr>
@@ -287,7 +311,8 @@ LSPE/Strip DB: Details of test on STRIP{{test.polarimeter_number}}
     </ul>    
 
     <h5>Spectrum</h5>
-    
+
+    {% if spectrum_analyses %}
     <table class="data-table" id="spectrum-table">
         <thead>
             <th>Method</th>
@@ -306,14 +331,18 @@ LSPE/Strip DB: Details of test on STRIP{{test.polarimeter_number}}
                 <td>({{analysis.wn_level|floatformat:1}}&plusmn;{{analysis.wn_level_err|floatformat:1}}) ADU<sup>2</sup>/&radic;Hz</td>
                 <td>({{analysis.sampling_frequency_hz}} Hz</td>
                 <td>
+                    <a href="{% url 'unittests:spectrum_update' analysis.id %}">
+                        <img src="{% static 'site/edit.svgz' %}" width="32" height="32" alt="Edit"/>
+                    </a>
                     <a href="{% url 'unittests:spectrum_delete' test.id analysis.id %}">
-                        <img src="{% static 'site/delete.svg' %}" width="32" height="32"/>
+                        <img src="{% static 'site/delete.svg' %}" width="32" height="32" alt="Delete"/>
                     </a>
                 </td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
+    {% endif %}
     
     <ul class="data-table-actions">
         <li><a href="{% url 'unittests:spectrum_create' test.id %}">Add new</a></li>

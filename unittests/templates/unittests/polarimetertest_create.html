@@ -5,14 +5,14 @@ LSPE/Strip DB: Add new test
 {% endblock %}
 
 {% block content %}
-<h2>Add new test</h2>
+<h2>Polarimetric test</h2>
 <form method="POST" enctype="multipart/form-data">
     {% csrf_token %}
     <div id="add-test-table">
         {{ form.as_p }}
     </div>
 
-    <input type="submit" value="Add new test"/>
+    <input type="submit" value="Submit"/>
 </form>
 
 <script>

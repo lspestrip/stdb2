@@ -18,6 +18,7 @@ from django.views import View
 from django.views.generic import (
     CreateView,
     DeleteView,
+    UpdateView,
 )
 
 from .models import (
@@ -61,16 +62,17 @@ class TestListView(View):
         return render(request, self.template, context)
 
 
-class FormValidMixin:
-    def form_valid(self, form):
-        self.object = form.save(self.request)
-        return HttpResponseRedirect(self.get_success_url())
+@method_decorator(login_required, name='dispatch')
+class TestCreate(CreateView):
+    'Create a new PolarimeterTest object'
 
-
-class TestCreate(FormValidMixin, CreateView):
     form_class = TestForm
     model = PolarimeterTest
     template_name = 'unittests/polarimetertest_create.html'
+
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        return super().form_valid(form)
 
     def get_form(self, form_class=None):
         form = super(TestCreate, self).get_form(form_class)
@@ -80,9 +82,13 @@ class TestCreate(FormValidMixin, CreateView):
         form.fields['acquisition_date'].input_formats = ['%Y-%m-%d']
         return form
 
-    @method_decorator(login_required)
-    def dispatch(self, request, *args, **kwargs):
-        return super().dispatch(request, *args, **kwargs)
+
+@method_decorator(login_required, name='dispatch')
+class TestUpdate(UpdateView):
+    'Update an existing PolarimeterTest object'
+    form_class = TestForm
+    model = PolarimeterTest
+    template_name = 'unittests/polarimetertest_create.html'
 
 
 class TestDetails(View):
@@ -193,6 +199,7 @@ class TestDetailsJson(View):
         return HttpResponse(json.dumps(result, indent=4), content_type='application/json')
 
 
+@method_decorator(login_required, name='dispatch')
 class TestDeleteView(DeleteView):
     model = PolarimeterTest
     success_url = reverse_lazy('unittests:test_list')
@@ -230,13 +237,12 @@ class TestPwrPlot(View):
         return resp
 
 
-class AddMixin(View):
+@method_decorator(login_required, name='dispatch')
+class CreateMixin(CreateView):
     form_class = None
+    model = None
     template_name = ''
     load_files = False
-
-    def save_form_without_commit(self, form, request):
-        return form.save(commit=False)
 
     def post(self, request, test_id):
         cur_test = get_object_or_404(PolarimeterTest, pk=test_id)
@@ -246,7 +252,7 @@ class AddMixin(View):
             form = self.form_class(request.POST)
 
         if form.is_valid():
-            new_obj = self.save_form_without_commit(form, request)
+            new_obj = form.save(commit=False)
             new_obj.test = cur_test
             new_obj.save()
 
@@ -262,27 +268,27 @@ class AddMixin(View):
             'form': form,
         })
 
-    @method_decorator(login_required)
-    def dispatch(self, request, *args, **kwargs):
-        return super(AddMixin, self).dispatch(request, *args, **kwargs)
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs.update(request=self.request)
+        return kwargs
 
 
-class AddMixinWithRequest(AddMixin):
+class CreateMixinWithRequest(CreateMixin):
     load_files = True
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
+        form.request = self.request
         form.fields['analysis_date'].widget.attrs.update(
             {'class': 'datepicker'})
         form.fields['analysis_date'].widget.format = '%Y-%m-%d'
         form.fields['analysis_date'].input_formats = ['%Y-%m-%d']
         return form
 
-    def save_form_without_commit(self, form, request):
-        return form.save(request, commit=False)
 
-
-class DeleteMixin(View):
+@method_decorator(login_required, name='dispatch')
+class DeleteMixin(DeleteView):
     model = None
 
     def get(self, request, test_id, obj_id):
@@ -292,16 +298,27 @@ class DeleteMixin(View):
         cur_obj = get_object_or_404(PolarimeterTest, pk=test_id)
         return redirect(cur_obj)
 
-    @method_decorator(login_required)
-    def dispatch(self, request, *args, **kwargs):
-        return super(DeleteMixin, self).dispatch(request, *args, **kwargs)
 
-
-class AdcOffsetAddView(AddMixin):
+@method_decorator(login_required, name='dispatch')
+class AdcOffsetAddView(CreateView):
     form_class = AdcOffsetCreate
     template_name = 'unittests/test_hk_entry_create.html'
+    model = AdcOffset
+
+    def form_valid(self, form):
+        obj = form.save(commit=False)
+        obj.test = PolarimeterTest.objects.get(pk=self.kwargs['test_id'])
+        return super().form_valid(form)
 
 
+@method_decorator(login_required, name='dispatch')
+class AdcOffsetUpdateView(UpdateView):
+    form_class = AdcOffsetCreate
+    template_name = 'unittests/test_hk_entry_create.html'
+    model = AdcOffset
+
+
+@method_decorator(login_required, name='dispatch')
 class AdcOffsetDeleteView(DeleteMixin):
     model = AdcOffset
 
@@ -343,11 +360,26 @@ class AdcOffsetJsonView(View):
         })
 
 
-class DetOutputAddView(AddMixin):
+@method_decorator(login_required, name='dispatch')
+class DetOutputAddView(CreateView):
     form_class = DetOutputCreate
     template_name = 'unittests/test_hk_entry_create.html'
+    model = DetectorOutput
+
+    def form_valid(self, form):
+        obj = form.save(commit=False)
+        obj.test = PolarimeterTest.objects.get(pk=self.kwargs['test_id'])
+        return super().form_valid(form)
 
 
+@method_decorator(login_required, name='dispatch')
+class DetOutputUpdateView(UpdateView):
+    form_class = DetOutputCreate
+    template_name = 'unittests/test_hk_entry_create.html'
+    model = DetectorOutput
+
+
+@method_decorator(login_required, name='dispatch')
 class DetOutputDeleteView(DeleteMixin):
     model = DetectorOutput
 
@@ -389,11 +421,26 @@ class DetOutputJsonView(View):
         })
 
 
-class BiasesAddView(AddMixin):
+@method_decorator(login_required, name='dispatch')
+class BiasesAddView(CreateView):
     form_class = BiasesCreate
     template_name = 'unittests/test_hk_entry_create.html'
+    model = Biases
+
+    def form_valid(self, form):
+        obj = form.save(commit=False)
+        obj.test = PolarimeterTest.objects.get(pk=self.kwargs['test_id'])
+        return super().form_valid(form)
 
 
+@method_decorator(login_required, name='dispatch')
+class BiasesUpdateView(UpdateView):
+    form_class = BiasesCreate
+    template_name = 'unittests/test_hk_entry_create.html'
+    model = Biases
+
+
+@method_decorator(login_required, name='dispatch')
 class BiasesDeleteView(DeleteMixin):
     model = Biases
 
@@ -448,11 +495,26 @@ class BiasesJsonView(View):
         })
 
 
-class TemperatureAddView(AddMixin):
+@method_decorator(login_required, name='dispatch')
+class TemperatureAddView(CreateView):
     form_class = TemperatureCreate
     template_name = 'unittests/temperature_create.html'
+    model = Temperatures
+
+    def form_valid(self, form):
+        obj = form.save(commit=False)
+        obj.test = PolarimeterTest.objects.get(pk=self.kwargs['test_id'])
+        return super().form_valid(form)
 
 
+@method_decorator(login_required, name='dispatch')
+class TemperatureUpdateView(UpdateView):
+    form_class = TemperatureCreate
+    template_name = 'unittests/temperature_create.html'
+    model = Temperatures
+
+
+@method_decorator(login_required, name='dispatch')
 class TemperatureDeleteView(DeleteMixin):
     model = Temperatures
 
@@ -510,7 +572,23 @@ class TnoiseListView(View):
         return render(request, self.template, context)
 
 
-class TnoiseAddView(AddMixinWithRequest, CreateView):
+class ReportCreateMixin:
+    def form_valid(self, form):
+        obj = form.save(commit=False)
+        obj.author = self.request.user
+        obj.test = PolarimeterTest.objects.get(pk=self.kwargs['test_id'])
+        return super().form_valid(form)
+
+
+@method_decorator(login_required, name='dispatch')
+class TnoiseAddView(ReportCreateMixin, CreateView):
+    form_class = NoiseTemperatureAnalysisCreate
+    model = NoiseTemperatureAnalysis
+    template_name = 'unittests/tnoise_create.html'
+
+
+@method_decorator(login_required, name='dispatch')
+class TnoiseUpdateView(UpdateView):
     form_class = NoiseTemperatureAnalysisCreate
     model = NoiseTemperatureAnalysis
     template_name = 'unittests/tnoise_create.html'
@@ -520,6 +598,7 @@ class TnoiseAddView(AddMixinWithRequest, CreateView):
         return super().dispatch(request, *args, **kwargs)
 
 
+@method_decorator(login_required, name='dispatch')
 class TnoiseAddFromJsonView(View):
     'Import a JSON file containing the estimates of Tnoise for a polarimeter'
 
@@ -566,6 +645,7 @@ class TnoiseAddFromJsonView(View):
         })
 
 
+@method_decorator(login_required, name='dispatch')
 class TnoiseDeleteView(DeleteMixin):
     model = NoiseTemperatureAnalysis
 
@@ -574,7 +654,7 @@ class DownloadReportMixin(View):
     model_class = None
 
     def get(self, request, pk):
-        'Send a plot of the data'
+        'Send the report as an attachment'
 
         cur_analysis = get_object_or_404(self.model_class, pk=pk)
         data_file = cur_analysis.report_file
@@ -607,15 +687,21 @@ class SpectralAnalysisListView(View):
         return render(request, self.template, context)
 
 
-class SpectralAnalysisAddView(AddMixinWithRequest):
+@method_decorator(login_required, name='dispatch')
+class SpectralAnalysisAddView(ReportCreateMixin, CreateView):
     form_class = SpectralAnalysisCreate
+    model = SpectralAnalysis
     template_name = 'unittests/spectral_analysis_create.html'
 
-    @method_decorator(login_required)
-    def dispatch(self, request, *args, **kwargs):
-        return super().dispatch(request, *args, **kwargs)
+
+@method_decorator(login_required, name='dispatch')
+class SpectralAnalysisUpdateView(UpdateView):
+    form_class = SpectralAnalysisCreate
+    model = SpectralAnalysis
+    template_name = 'unittests/spectral_analysis_create.html'
 
 
+@method_decorator(login_required, name='dispatch')
 class SpectralAnalysisDeleteView(DeleteMixin):
     model = SpectralAnalysis
 
@@ -636,15 +722,21 @@ class BandpassAnalysisListView(View):
         return render(request, self.template, context)
 
 
-class BandpassAnalysisAddView(AddMixinWithRequest):
+@method_decorator(login_required, name='dispatch')
+class BandpassAnalysisAddView(ReportCreateMixin, CreateView):
     form_class = BandpassAnalysisCreate
+    model = BandpassAnalysis
     template_name = 'unittests/bandpass_analysis_create.html'
 
-    @method_decorator(login_required)
-    def dispatch(self, request, *args, **kwargs):
-        return super().dispatch(request, *args, **kwargs)
+
+@method_decorator(login_required, name='dispatch')
+class BandpassAnalysisUpdateView(UpdateView):
+    form_class = BandpassAnalysisCreate
+    model = BandpassAnalysis
+    template_name = 'unittests/bandpass_analysis_create.html'
 
 
+@method_decorator(login_required, name='dispatch')
 class BandpassAnalysisDeleteView(DeleteMixin):
     model = BandpassAnalysis
 

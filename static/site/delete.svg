@@ -26,7 +26,7 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="3.959798"
-     inkscape:cx="121.94056"
+     inkscape:cx="71.81174"
      inkscape:cy="112.63606"
      inkscape:document-units="mm"
      inkscape:current-layer="layer2"
@@ -35,8 +35,8 @@
      fit-margin-left="0"
      fit-margin-right="0"
      fit-margin-bottom="0"
-     inkscape:window-width="2400"
-     inkscape:window-height="1271"
+     inkscape:window-width="1920"
+     inkscape:window-height="1001"
      inkscape:window-x="-9"
      inkscape:window-y="-9"
      inkscape:window-maximized="1" />
@@ -48,7 +48,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -58,7 +58,7 @@
      inkscape:label="Livello 2"
      transform="translate(-82.352417,-185.91611)">
     <rect
-       style="fill:#db1e0f;fill-opacity:1;stroke:none;stroke-width:2.46499991;stroke-miterlimit:4;stroke-dasharray:none"
+       style="fill:#b14139;fill-opacity:1;stroke:none;stroke-width:2.46499991;stroke-miterlimit:4;stroke-dasharray:none"
        id="rect22"
        width="59.267017"
        height="60.93745"

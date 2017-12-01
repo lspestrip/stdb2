@@ -31,55 +31,54 @@
 
   <body>
 
-    <div class="container">
-      <div class="status row">
-        <div class="offset-by-eight four columns">
-          <ul class="inline">
-            {% if user.is_authenticated %}
-              <li><a href="{% url 'user-auth:logout' %}?next={{ request.path }}">
-                Log out</a></li>
-            {% else %}
-              <li><a href="{% url 'user-auth:login' %}?next={{ request.path }}">
-                Log in</a></li>
-            {% endif %}
-          </ul>
-        </div>
+    <nav class="navigation">
+      {% block action_bar %}
+      <div id="action-bar">
+        <ul>
+          {% url 'unittests:test_list' as url %}
+          <li><a href="{{ url }}" {% if request.path == url %} class="active" {% endif %}>Polarimetric tests</a></li>
+          {% url 'unittests:bandpass_list' as url %}
+          <li><a href="{{ url }}" {% if request.path == url %} class="active" {% endif %}>Bandpass reports</a></li>
+          {% url 'unittests:tnoise_list' as url %}
+          <li><a href="{{ url }}" {% if request.path == url %} class="active" {% endif %}>Noise temperature reports</a></li>
+          {% url 'unittests:spectrum_list' as url %}
+          <li><a href="{{ url }}" {% if request.path == url %} class="active" {% endif %}>Spectral analysis reports</a></li>
+
+          {% if user.is_authenticated %}
+            <li class="last"><a href="{% url 'user-auth:logout' %}?next={{ request.path }}">Log out</a></li>
+          {% else %}
+            <li class="last"><a href="{% url 'user-auth:login' %}?next={{ request.path }}">Log in</a></li>
+          {% endif %}
+        </ul>
       </div>
-      <header class="row">
-        <div class="offset-by-one ten columns">
-          <h1 class="logo">Strip Test Database</h1>
-        </div>
-      </header>
-      <nav>
-        {% block action_bar %}
-        <div id="action-bar">
-          <ul>
-            <li><a href="{% url 'unittests:test_list' %}">Polarimetric tests</a></li>
-            <li><a href="{% url 'unittests:bandpass_list' %}">Bandpass reports</a></li>
-            <li><a href="{% url 'unittests:tnoise_list' %}">Noise temperature reports</a></li>
-            <li><a href="{% url 'unittests:spectrum_list' %}">Spectral analysis reports</a></li>
-            {% block action_bar_buttons %}
-            {% endblock %}
-          </ul>
-        </div>
-        {% endblock %}
-      </nav>
-      
-      <main>
+      {% endblock %}
+    </nav>
+
+    <section class="main">
+      <div class="container">
+        <header class="row">
+          <div class="ten columns">
+            <h1 class="logo">Strip Test Database</h1>
+          </div>
+        </header>
         {% block content %}
         This is the default content!
         {% endblock %}
-      </main>
-    </div><!-- container -->
+      </div>
+    </section>
 
-    <footer>
-      <p>
-        &copy; 2017
-        <a href="http://cosmo.fisica.unimi.it/persone/maurizio-tomasi/">
-          Maurizio Tomasi</a>. Report bugs using the <a
-          href="https://github.com/lspestrip/stdb2/issues">GitHub page</a>.
-      </p>
-    </footer>
+    <section class="footer u-full-width">
+      <div class="container">
+        <div class="row">
+          <p>
+            &copy; 2017
+            <a href="http://cosmo.fisica.unimi.it/persone/maurizio-tomasi/">
+              Maurizio Tomasi</a>. Report bugs using the <a
+              href="https://github.com/lspestrip/stdb2/issues">GitHub page</a>.
+          </p>
+        </div>
+      </div>
+    </section>
 
   </body>
 

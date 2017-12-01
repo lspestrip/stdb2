@@ -6,9 +6,9 @@ LSPE/Strip DB: List of bandpass analysis results
 
 {% block content %}
 <h2>Bandpass analysis results</h2>
-
 <p>Number of reports in the database: {{ bandpass_analysis_tests | length }}</p>
 <table>
+    {% if bandpass_analysis_tests %}
     <thead>
         <th>Polarimeter</th>
         <th>Test</th>
@@ -37,5 +37,6 @@ LSPE/Strip DB: List of bandpass analysis results
         </tr>
         {% endfor %}
     </tbody>
+    {% endif %}
 </table>
 {% endblock %}

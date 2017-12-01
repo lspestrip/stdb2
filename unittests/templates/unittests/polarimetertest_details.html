@@ -5,19 +5,15 @@
 LSPE/Strip DB: Details of test on STRIP{{test.polarimeter_number}}
 {% endblock %}
 
-{% block action_bar_buttons %}
-<li><a href="{% url 'unittests:test_create' %}">Add test</a></li>
-{% endblock %}
-
 {% block content %}
-<h1>
+<h2>
     {{test.polarimeter_name}} &ndash; 
     {% if test.short_description %} 
         {{ test.short_description }} 
     {% else %} 
         {{test.test_type}} 
     {% endif %}
-</h1>
+</h2>
 
 <div class="section general">
     <div class="row">

@@ -5,15 +5,16 @@
 LSPE/Strip DB: List of tests
 {% endblock %}
 
-{% block action_bar_buttons %}
-<li><a href="{% url 'unittests:test_create' %}">Add test</a></li>
-{% endblock %}
-
 {% block content %}
 <div class="row">
     <div class="column" style="margin-top: 1em">
-        <h1>Polarimetric unit tests</h1>
+        <h2>Polarimetric unit tests</h2>
         <p>Number of tests in the database: {{ tests | length }}</p>
+
+        <ul>
+            <li><a href="{% url 'unittests:test_create' %}">Add test</a></li>
+        </ul>
+        
 
         {% if tests %}
         <input type="text" id="polarimeter-test-filter" onkeyup="filterPolarimeterTable()" placeholder="Filter…">
@@ -44,6 +45,7 @@ LSPE/Strip DB: List of tests
                         <a href="{% url 'unittests:test_update' test.id %}">
                             <img src="{% static 'site/edit.svg' %}" width="32" height="32" alt="Edit"/>
                         </a>
+                        &nbsp;
                         <a href="{% url 'unittests:test_delete' test.id %}">
                             <img src="{% static 'site/delete.svg' %}" width="32" height="32" alt="Delete"/>
                         </a>

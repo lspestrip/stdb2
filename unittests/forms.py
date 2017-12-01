@@ -26,6 +26,7 @@ class TestForm(forms.ModelForm):
             'phsw_state',
             'test_type',
             'operators',
+            'short_description',
             'notes',
         ]
         labels = {

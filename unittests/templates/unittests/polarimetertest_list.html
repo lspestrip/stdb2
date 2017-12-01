@@ -29,7 +29,15 @@ LSPE/Strip DB: List of tests
                 {% for test in tests %}
                 <tr>
                     <td>{{ test.polarimeter_name }}</a></td>
-                    <td><a href="{% url 'unittests:test_details' test.id %}">{{ test.test_type }}</a></td>
+                    <td>
+                        <a href="{% url 'unittests:test_details' test.id %}">
+                            {% if test.short_description %}
+                                {{ test.short_description }}
+                            {% else %}
+                                <i>{{ test.test_type }}</i>
+                            {% endif %}
+                        </a>
+                    </td>
                     <td>{{ test.acquisition_date }}</td>
                     <td>{{ test.phsw_state }}</td>
                     <td>

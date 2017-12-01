@@ -136,6 +136,8 @@ class PolarimeterTest(models.Model):
     acquisition_date = models.DateField(
         verbose_name='Date of acquisition (YYYY-MM-DD)')
     data_file = models.FileField(max_length=1024, upload_to='unit_test_data/')
+    short_description = models.CharField(max_length=140, blank=True,
+                                         verbose_name='Short description (optional)')
     notes = models.TextField(verbose_name='Notes', blank=True)
     phsw_state = models.CharField(
         max_length=12, default='N/A', choices=PHSW_STATES)

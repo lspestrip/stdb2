@@ -754,18 +754,19 @@ class BandpassAnalysisReport(DownloadReportMixin, View):
 
 class TestTimeTableData(APIView):
     def get(self, request, format=None):
-        result = dict()
+        date_values = []
+        num_of_tests = []
 
         today = timezone.now().date()
         for days_ago in range(7):
             start = today - timedelta(days=days_ago)
-            end = today - timedelta(days=days_ago + 1)
-            result[start] = PolarimeterTest.objects.filter(
-                creation_date=start).count()
+            date_values.append(start)
+            num_of_tests.append(PolarimeterTest.objects.filter(
+                creation_date=start).count())
 
         data = {
-            'date': result.keys(),
-            'num_of_tests': result.values(),
+            'date': date_values,
+            'num_of_tests': num_of_tests,
         }
 
         return RESTResponse(data)

@@ -1,4 +1,4 @@
-/* Menu bar */
+/* Navigation bar (left side) */
 
 nav {
     position: fixed;
@@ -43,6 +43,27 @@ nav a:hover {
 
 nav li.last {
     margin-top: 2.5em;
+}
+
+/* Action bar */
+
+.action-bar li {
+    display: inline-block;
+    list-style: none;
+}
+
+.action-bar a {
+    text-decoration: none;
+    background-color: #77d;
+    color: white;
+    border-radius: 4px;
+    font-weight: bold;
+    padding: 16px 32px;
+    border: none;
+    text-align: center;
+    font-size: 16px;
+    float: left;
+    cursor: pointer;
 }
 
 /* Other */

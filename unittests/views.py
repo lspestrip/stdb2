@@ -3,6 +3,7 @@
 '''Views of the "unittest" application
 '''
 
+from datetime import timedelta
 import mimetypes
 import os.path
 
@@ -14,12 +15,16 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils.decorators import method_decorator
+from django.utils import timezone
 from django.views import View
 from django.views.generic import (
     CreateView,
     DeleteView,
     UpdateView,
 )
+
+from rest_framework.views import APIView
+from rest_framework.response import Response as RESTResponse
 
 from .models import (
     PolarimeterTest,
@@ -743,3 +748,24 @@ class BandpassAnalysisDeleteView(DeleteMixin):
 
 class BandpassAnalysisReport(DownloadReportMixin, View):
     model_class = BandpassAnalysis
+
+
+# REST classes (used for plots)
+
+class TestTimeTableData(APIView):
+    def get(self, request, format=None):
+        result = dict()
+
+        today = timezone.now().date()
+        for days_ago in range(7):
+            start = today - timedelta(days=days_ago)
+            end = today - timedelta(days=days_ago + 1)
+            result[start] = PolarimeterTest.objects.filter(
+                creation_date=start).count()
+
+        data = {
+            'date': result.keys(),
+            'num_of_tests': result.values(),
+        }
+
+        return RESTResponse(data)

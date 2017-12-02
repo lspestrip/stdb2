@@ -86,4 +86,8 @@ urlpatterns = [
         views.SpectralAnalysisUpdateView.as_view(), name='spectrum_update'),
     url(r'^tests/(?P<test_id>\d+)/spectrum/(?P<obj_id>\d+)/delete$',
         views.SpectralAnalysisDeleteView.as_view(), name='spectrum_delete'),
+
+    # REST API
+    url(r'^api/tests/countbydate/$', views.TestTimeTableData.as_view(),
+        name='api-tests-countbydate'),
 ]

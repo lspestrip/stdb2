@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+
+{% block title %}
+LSPE/Strip DB: Dashboard
+{% endblock %}
+
+{% block content %}
+<h2>
+    Dashboard
+</h2>
+
+<div class="section activity">
+    <div class="row">
+        <div class="twelve columns">
+            <h4>
+                Activity
+            </h4>
+
+            <div id="timeline-plot" style="height: 280px">
+                <!-- plotly chart -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="section users">
+    <div class="row">
+        <div class="four columns">
+            <h4>
+                Users
+            </h4>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    // Timetable plot
+
+    $.ajax({
+        method: "GET",
+        url: "{% url 'unittests:api-tests-countbydate' %}",
+        success: function(data) {
+            timePlotDate = data.date;
+            timePlotCount = data.num_of_tests;
+            plot_date_chart();
+        },
+        error: function(error_data) {
+            console.log("error:");
+            console.log(error_data);
+        }
+    });
+
+    function plot_date_chart() {
+        var data = [{
+            x: timePlotDate,
+            y: timePlotCount,
+            type: "scatter"
+        }];
+
+        var layout = {
+            title: "Activity in the last " + timePlotDate.length + " days",
+            yaxis: {
+                title: "Num of tests"
+            }
+        };
+
+        Plotly.newPlot("timeline-plot", data, layout);
+    }
+
+</script>
+{% endblock %}

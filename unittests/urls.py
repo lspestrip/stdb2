@@ -1,10 +1,14 @@
 # -*- encoding: utf-8 -*-
 
 from django.conf.urls import url
+from django.views.generic import TemplateView
 
 from . import views
 
 urlpatterns = [
+    url(r'^dashboard/$', TemplateView.as_view(template_name='unittests/dashboard.html'),
+        name='dashboard'),
+
     url(r'^$', views.TestListView.as_view(), name='test_list'),
     url(r'^tests/(?P<test_id>\d+)/$',
         views.TestDetails.as_view(), name='test_details'),

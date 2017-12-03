@@ -18,10 +18,6 @@ LSPE/Strip DB: List of tests
         </ul>
     </div>
 
-    <div class="twelve columns overall-plot" id="timeline-plot" style="height: 280px">
-        <!-- plotly chart -->
-    </div>
-
     <div class="twelve columns">
         {% if tests %}
         <input type="text" id="polarimeter-test-filter" onkeyup="filterPolarimeterTable()" placeholder="Filter…">
@@ -109,39 +105,6 @@ LSPE/Strip DB: List of tests
                 rows[rowidx].style.display = "none";
             }
         }
-    }
-
-    // Timetable plot
-
-    $.ajax({
-        method: "GET",
-        url: "{% url 'unittests:api-tests-countbydate' %}",
-        success: function(data) {
-            timePlotDate = data.date;
-            timePlotCount = data.num_of_tests;
-            plot_date_chart();
-        },
-        error: function(error_data) {
-            console.log("error:");
-            console.log(error_data);
-        }
-    });
-
-    function plot_date_chart() {
-        var data = [{
-            x: timePlotDate,
-            y: timePlotCount,
-            type: "scatter"
-        }];
-
-        var layout = {
-            title: "Activity in the last " + timePlotDate.length + " days",
-            yaxis: {
-                title: "Num of tests"
-            }
-        };
-
-        Plotly.newPlot("timeline-plot", data, layout);
     }
 </script>
 {% endblock %}

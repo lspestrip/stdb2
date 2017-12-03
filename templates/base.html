@@ -44,6 +44,8 @@
           <li><a href="{{ url }}" {% if request.path == url %} class="active" {% endif %}>Noise temperature reports</a></li>
           {% url 'unittests:spectrum_list' as url %}
           <li><a href="{{ url }}" {% if request.path == url %} class="active" {% endif %}>Spectral analysis reports</a></li>
+          {% url 'unittests:dashboard' as url %}
+          <li><a href="{{ url }}" {% if request.path == url %} class="active" {% endif %}>Dashboard</a></li>
 
           {% if user.is_authenticated %}
             <li class="last"><a href="{% url 'user-auth:logout' %}?next={{ request.path }}">Log out</a></li>

@@ -758,7 +758,7 @@ class TestTimeTableData(APIView):
         num_of_tests = []
 
         today = timezone.now().date()
-        for days_ago in range(7):
+        for days_ago in range(30):
             start = today - timedelta(days=days_ago)
             date_values.append(start)
             num_of_tests.append(PolarimeterTest.objects.filter(

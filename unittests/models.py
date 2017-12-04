@@ -127,6 +127,10 @@ def update_hdf5_test_file_attrs(file_name, poltest):
             h5_file.attrs[key] = value
 
 
+def get_polarimeter_name(num):
+    return 'STRIP{0:02d}'.format(num)
+
+
 class PolarimeterTest(models.Model):
     'A dedicated test done on one polarimeter'
 
@@ -161,7 +165,7 @@ class PolarimeterTest(models.Model):
 
     @property
     def polarimeter_name(self):
-        return 'STRIP{0:02d}'.format(self.polarimeter_number)
+        return get_polarimeter_name(self.polarimeter_number)
 
     def get_absolute_url(self):
         return reverse('unittests:test_details', kwargs={'test_id': self.pk})

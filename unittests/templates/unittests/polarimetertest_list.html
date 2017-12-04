@@ -19,44 +19,42 @@ LSPE/Strip DB: List of tests
     </div>
 
     <div class="twelve columns">
-        {% if tests %}
+        {% if polarimeter_tests %}
         <input type="text" id="polarimeter-test-filter" onkeyup="filterPolarimeterTable()" placeholder="Filter…">
-        <table id="polarimeter-test-table">
-            <thead>
-                <th>Polarimeter</th>
-                <th>Test</th>
-                <th>Acquisition date</th>
-                <th>PHSW</th>
-                <th>Actions</th>
-            </thead>
-            <tbody id="polarimeter-test-table-body">
-                {% for test in tests %}
-                <tr>
-                    <td>{{ test.polarimeter_name }}</a></td>
-                    <td>
-                        <a href="{% url 'unittests:test_details' test.id %}">
-                            {% if test.short_description %}
-                                {{ test.short_description }}
-                            {% else %}
-                                <i>{{ test.test_type }}</i>
-                            {% endif %}
-                        </a>
-                    </td>
-                    <td>{{ test.acquisition_date }}</td>
-                    <td>{{ test.phsw_state }}</td>
-                    <td>
-                        <a href="{% url 'unittests:test_update' test.id %}">
-                            <img src="{% static 'site/edit.svg' %}" width="32" height="32" alt="Edit"/>
-                        </a>
-                        &nbsp;
-                        <a href="{% url 'unittests:test_delete' test.id %}">
-                            <img src="{% static 'site/delete.svg' %}" width="32" height="32" alt="Delete"/>
-                        </a>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+
+        <ul id="polarimeter-test-list">
+            {% for cur_pol, cur_list_of_tests in polarimeter_tests.items %}
+            <li onclick="toggle_ul(this);">
+                <span class="polarimeter-name">
+                    <span class="dropdown-icon">&#9661;</span>{{ cur_pol }}
+                </span>
+                <ul class="polarimeter-test-sublist item_hide" hidden="true">
+                    {% for cur_test in cur_list_of_tests %}
+                    <li>
+                        <div class="test-definition">
+                            <a href="{% url 'unittests:test_update' cur_test.id %}"><!--
+                            --><img src="{% static 'site/edit.svg' %}" width="32" height="32" alt="Edit"/><!--
+                            --></a>
+                            &nbsp;
+                            <a href="{% url 'unittests:test_delete' cur_test.id %}"><!--
+                            --><img src="{% static 'site/delete.svg' %}" width="32" height="32" alt="Delete"/><!--
+                            --></a>
+                            <span class="test-description">
+                                <a href="{% url 'unittests:test_details' cur_test.id %}">
+                                    {% if cur_test.short_description %}
+                                        {{ cur_test.short_description }}
+                                    {% else %}
+                                        <i>{{ cur_test.test_type }}</i>
+                                    {% endif %}
+                                </a> ({{ cur_test.acquisition_date }})
+                            </span>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </li>
+            {% endfor %}
+        </ul>
         {% endif %}
     </div>
 </div>
@@ -104,6 +102,17 @@ LSPE/Strip DB: List of tests
             } else {
                 rows[rowidx].style.display = "none";
             }
+        }
+    }
+
+    function toggle_ul(obj) {
+        var list_of_children = $(".item_hide", obj);
+        if(list_of_children.is(":visible")) {
+            $(".polarimeter-name .dropdown-icon", obj).html("&#9661;");
+            list_of_children.slideUp(); 
+        } else {
+            $(".polarimeter-name .dropdown-icon", obj).html("&#9651;");
+            list_of_children.slideDown();
         }
     }
 </script>

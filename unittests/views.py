@@ -3,6 +3,7 @@
 '''Views of the "unittest" application
 '''
 
+from collections import OrderedDict
 from datetime import timedelta
 import mimetypes
 import os.path
@@ -28,6 +29,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response as RESTResponse
 
 from .models import (
+    get_polarimeter_name,
     PolarimeterTest,
     AdcOffset,
     DetectorOutput,
@@ -62,9 +64,24 @@ class TestListView(View):
     def get(self, request):
         'Produce a list of the tests in the database'
 
-        context = {
-            'tests': PolarimeterTest.objects.all()
-        }
+        # Get a list of the polarimeters which have at least one test
+        pol_nums = list(PolarimeterTest.objects.order_by()
+                        .values_list('polarimeter_number').order_by().distinct())
+        if pol_nums:
+            tests = OrderedDict()
+            for cur_pol_num, in pol_nums:
+                pol_name = get_polarimeter_name(cur_pol_num)
+                tests[pol_name] = \
+                    PolarimeterTest.objects.filter(
+                        polarimeter_number=cur_pol_num)
+
+            context = {
+                'tests': PolarimeterTest.objects.all(),
+                'polarimeter_tests': tests,
+            }
+        else:
+            context = {}
+
         return render(request, self.template, context)
 
 

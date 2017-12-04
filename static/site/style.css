@@ -66,6 +66,21 @@ nav li.last {
     cursor: pointer;
 }
 
+/* Hierarchical lists which can make their elements collapse */
+
+#polarimeter-test-list, .polarimeter-test-sublist {
+    list-style: none;
+}
+
+#polarimeter-test-list .polarimeter-name {
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.test-description {
+    vertical-align: 50%;
+}
+
 /* Other */
 
 h1, h2, h3, h4, h5, h6, h7 {

@@ -72,7 +72,7 @@ class TestListView(View):
             pol_nums.sort()
             for cur_pol_num in pol_nums:
                 pol_name = get_polarimeter_name(cur_pol_num)
-                tests[pol_name] =
+                tests[pol_name] = \
                     PolarimeterTest.objects.filter(
                         polarimeter_number=cur_pol_num)
 

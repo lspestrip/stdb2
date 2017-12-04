@@ -25,7 +25,7 @@ LSPE/Strip DB: List of tests
         <ul id="polarimeter-test-list">
             {% for cur_pol, cur_list_of_tests in polarimeter_tests.items %}
             <li>
-                <span class="polarimeter-name" onclick="toggle_ul(this.parent);">
+                <span class="polarimeter-name" onclick="toggle_ul(this);">
                     <span class="dropdown-icon">&#9661;</span>{{ cur_pol }}
                 </span>
                 <ul class="polarimeter-test-sublist item_hide" hidden="true">
@@ -106,7 +106,7 @@ LSPE/Strip DB: List of tests
     }
 
     function toggle_ul(obj) {
-        var list_of_children = $(".item_hide", obj);
+        var list_of_children = $(obj).next('ul');
         if(list_of_children.is(":visible")) {
             $(".polarimeter-name .dropdown-icon", obj).html("&#9661;");
             list_of_children.slideUp(); 

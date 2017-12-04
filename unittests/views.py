@@ -65,18 +65,18 @@ class TestListView(View):
         'Produce a list of the tests in the database'
 
         # Get a list of the polarimeters which have at least one test
-        pol_nums = list(PolarimeterTest.objects.order_by()
-                        .values_list('polarimeter_number').order_by().distinct())
+        pol_nums = [x[0] for x in PolarimeterTest.objects.order_by()
+                        .values_list('polarimeter_number').distinct())]
         if pol_nums:
-            tests = OrderedDict()
-            for cur_pol_num, in pol_nums:
-                pol_name = get_polarimeter_name(cur_pol_num)
-                tests[pol_name] = \
+            tests=OrderedDict()
+            pol_nums.sort()
+            for cur_pol_num in pol_nums:
+                pol_name=get_polarimeter_name(cur_pol_num)
+                tests[pol_name]=
                     PolarimeterTest.objects.filter(
-                        polarimeter_number=cur_pol_num)
+                        polarimeter_number = cur_pol_num)
 
-            context = {
-                'tests': PolarimeterTest.objects.all(),
+            context={
                 'polarimeter_tests': tests,
             }
         else:

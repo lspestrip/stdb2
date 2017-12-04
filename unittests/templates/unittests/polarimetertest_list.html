@@ -24,8 +24,8 @@ LSPE/Strip DB: List of tests
 
         <ul id="polarimeter-test-list">
             {% for cur_pol, cur_list_of_tests in polarimeter_tests.items %}
-            <li onclick="toggle_ul(this);">
-                <span class="polarimeter-name">
+            <li>
+                <span class="polarimeter-name" onclick="toggle_ul(this.parent);">
                     <span class="dropdown-icon">&#9661;</span>{{ cur_pol }}
                 </span>
                 <ul class="polarimeter-test-sublist item_hide" hidden="true">

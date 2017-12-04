@@ -26,10 +26,16 @@ LSPE/Strip DB: Dashboard
 
 <div class="section users">
     <div class="row">
-        <div class="four columns">
+        <div class="twelve columns">
             <h4>
                 Users
             </h4>
+
+            <p>The following plot shows how many tests each user has saved in the database.</p>
+
+            <div id="user-activity-plot" style="height: 280px">
+                <!-- plotly chart -->
+            </div>
         </div>
     </div>
 </div>
@@ -52,6 +58,18 @@ LSPE/Strip DB: Dashboard
         }
     });
 
+    $.ajax({
+        method: "GET",
+        url: "{% url 'unittests:api-tests-users' %}",
+        success: function(data) {
+            plot_user_activity_chart(data.users);
+        },
+        error: function(error_data) {
+            console.log("error:");
+            console.log(error_data);
+        }
+    });
+
     function plot_date_chart() {
         var data = [{
             x: timePlotDate,
@@ -67,6 +85,40 @@ LSPE/Strip DB: Dashboard
         };
 
         Plotly.newPlot("timeline-plot", data, layout);
+    }
+
+    function plot_user_activity_chart(users) {
+        var user_names = [];
+        var user_counts = [];
+
+        /* Sort users according to the number of tests they have
+           saved in the database, then by their names */
+        users.sort(function(a, b) { 
+            if(a.num_of_tests != b.num_of_tests)
+                return a.num_of_tests - b.num_of_tests;
+            else
+                return a.name < b.name;
+        })
+        for(var i = 0; i < users.length; i++) {
+            if(users[i].num_of_tests > 0) {
+                user_names.push(users[i].name);
+                user_counts.push(users[i].num_of_tests);
+            }
+        }
+        var data = [{
+            x: user_counts,
+            y: user_names,
+            type: "bar",
+            orientation: "h"
+        }];
+
+        var layout = {
+            yaxis: {
+                title: "Number of tests"
+            }
+        };
+
+        Plotly.newPlot("user-activity-plot", data, layout);
     }
 
 </script>

@@ -12,6 +12,7 @@ import simplejson as json
 from django.contrib.auth import get_user
 from django.core.urlresolvers import reverse_lazy
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth import get_user_model
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils.decorators import method_decorator
@@ -751,6 +752,22 @@ class BandpassAnalysisReport(DownloadReportMixin, View):
 
 
 # REST classes (used for plots)
+
+class UsersData(APIView):
+    def get(self, request, format=None):
+        users = []
+
+        for cur_user in get_user_model().objects.all():
+            users.append({
+                'id': cur_user.pk,
+                'name': cur_user.username,
+                'num_of_tests': PolarimeterTest.objects.filter(author=cur_user).count(),
+            })
+
+        return RESTResponse({
+            'users': users,
+        })
+
 
 class TestTimeTableData(APIView):
     def get(self, request, format=None):

@@ -1,8 +1,43 @@
-/* Navigation bar (left side) */
+/* Enable CSS grids */
+* {
+    box-sizing: border-box;
+}
 
 nav {
-    position: fixed;
+    width: 15rem;
+    float: left;
 }
+
+.main {
+    width: calc(100% - 18rem);
+    float: right;
+}
+
+/* General style */
+
+html {
+    font-family: "Raleway", "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    line-height: 1.6;
+}
+
+h1 { font-size: 5.0rem; line-height: 1.2; }
+h2 { font-size: 4.0rem; line-height: 1.2; }
+h3 { font-size: 3.0rem; line-height: 1.1; }
+h4 { font-size: 2.0rem; line-height: 1.1; }
+h5 { font-size: 1.5rem; line-height: 1.0; }
+
+th, td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #777;
+}
+
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+/* Navigation bar (left side) */
 
 nav ul {
     background-color: #333;

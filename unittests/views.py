@@ -770,6 +770,32 @@ class BandpassAnalysisReport(DownloadReportMixin, View):
 
 # REST classes (used for plots)
 
+class TnoiseData(APIView):
+    def get(self, request, format=None):
+        pol_nums = [x[0] for x in NoiseTemperatureAnalysis.objects.order_by('test__polarimeter_number')
+                    .values_list('test__polarimeter_number').distinct()]
+
+        tnoise = []
+        tnoise_err = []
+        for cur_pol_num in pol_nums:
+            data = NoiseTemperatureAnalysis.objects.filter(
+                test__polarimeter_number=cur_pol_num).all()
+            cur_tnoise = []
+            cur_tnoise_err = []
+            for cur_val in data:
+                cur_tnoise.append(cur_val.noise_temperature)
+                cur_tnoise_err.append(cur_val.noise_temperature_err)
+
+            tnoise.append(cur_tnoise)
+            tnoise_err.append(cur_tnoise_err)
+
+        return RESTResponse({
+            'polarimeters': [get_polarimeter_name(x) for x in pol_nums],
+            'tnoise': tnoise,
+            'error': tnoise_err,
+        })
+
+
 class UsersData(APIView):
     def get(self, request, format=None):
         users = []

@@ -8,6 +8,9 @@ LSPE/Strip DB: List of tests
 <h2>Noise temperature estimates</h2>
 
 <p>Number of reports in the database: {{ tnoise_tests | length }}</p>
+
+<div id="tnoise-plot" style="height: 280px"></div>
+
 <table>
     <thead>
         <th>Polarimeter</th>
@@ -40,4 +43,51 @@ LSPE/Strip DB: List of tests
         {% endfor %}
     </tbody>
 </table>
+
+<script>
+    $.ajax({
+        method: "GET",
+        url: "{% url 'unittests:api-tnoise-data' %}",
+        success: function(data) {
+            pol_name = data.polarimeters;
+            tnoise = data.tnoise;
+            error = data.error;
+
+            plot_tnoise_chart(pol_name, tnoise, error);
+        },
+        error: function(error_data) {
+            console.log("error:");
+            console.log(error_data);
+        }
+    });
+
+    function mean(arr) {
+        var sum = 0.0;
+        for (var i = 0; i < arr.length; i++) {
+            sum += arr[i];
+        }
+
+        return sum / arr.length;
+    }
+
+    function plot_tnoise_chart(pol_name, tnoise, error) {
+        mean_tnoise = [];
+        text = [];
+        for(var i = 0; i < tnoise.length; i++) {
+            mean_tnoise.push(mean(tnoise[i]));
+            text.push('mean of ' + tnoise[i].length.toString() + ' estimate(s)');
+        }
+
+        var data = [{
+            x: mean_tnoise,
+            y: pol_name,
+            text: text,
+            type: "bar",
+            orientation: "h"
+        }];
+
+        Plotly.newPlot("tnoise-plot", data, { });
+    }
+
+</script>
 {% endblock %}

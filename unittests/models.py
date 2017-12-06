@@ -167,6 +167,13 @@ class PolarimeterTest(models.Model):
     def polarimeter_name(self):
         return get_polarimeter_name(self.polarimeter_number)
 
+    @property
+    def test_description(self):
+        if self.short_description:
+            return self.short_description
+        else:
+            return self.test_type.description
+
     def get_absolute_url(self):
         return reverse('unittests:test_details', kwargs={'test_id': self.pk})
 
@@ -458,9 +465,9 @@ class NoiseTemperatureAnalysis(models.Model):
         settings.AUTH_USER_MODEL, related_name='tnoise_owned')
 
     def __str__(self):
-        return ('Tnoise={0} for {1}'
+        return ('Tnoise = {0}±{1} K'
                 .format(self.noise_temperature,
-                        self.test.polarimeter_name))
+                        self.noise_temperature_err))
 
     def get_absolute_url(self):
         return reverse('unittests:tnoise_list')

@@ -22,6 +22,7 @@ from django.views import View
 from django.views.generic import (
     CreateView,
     DeleteView,
+    TemplateView,
     UpdateView,
 )
 
@@ -258,6 +259,37 @@ class TestPwrPlot(View):
         resp['Content-Disposition'] = 'attachment; filename="{0}"'.format(
             os.path.basename(image_file.name))
         return resp
+
+
+class PolarimeterDetails(TemplateView):
+    template_name = 'unittests/polarimeter_details.html'
+
+    def get_context_data(self, **kwargs):
+        'Details about a polarimeter'
+
+        context = super().get_context_data(**kwargs)
+        polarimeter_name = context['pol_name']
+        polarimeter_number = int(polarimeter_name[5:7])
+        context['polarimeter_name'] = polarimeter_name
+        context['polarimeter_number'] = polarimeter_number
+
+        context['tests'] = \
+            PolarimeterTest.objects.filter(
+                polarimeter_number=polarimeter_number).all()
+
+        context['bandpasses'] = \
+            BandpassAnalysis.objects.filter(
+                test__polarimeter_number=polarimeter_number).all()
+
+        context['noise_temperatures'] = \
+            NoiseTemperatureAnalysis.objects.filter(
+                test__polarimeter_number=polarimeter_number).all()
+
+        context['spectrums'] = \
+            SpectralAnalysis.objects.filter(
+                test__polarimeter_number=polarimeter_number).all()
+
+        return context
 
 
 @method_decorator(login_required, name='dispatch')

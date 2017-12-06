@@ -24,7 +24,11 @@ LSPE/Strip DB: List of tests
     <tbody>
         {% for cur in tnoise_tests %}
         <tr>
-            <td>{{ cur.test.polarimeter_name }}</td>
+            <td>
+                <a href="{% url 'unittests:polarimeter_details' cur.test.polarimeter_name %}">
+                    {{ cur.test.polarimeter_name }}
+                </a>
+            </td>
             <td>
                 <a href="{% url 'unittests:test_details' cur.test.id %}">{{ cur.test.test_type }} (PHSW {{ cur.test.phsw_state }})</a>
             </td>

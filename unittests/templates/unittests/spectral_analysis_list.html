@@ -23,7 +23,11 @@ LSPE/Strip DB: List of spectral analysis results
     <tbody>
         {% for cur in spectral_analysis_tests %}
         <tr>
-            <td>{{ cur.test.polarimeter_name }}</td>
+            <td>
+                <a href="{% url 'unittests:polarimeter_details' cur.test.polarimeter_name %}">
+                    {{ cur.test.polarimeter_name }}
+                </a>
+            </td>
             <td>
                 <a href="{% url 'unittests:test_details' cur.test.id %}">{{ cur.test.test_type }}</a>
             </td>

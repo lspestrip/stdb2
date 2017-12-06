@@ -25,9 +25,9 @@ LSPE/Strip DB: List of tests
         <ul id="polarimeter-test-list">
             {% for cur_pol, cur_list_of_tests in polarimeter_tests.items %}
             <li>
-                <span class="polarimeter-name" onclick="toggle_ul(this);">
-                    <span class="dropdown-icon">&#9661;</span>{{ cur_pol }}
-                </span>
+                <span class="polarimeter-name">
+                    <a href="{% url 'unittests:polarimeter_details' cur_pol %}">{{ cur_pol }}</a>
+                </span><span class="dropdown-icon" onclick="toggle_ul(this);">&#9661;</span>
                 <ul class="polarimeter-test-sublist item_hide" hidden="true">
                     {% for cur_test in cur_list_of_tests %}
                     <li>
@@ -108,10 +108,10 @@ LSPE/Strip DB: List of tests
     function toggle_ul(obj) {
         var list_of_children = $(obj).next('ul');
         if(list_of_children.is(":visible")) {
-            $(".polarimeter-name .dropdown-icon", obj).html("&#9661;");
+            $(".dropdown-icon", obj).html("&#9661;");
             list_of_children.slideUp(); 
         } else {
-            $(".polarimeter-name .dropdown-icon", obj).html("&#9651;");
+            $(".dropdown-icon", obj).html("&#9651;");
             list_of_children.slideDown();
         }
     }

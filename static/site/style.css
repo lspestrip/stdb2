@@ -107,7 +107,7 @@ nav li.last {
     list-style: none;
 }
 
-#polarimeter-test-list .polarimeter-name {
+#polarimeter-test-list .dropdown-icon {
     font-weight: bold;
     cursor: pointer;
 }

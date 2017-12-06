@@ -24,6 +24,9 @@ urlpatterns = [
     url(r'^tests/(?P<pk>\d+)/delete$',
         views.TestDeleteView.as_view(), name='test_delete'),
 
+    url(r'^(?P<pol_name>STRIP\d+)/$',
+        views.PolarimeterDetails.as_view(), name='polarimeter_details'),
+
     url(r'^tests/(?P<test_id>\d+)/newadcoffset$',
         views.AdcOffsetAddView.as_view(), name='adc_create'),
     url(r'^tests/(?P<test_id>\d+)/newadcoffset/json$',

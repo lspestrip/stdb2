@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block title %}
+LSPE/Strip DB: List of tests
+{% endblock %}
+
+{% block content %}
+<h2>{{ polarimeter_name }}</h2>
+
+{% if tests %}
+<section id="test-section">
+    <h3>Tests</h3>
+
+    <ul>
+    {% for test in tests %}
+        <li><a href="{% url 'unittests:test_details' test.id %}">{{ test.test_description }}</a></li>
+    {% endfor %}
+    </ul>
+</section>
+{% endif %}
+
+{% if bandpasses %}
+<section id='bandpass-section'>
+    <h3>Bandpass estimates</h3>
+
+    <ul>
+        {% for band in bandpasses %}
+        <li>
+            <a href="{% url 'unittests:test_details' band.test.id %}">
+                {{ band.test.test_description }}   
+            </a>:
+            &nu;<sub>cen</sub> = 
+            {{ band.central_frequency_ghz|floatformat:1 }}&plusmn;{{ band.central_frequency_err|floatformat:1 }} GHz,
+            &Delta;&nu; =
+            {{ band.bandwidth_ghz|floatformat:1 }}&plusmn;{{ band.bandwidth_err|floatformat:1 }} GHz
+        </li>
+        {% endfor %}
+    </ul>
+</section>
+{% endif %}
+
+{% if noise_temperatures %}
+<section id='tnoise-section'>
+    <h3>Noise temperature estimates</h3>
+
+    <ul>
+        {% for tnoise in noise_temperatures %}
+        <li>
+            <a href="{% url 'unittests:test_details' tnoise.test.id %}">
+                {{ tnoise.test.test_description }}   
+            </a>:
+            T<sub>noise</sub> = 
+            {{ tnoise.noise_temperature|floatformat:1 }}&plusmn;{{ tnoise.noise_temperature_err|floatformat:1 }} K
+        </li>
+        {% endfor %}
+    </ul>
+</section>
+{% endif %}
+
+{% if spectrums %}
+<section id='spectrum-section'>
+    <h3>Spectrum estimates</h3>
+
+    <ul>
+        {% for spec in spectrums %}
+        <li>
+            <a href="{% url 'unittests:test_details' spec.test.id %}">
+                {{ spec.test.test_description }}   
+            </a>:
+            f<sub>knee</sub> = 
+            {{ spec.oof_knee_frequency_hz|floatformat:1 }}&plusmn;{{ spec.oof_knee_frequency_err|floatformat:1 }} Hz,
+            wn =
+            {{ spec.wn_level_adu2_rhz|floatformat:1 }}&plusmn;{{ spec.wn_level_err|floatformat:1 }} ADU<sup>2</sup>/&radic;Hz
+        </li>
+        {% endfor %}
+    </ul>
+</section>
+{% endif %}
+
+{% endblock %}

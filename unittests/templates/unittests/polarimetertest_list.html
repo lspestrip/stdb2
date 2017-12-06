@@ -6,19 +6,19 @@ LSPE/Strip DB: List of tests
 {% endblock %}
 
 {% block content %}
-<div class="row">
-    <div class="column" style="margin-top: 1em">
+<div class="content">
+    <div style="margin-top: 1em">
         <h2>Polarimetric unit tests</h2>
         <p>Number of tests in the database: {{ tests | length }}</p>
     </div>
 
-    <div class="twelve columns action-bar">
+    <div class="action-bar">
         <ul>
             <li><a href="{% url 'unittests:test_create' %}">Add test</a></li>
         </ul>
     </div>
 
-    <div class="twelve columns">
+    <div>
         {% if polarimeter_tests %}
         <input type="text" id="polarimeter-test-filter" onkeyup="filterPolarimeterTable()" placeholder="Filter…">
 

@@ -16,54 +16,87 @@ LSPE/Strip DB: Details of test on STRIP{{test.polarimeter_number}}
 </h2>
 
 <div class="section general">
-    <div class="row">
-        <div class="column">
-            <h5>General information</h5>
+    <h5>General information</h5>
 
-            {% if test.pwr_plot %}
-            <div id='pwrplot-div'>
-                <img id='pwrplot' src="{% url 'unittests:test_pwr_plot' test.id %}"/>
-            </div>
-            {% endif %}
-
-            <p>
-                <a href="{% url 'unittests:test_update' test.id %}">
-                    <img src="{% static 'site/edit.svg' %}" width="32" height="32" alt="Edit"/>
-                </a>
-                <a href="{% url 'unittests:test_delete' test.id %}">
-                    <img src="{% static 'site/delete.svg' %}" width="32" height="32" alt="Delete"/>
-                </a>
-            </p>
-
-            <table>
-                <tr><td><b>Acquisition date</b></td><td>
-                    <time datetime="{{test.acquisition_date|date:"Y-m-d"}}">{{test.acquisition_date|date:"l, F j, Y"}}</time>
-                </td></tr>
-                <tr><td><b>Band</b></td><td>{{test.band}}</td></tr>
-                <tr><td><b>Cryogenic?</b></td><td>{{test.cryogenic|yesno|capfirst}}</td></tr>
-                <tr><td><b>Operators</b></td><td>{{ operators|join:", " }}</td></tr>
-                {% if test.short_description %}
-                <tr><td><b>Description</b></td><td>{{ test.short_description }}</td></tr>
-                {% endif %}
-                <tr><td><b>Notes</b></td><td>{% if test.notes %} {{test.notes|linebreaks}} {% else %} (None) {% endif %}</td></tr>
-                <tr><td><b>Author</b></td><td>{{test.author}}</td></tr>
-                <tr><td><b>Date of creation</b></td><td>
-                    <time datetime="{{test.creation_date|date:"Y-m-d"}}">{{test.creation_date|date:"l, F j, Y"}}</time>
-                </td></tr>
-                <tr><td><b>JSON record</b></td><td><a href="{% url 'unittests:test_details_json' test.id %}">Link</a></td></tr>
-            </table>
-            <p><a href="{% url 'unittests:test_download' test.id %}">Download data file</a>  ({{test.data_file.size|filesizeformat}})</p>
-        </div>
+    {% if test.pwr_plot %}
+    <div id='pwrplot-div'>
+        <img id='pwrplot' src="{% url 'unittests:test_pwr_plot' test.id %}"/>
     </div>
+    {% endif %}
+
+    <p>
+        <a href="{% url 'unittests:test_update' test.id %}">
+            <img src="{% static 'site/edit.svg' %}" width="32" height="32" alt="Edit"/>
+        </a>
+        <a href="{% url 'unittests:test_delete' test.id %}">
+            <img src="{% static 'site/delete.svg' %}" width="32" height="32" alt="Delete"/>
+        </a>
+    </p>
+
+    <table>
+        <tr><td><b>Acquisition date</b></td><td>
+            <time datetime="{{test.acquisition_date|date:"Y-m-d"}}">{{test.acquisition_date|date:"l, F j, Y"}}</time>
+        </td></tr>
+        <tr><td><b>Band</b></td><td>{{test.band}}</td></tr>
+        <tr><td><b>Cryogenic?</b></td><td>{{test.cryogenic|yesno|capfirst}}</td></tr>
+        <tr><td><b>Operators</b></td><td>{{ operators|join:", " }}</td></tr>
+        {% if test.short_description %}
+        <tr><td><b>Description</b></td><td>{{ test.short_description }}</td></tr>
+        {% endif %}
+        <tr><td><b>Notes</b></td><td>{% if test.notes %} {{test.notes|linebreaks}} {% else %} (None) {% endif %}</td></tr>
+        <tr><td><b>Author</b></td><td>{{test.author}}</td></tr>
+        <tr><td><b>Date of creation</b></td><td>
+            <time datetime="{{test.creation_date|date:"Y-m-d"}}">{{test.creation_date|date:"l, F j, Y"}}</time>
+        </td></tr>
+        <tr><td><b>JSON record</b></td><td><a href="{% url 'unittests:test_details_json' test.id %}">Link</a></td></tr>
+    </table>
+    <p><a href="{% url 'unittests:test_download' test.id %}">Download data file</a>  ({{test.data_file.size|filesizeformat}})</p>
 </div>
 
 <div class="section housekeepings1">
-    <div class="row">
-        <div class="one-half column">
-            <h5>ADC offsets</h5>
+    <div class="one-half column">
+        <h5>ADC offsets</h5>
 
-            {% if adc_offsets %}
-            <table class="data-table" id="adc-offsets-table">
+        {% if adc_offsets %}
+        <table class="data-table" id="adc-offsets-table">
+            <thead>
+                <th>PWR0</th>
+                <th>PWR1</th>
+                <th>PWR2</th>
+                <th>PWR3</th>
+            </thead>
+            <tbody>
+                {% for ofs in adc_offsets %}
+                <tr>
+                    <td>{{ofs.q1_adu}}</td>
+                    <td>{{ofs.u1_adu}}</td>
+                    <td>{{ofs.u2_adu}}</td>
+                    <td>{{ofs.q2_adu}}</td>
+                    <td>
+                        <a href="{% url 'unittests:adc_update' test.id ofs.id %}">
+                            <img src="{% static 'site/edit.svg' %}" width="32" height="32" alt="Edit"/>
+                        </a>
+                        <a href="{% url 'unittests:adc_delete' test.id ofs.id %}">
+                            <img src="{% static 'site/delete.svg' %}" width="32" height="32" alt="Delete"/>
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% endif %}
+
+        <ul class="data-table-actions">
+            <li><a href="{% url 'unittests:adc_create' test.id %}">Add new</a></li>
+            <li><a href="{% url 'unittests:adc_create_json' test.id %}">Import a JSON file</a></li>
+        </ul>
+    </div>
+
+    <div class="one-half column">
+        <h5>Detector outputs</h5>
+        
+            {% if det_outputs %}
+            <table class="data-table" id="detector-outputs">
                 <thead>
                     <th>PWR0</th>
                     <th>PWR1</th>
@@ -71,17 +104,17 @@ LSPE/Strip DB: Details of test on STRIP{{test.polarimeter_number}}
                     <th>PWR3</th>
                 </thead>
                 <tbody>
-                    {% for ofs in adc_offsets %}
+                    {% for out in det_outputs %}
                     <tr>
-                        <td>{{ofs.q1_adu}}</td>
-                        <td>{{ofs.u1_adu}}</td>
-                        <td>{{ofs.u2_adu}}</td>
-                        <td>{{ofs.q2_adu}}</td>
+                        <td>{{out.q1_adu}}</td>
+                        <td>{{out.u1_adu}}</td>
+                        <td>{{out.u2_adu}}</td>
+                        <td>{{out.q2_adu}}</td>
                         <td>
-                            <a href="{% url 'unittests:adc_update' test.id ofs.id %}">
+                            <a href="{% url 'unittests:detoutput_update' test.id out.id %}">
                                 <img src="{% static 'site/edit.svg' %}" width="32" height="32" alt="Edit"/>
                             </a>
-                            <a href="{% url 'unittests:adc_delete' test.id ofs.id %}">
+                            <a href="{% url 'unittests:detoutput_delete' test.id out.id %}">
                                 <img src="{% static 'site/delete.svg' %}" width="32" height="32" alt="Delete"/>
                             </a>
                         </td>
@@ -90,165 +123,124 @@ LSPE/Strip DB: Details of test on STRIP{{test.polarimeter_number}}
                 </tbody>
             </table>
             {% endif %}
-
+        
             <ul class="data-table-actions">
-                <li><a href="{% url 'unittests:adc_create' test.id %}">Add new</a></li>
-                <li><a href="{% url 'unittests:adc_create_json' test.id %}">Import a JSON file</a></li>
+                <li><a href="{% url 'unittests:detoutput_create' test.id %}">Add new</a></li>
+                <li><a href="{% url 'unittests:detoutput_create_json' test.id %}">Import a JSON file</a></li>
             </ul>
-        </div>
-
-        <div class="one-half column">
-            <h5>Detector outputs</h5>
-            
-                {% if det_outputs %}
-                <table class="data-table" id="detector-outputs">
-                    <thead>
-                        <th>PWR0</th>
-                        <th>PWR1</th>
-                        <th>PWR2</th>
-                        <th>PWR3</th>
-                    </thead>
-                    <tbody>
-                        {% for out in det_outputs %}
-                        <tr>
-                            <td>{{out.q1_adu}}</td>
-                            <td>{{out.u1_adu}}</td>
-                            <td>{{out.u2_adu}}</td>
-                            <td>{{out.q2_adu}}</td>
-                            <td>
-                                <a href="{% url 'unittests:detoutput_update' test.id out.id %}">
-                                    <img src="{% static 'site/edit.svg' %}" width="32" height="32" alt="Edit"/>
-                                </a>
-                                <a href="{% url 'unittests:detoutput_delete' test.id out.id %}">
-                                    <img src="{% static 'site/delete.svg' %}" width="32" height="32" alt="Delete"/>
-                                </a>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-                {% endif %}
-            
-                <ul class="data-table-actions">
-                    <li><a href="{% url 'unittests:detoutput_create' test.id %}">Add new</a></li>
-                    <li><a href="{% url 'unittests:detoutput_create_json' test.id %}">Import a JSON file</a></li>
-                </ul>
-        </div>
     </div>
 </div>
 
 <div class="section housekeepings2">
-    <div class="row">
-        <div class="one-half column">
-            <h5>HEMT biases</h5>
+    <div class="one-half column">
+        <h5>HEMT biases</h5>
 
-            {% if biases %}
-            <table class="data-table" id="bias-table">
-                <thead>
-                    <th>HEMT</th>
-                    <th>V<sub>d</sub> [V]</th>
-                    <th>I<sub>d</sub> [mA]</th>
-                    <th>V<sub>g</sub> [mV]</th>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>H0 (HA1)</td>
-                        <td>{{biases.drain_voltage_ha1_V}}</td>
-                        <td>{{biases.drain_current_ha1_mA}}</td>
-                        <td>{{biases.gate_voltage_ha1_mV}}</td>
-                    </tr>
-                    <tr>
-                        <td>H1 (HB1)</td>
-                        <td>{{biases.drain_voltage_hb1_V}}</td>
-                        <td>{{biases.drain_current_hb1_mA}}</td>
-                        <td>{{biases.gate_voltage_hb1_mV}}</td>
-                    </tr>
-                    <tr>
-                        <td>H2 (HA2)</td>
-                        <td>{{biases.drain_voltage_ha2_V}}</td>
-                        <td>{{biases.drain_current_ha2_mA}}</td>
-                        <td>{{biases.gate_voltage_ha2_mV}}</td>
-                    </tr>
-                    <tr>
-                        <td>H3 (HB2)</td>
-                        <td>{{biases.drain_voltage_hb2_V}}</td>
-                        <td>{{biases.drain_current_hb2_mA}}</td>
-                        <td>{{biases.gate_voltage_hb2_mV}}</td>
-                    </tr>
-                    <tr>
-                        <td>H4 (HA3)</td>
-                        <td>{{biases.drain_voltage_ha3_V}}</td>
-                        <td>{{biases.drain_current_ha3_mA}}</td>
-                        <td>{{biases.gate_voltage_ha3_mV}}</td>
-                    </tr>
-                    <tr>
-                        <td>H5 (HB3)</td>
-                        <td>{{biases.drain_voltage_hb3_V}}</td>
-                        <td>{{biases.drain_current_hb3_mA}}</td>
-                        <td>{{biases.gate_voltage_hb3_mV}}</td>
-                    </tr>
-                </tbody>
-            </table>
-            <ul class="data-table-actions">
-                <a href="{% url 'unittests:biases_update' test.id biases.id %}">
-                    <img src="{% static 'site/edit.svg' %}" width="32" height="32" alt="Edit"/>
-                </a>
-                <a href="{% url 'unittests:biases_delete' test.id biases.id %}">Delete</a>
-            </ul>
+        {% if biases %}
+        <table class="data-table" id="bias-table">
+            <thead>
+                <th>HEMT</th>
+                <th>V<sub>d</sub> [V]</th>
+                <th>I<sub>d</sub> [mA]</th>
+                <th>V<sub>g</sub> [mV]</th>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>H0 (HA1)</td>
+                    <td>{{biases.drain_voltage_ha1_V}}</td>
+                    <td>{{biases.drain_current_ha1_mA}}</td>
+                    <td>{{biases.gate_voltage_ha1_mV}}</td>
+                </tr>
+                <tr>
+                    <td>H1 (HB1)</td>
+                    <td>{{biases.drain_voltage_hb1_V}}</td>
+                    <td>{{biases.drain_current_hb1_mA}}</td>
+                    <td>{{biases.gate_voltage_hb1_mV}}</td>
+                </tr>
+                <tr>
+                    <td>H2 (HA2)</td>
+                    <td>{{biases.drain_voltage_ha2_V}}</td>
+                    <td>{{biases.drain_current_ha2_mA}}</td>
+                    <td>{{biases.gate_voltage_ha2_mV}}</td>
+                </tr>
+                <tr>
+                    <td>H3 (HB2)</td>
+                    <td>{{biases.drain_voltage_hb2_V}}</td>
+                    <td>{{biases.drain_current_hb2_mA}}</td>
+                    <td>{{biases.gate_voltage_hb2_mV}}</td>
+                </tr>
+                <tr>
+                    <td>H4 (HA3)</td>
+                    <td>{{biases.drain_voltage_ha3_V}}</td>
+                    <td>{{biases.drain_current_ha3_mA}}</td>
+                    <td>{{biases.gate_voltage_ha3_mV}}</td>
+                </tr>
+                <tr>
+                    <td>H5 (HB3)</td>
+                    <td>{{biases.drain_voltage_hb3_V}}</td>
+                    <td>{{biases.drain_current_hb3_mA}}</td>
+                    <td>{{biases.gate_voltage_hb3_mV}}</td>
+                </tr>
+            </tbody>
+        </table>
+        <ul class="data-table-actions">
+            <a href="{% url 'unittests:biases_update' test.id biases.id %}">
+                <img src="{% static 'site/edit.svg' %}" width="32" height="32" alt="Edit"/>
+            </a>
+            <a href="{% url 'unittests:biases_delete' test.id biases.id %}">Delete</a>
+        </ul>
 
-            {% else %}
-            <ul class="data-table-actions">
-                <li><a href="{% url 'unittests:biases_create' test.id %}">Add new</a></li>
-                <li><a href="{% url 'unittests:biases_create_json' test.id %}">Import a JSON file</a></li>
-            </ul>
-            {% endif %}
-        </div>
+        {% else %}
+        <ul class="data-table-actions">
+            <li><a href="{% url 'unittests:biases_create' test.id %}">Add new</a></li>
+            <li><a href="{% url 'unittests:biases_create_json' test.id %}">Import a JSON file</a></li>
+        </ul>
+        {% endif %}
+    </div>
 
-        <div class="one-half column">
-            <h5>Temperatures</h5>
+    <div class="one-half column">
+        <h5>Temperatures</h5>
 
-            {% if temperatures %}
-            <table class="data-table" id="temperature-table">
-                <thead>
-                    <th>T<sub>A1</sub> [K]</th>
-                    <th>T<sub>A2</sub> [K]</th>
-                    <th>T<sub>B1</sub> [K]</th>
-                    <th>T<sub>B2</sub> [K]</th>
-                    <th>T<sub>p1</sub> [K]</th>
-                    <th>T<sub>p2</sub> [K]</th>
-                    <th>T<sub>c1</sub> [K]</th>
-                    <th>T<sub>c2</sub> [K]</th>
-                </thead>
-                <tbody>
-                    {% for temp in temperatures %}
-                    <tr>
-                        <td>{{temp.t_load_a_1}}</td>
-                        <td>{{temp.t_load_a_2}}</td>
-                        <td>{{temp.t_load_b_1}}</td>
-                        <td>{{temp.t_load_b_2}}</td>
-                        <td>{{temp.t_polarimeter_1}}</td>
-                        <td>{{temp.t_polarimeter_2}}</td>
-                        <td>{{temp.t_cross_guide_1}}</td>
-                        <td>{{temp.t_cross_guide_2}}</td>
-                        <td>
-                            <a href="{% url 'unittests:temperature_update' test.id temp.id %}">
-                                <img src="{% static 'site/edit.svg' %}" width="32" height="32" alt="Edit"/>
-                            </a>
-                            <a href="{% url 'unittests:temperature_delete' test.id temp.id %}">
-                                <img src="{% static 'site/delete.svg' %}" width="32" height="32" alt="Delete"/>
-                            </a>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-            {% endif %}
+        {% if temperatures %}
+        <table class="data-table" id="temperature-table">
+            <thead>
+                <th>T<sub>A1</sub> [K]</th>
+                <th>T<sub>A2</sub> [K]</th>
+                <th>T<sub>B1</sub> [K]</th>
+                <th>T<sub>B2</sub> [K]</th>
+                <th>T<sub>p1</sub> [K]</th>
+                <th>T<sub>p2</sub> [K]</th>
+                <th>T<sub>c1</sub> [K]</th>
+                <th>T<sub>c2</sub> [K]</th>
+            </thead>
+            <tbody>
+                {% for temp in temperatures %}
+                <tr>
+                    <td>{{temp.t_load_a_1}}</td>
+                    <td>{{temp.t_load_a_2}}</td>
+                    <td>{{temp.t_load_b_1}}</td>
+                    <td>{{temp.t_load_b_2}}</td>
+                    <td>{{temp.t_polarimeter_1}}</td>
+                    <td>{{temp.t_polarimeter_2}}</td>
+                    <td>{{temp.t_cross_guide_1}}</td>
+                    <td>{{temp.t_cross_guide_2}}</td>
+                    <td>
+                        <a href="{% url 'unittests:temperature_update' test.id temp.id %}">
+                            <img src="{% static 'site/edit.svg' %}" width="32" height="32" alt="Edit"/>
+                        </a>
+                        <a href="{% url 'unittests:temperature_delete' test.id temp.id %}">
+                            <img src="{% static 'site/delete.svg' %}" width="32" height="32" alt="Delete"/>
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% endif %}
 
-            <ul class="data-table-actions">
-                <a href="{% url 'unittests:temperature_create' test.id %}">Add new</a>
-                <li><a href="{% url 'unittests:temperature_create_json' test.id %}">Import a JSON file</a></li>
-            </ul>
-        </div>
+        <ul class="data-table-actions">
+            <a href="{% url 'unittests:temperature_create' test.id %}">Add new</a>
+            <li><a href="{% url 'unittests:temperature_create_json' test.id %}">Import a JSON file</a></li>
+        </ul>
     </div>
 </div>
 

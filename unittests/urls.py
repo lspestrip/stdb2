@@ -72,7 +72,7 @@ urlpatterns = [
         views.TnoiseAddFromJsonView.as_view(), name='tnoise_create_json'),
     url(r'^tests/(?P<test_id>\d+)/tnoise/(?P<pk>\d+)/update$',
         views.TnoiseUpdateView.as_view(), name='tnoise_update'),
-    url(r'^tests/(?P<test_id>\d+)/tnoise/(?P<obj_id>\d+)/delete$',
+    url(r'^tnoise/(?P<pk>\d+)/delete$',
         views.TnoiseDeleteView.as_view(), name='tnoise_delete'),
 
     url(r'^bandpass/$', views.BandpassAnalysisListView.as_view(),
@@ -83,7 +83,7 @@ urlpatterns = [
         views.BandpassAnalysisAddView.as_view(), name='bandpass_create'),
     url(r'^tests/(?P<test_id>\d+)/bandpass/(?P<pk>\d+)/update$',
         views.BandpassAnalysisUpdateView.as_view(), name='bandpass_update'),
-    url(r'^tests/(?P<test_id>\d+)/bandpass/(?P<obj_id>\d+)/delete$',
+    url(r'^bandpass/(?P<pk>\d+)/delete$',
         views.BandpassAnalysisDeleteView.as_view(), name='bandpass_delete'),
 
     url(r'^spectrum/$', views.SpectralAnalysisListView.as_view(), name='spectrum_list'),
@@ -93,7 +93,7 @@ urlpatterns = [
         views.SpectralAnalysisAddView.as_view(), name='spectrum_create'),
     url(r'^tests/(?P<test_id>\d+)/spectrum/(?P<pk>\d+)/update$',
         views.SpectralAnalysisUpdateView.as_view(), name='spectrum_update'),
-    url(r'^tests/(?P<test_id>\d+)/spectrum/(?P<obj_id>\d+)/delete$',
+    url(r'^spectrum/(?P<pk>\d+)/delete$',
         views.SpectralAnalysisDeleteView.as_view(), name='spectrum_delete'),
 
     # REST API

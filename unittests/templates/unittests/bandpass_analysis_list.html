@@ -12,14 +12,16 @@ LSPE/Strip DB: List of bandpass analysis results
     <thead>
         <th>Polarimeter</th>
         <th>Test</th>
-        <th>Central frequency [GHz]</th>
-        <th>Bandwidth [GHz]</th>
+        <th>&nu;<sub>cen</sub> [GHz]</th>
+        <th>&Delta;&nu; [GHz]</th>
         <th>Analysis date</th>
+        <th>JSON</th>
         <th>Report</th>
     </thead>
     <tbody>
         {% for cur in bandpass_analysis_tests %}
         <tr>
+            {% with cur_results=cur.analysis_results %}
             <td>
                 <a href="{% url 'unittests:polarimeter_details' cur.test.polarimeter_name %}">
                     {{ cur.test.polarimeter_name }}
@@ -28,9 +30,10 @@ LSPE/Strip DB: List of bandpass analysis results
             <td>
                 <a href="{% url 'unittests:test_details' cur.test.id %}">{{ cur.test.test_type }} (PHSW {{ cur.test.phsw_state }})</a>
             </td>
-            <td>{{ cur.central_frequency_ghz|floatformat:2 }}±{{ cur.central_frequency_err|floatformat:2 }}</a></td>
-            <td>{{ cur.bandwidth_ghz|floatformat:2 }}±{{ cur.bandwidth_err|floatformat:2 }}</td>
-            <td><time datetime="{{cur.analysis_date|date:"Y-m-d"}}">{{cur.analysis_date|date:"l, F j, Y"}}</time></td>
+            <td>{{ cur_results.final_central_nu|floatformat:2 }}&pm;{{ cur_results.final_central_nu_err|floatformat:2 }}</a></td>
+            <td>{{ cur_results.final_bandwidth|floatformat:2 }}&pm;{{ cur_results.final_bandwidth_err|floatformat:2 }}</a></td>
+            <td><time datetime="{{cur_results.analysis_date|date:"Y-m-d"}}">{{cur_results.analysis_date}}</time></td>
+            <td><a href="{% url 'unittests:api-bandpass-data' cur.id %}">Link</a></td>
             <td>
                 {% if cur.report_file %}
                     <a href="{% url 'unittests:spectrum_report' cur.id %}">Report</a>
@@ -38,6 +41,7 @@ LSPE/Strip DB: List of bandpass analysis results
                     (None)
                 {% endif %}
             </td>
+            {% endwith %}
         </tr>
         {% endfor %}
     </tbody>

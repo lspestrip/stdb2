@@ -40,7 +40,6 @@ from .models import (
     dict_to_detector_output_list,
     dict_to_biases,
     dict_to_temperature_set_list,
-    dict_to_tnoise_analysis,
     NoiseTemperatureAnalysis,
     BandpassAnalysis,
     SpectralAnalysis,
@@ -670,53 +669,6 @@ class TnoiseUpdateView(UpdateView):
 
 
 @method_decorator(login_required, name='dispatch')
-class TnoiseAddFromJsonView(View):
-    'Import a JSON file containing the estimates of Tnoise for a polarimeter'
-
-    def post(self, request, test_id):
-        'Import the level of the detector outputs for a test from a JSON record'
-
-        cur_test = get_object_or_404(PolarimeterTest, pk=test_id)
-        form = CreateFromJSON(request.POST)
-        if form.is_valid():
-            data = json.loads(form.cleaned_data['json_text'])
-            new_analysis = dict_to_tnoise_analysis(data)
-            new_analysis.test = cur_test
-            new_analysis.author = get_user(request)
-            new_analysis.save()
-
-            return redirect(cur_test)
-
-    def get(self, request, test_id):
-        form = CreateFromJSON(initial={
-            'json_text': json.dumps(
-                {
-                    "average_gain": {
-                        "mean": 1.0,
-                        "std": 2.0,
-                    },
-                    "gain_prod": {
-                        "mean": 3.0,
-                        "std": 4.0,
-                    },
-                    "tnoise": {
-                        "mean": 5.0,
-                        "std": 6.0,
-                    },
-                    "estimation_method": "nonlinear fit",
-                    "striptun_version": "1.0",
-                    "latest_git_commit": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
-                    "date": "2017-01-01"
-                }, indent=4)
-        })
-
-        return render(request, 'unittests/tnoise_create.html', {
-            'test_id': test_id,
-            'form': form,
-        })
-
-
-@method_decorator(login_required, name='dispatch')
 class TnoiseDeleteView(DeleteMixin):
     model = NoiseTemperatureAnalysis
     template_name = 'unittests/generic_confirm_delete.html'
@@ -821,30 +773,59 @@ class BandpassAnalysisReport(DownloadReportMixin, View):
 
 # REST classes (used for plots)
 
-class TnoiseData(APIView):
+class ReportAllDataMixin:
+    model = NoiseTemperatureAnalysis
+
     def get(self, request, format=None):
-        pol_nums = [x[0] for x in NoiseTemperatureAnalysis.objects.order_by('test__polarimeter_number')
+        pol_nums = [x[0] for x in self.model.objects.order_by('test__polarimeter_number')
                     .values_list('test__polarimeter_number').distinct()]
 
-        tnoise = []
-        tnoise_err = []
+        results = []
         for cur_pol_num in pol_nums:
-            data = NoiseTemperatureAnalysis.objects.filter(
+            data = self.model.objects.filter(
                 test__polarimeter_number=cur_pol_num).all()
-            cur_tnoise = []
-            cur_tnoise_err = []
+            pol_results = []
             for cur_val in data:
-                cur_tnoise.append(cur_val.noise_temperature)
-                cur_tnoise_err.append(cur_val.noise_temperature_err)
+                pol_results.append(cur_val.analysis_results)
 
-            tnoise.append(cur_tnoise)
-            tnoise_err.append(cur_tnoise_err)
+            results.append(pol_results)
 
         return RESTResponse({
             'polarimeters': [get_polarimeter_name(x) for x in pol_nums],
-            'tnoise': tnoise,
-            'error': tnoise_err,
+            'results': results,
         })
+
+
+class ReportDataMixin:
+    model = None
+
+    def get(self, request, pk):
+        analysis = get_object_or_404(self.model, pk=pk)
+        return RESTResponse(analysis.analysis_results)
+
+
+class TnoiseAllData(APIView, ReportAllDataMixin):
+    model = NoiseTemperatureAnalysis
+
+
+class TnoiseData(APIView, ReportDataMixin):
+    model = NoiseTemperatureAnalysis
+
+
+class BandpassAllData(APIView, ReportAllDataMixin):
+    model = BandpassAnalysis
+
+
+class BandpassData(APIView, ReportDataMixin):
+    model = BandpassAnalysis
+
+
+class SpectrumAllData(APIView, ReportAllDataMixin):
+    model = SpectralAnalysis
+
+
+class SpectrumData(APIView, ReportDataMixin):
+    model = SpectralAnalysis
 
 
 class UsersData(APIView):

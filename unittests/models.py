@@ -451,30 +451,13 @@ class NoiseTemperatureAnalysis(models.Model):
         settings.AUTH_USER_MODEL, related_name='tnoise_owned')
 
     def __str__(self):
-        return ('Tnoise = {0}±{1} K'
-                .format(self.noise_temperature,
-                        self.noise_temperature_err))
+        return ('noise temperature analysis for {0}'.format(self.test))
 
     def get_absolute_url(self):
         return reverse('unittests:tnoise_list')
 
     class Meta:
         verbose_name = 'noise temperature and gain estimates'
-
-
-def dict_to_tnoise_analysis(data):
-    return NoiseTemperatureAnalysis(
-        average_gain=data['average_gain']['mean'],
-        average_gain_err=data['average_gain']['std'],
-        cross_gain=data['gain_prod']['mean'],
-        cross_gain_err=data['gain_prod']['std'],
-        noise_temperature=data['tnoise']['mean'],
-        noise_temperature_err=data['tnoise']['std'],
-        estimation_method=data['analysis_method'],
-        code_version=data['striptun_version'],
-        code_commit=data['latest_git_commit'],
-        analysis_date=data['analysis_date']
-    )
 
 
 class SpectralAnalysis(models.Model):

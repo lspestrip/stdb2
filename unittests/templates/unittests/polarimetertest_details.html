@@ -261,17 +261,25 @@ LSPE/Strip DB: Details of test on STRIP{{test.polarimeter_number}}
     <table class="data-table" id="tnoise-table">
         <thead>
             <th>Method</th>
-            <th>Noise temperature</th>
-            <th>Average gain</th>
-            <th>Cross gain</th>
+            <th>T<sub>noise</sub>&nbsp;[K]</th>
+            <th>G<sub>Q1</sub>&nbsp;[ADU/K]</th>
+            <th>G<sub>U1</sub>&nbsp;[ADU/K]</th>
+            <th>G<sub>U2</sub>&nbsp;[ADU/K]</th>
+            <th>G<sub>Q2</sub>&nbsp;[ADU/K]</th>
+            <th>JSON</th>
+            <th>Action</th>
         </thead>
         <tbody>
             {% for analysis in tnoise_analyses %}
             <tr>
-                <td>{{analysis.estimation_method}}</td>
-                <td>({{analysis.noise_temperature|floatformat:1}}&plusmn;{{analysis.noise_temperature_err|floatformat:1}}) K</td>
-                <td>({{analysis.average_gain|floatformat:1}}&plusmn;{{analysis.average_gain_err|floatformat:1}}) K/ADU</td>
-                <td>({{analysis.cross_gain|floatformat:1}}&plusmn;{{analysis.cross_gain_err|floatformat:1}}) K/ADU</td>
+                {% with cur_result=analysis.analysis_results %}
+                <td>{{cur_result.analysis_method}}</td>
+                <td>{{cur_result.tnoise.mean|floatformat:1}}&plusmn;{{cur_result.tnoise.std|floatformat:1}} </td>
+                <td>{{cur_result.gain_q1.mean|floatformat:0}}&plusmn;{{cur_result.gain_q1.std|floatformat:0}}</td>
+                <td>{{cur_result.gain_u1.mean|floatformat:0}}&plusmn;{{cur_result.gain_u1.std|floatformat:0}}</td>
+                <td>{{cur_result.gain_u2.mean|floatformat:0}}&plusmn;{{cur_result.gain_u2.std|floatformat:0}}</td>
+                <td>{{cur_result.gain_q2.mean|floatformat:0}}&plusmn;{{cur_result.gain_q2.std|floatformat:0}}</td>
+                <td><a href="{% url 'unittests:api-tnoise-data' analysis.id %}">Link</a></td>
                 <td>
                     <a href="{% url 'unittests:tnoise_update' analysis.id %}">
                         <img src="{% static 'site/edit.svg' %}" width="32" height="32" alt="Edit"/><!--
@@ -280,6 +288,7 @@ LSPE/Strip DB: Details of test on STRIP{{test.polarimeter_number}}
                         <img src="{% static 'site/delete.svg' %}" width="32" height="32" alt="Delete"/>
                     </a>
                 </td>
+                {% endwith %}
             </tr>
             {% endfor %}
         </tbody>
@@ -288,7 +297,6 @@ LSPE/Strip DB: Details of test on STRIP{{test.polarimeter_number}}
 
     <ul class="data-table-actions">
         <li><a href="{% url 'unittests:tnoise_create' test.id %}">Add new</a></li>
-        <li><a href="{% url 'unittests:tnoise_create_json' test.id %}">Import a JSON file</a></li>
     </ul>
 
     <h5>Bandpasses</h5>

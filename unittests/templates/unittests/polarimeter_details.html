@@ -57,7 +57,8 @@ LSPE/Strip DB: List of tests
                 {{ tnoise.test.test_description }}   
             </a>:
             T<sub>noise</sub> = 
-            {{ tnoise.noise_temperature|floatformat:1 }}&plusmn;{{ tnoise.noise_temperature_err|floatformat:1 }} K
+            {{ tnoise.analysis_results.tnoise.mean|floatformat:1 }}&plusmn;{{ tnoise.analysis_results.tnoise.std|floatformat:1 }} K
+            (<a href="{% url 'unittests:api-tnoise-data' tnoise.id %}">details</a>)
         </li>
         {% endfor %}
     </ul>

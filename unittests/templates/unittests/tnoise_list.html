@@ -15,15 +15,19 @@ LSPE/Strip DB: List of tests
     <thead>
         <th>Polarimeter</th>
         <th>Test</th>
-        <th>g<sup>2</sup><sub>mean</sub> [K/ADU]</th>
-        <th>g<sub>A</sub> g<sub>B</sub> [K/ADU]</th>
         <th>T<sub>noise</sub> [K]</th>
+        <th>G<sub>Q1</sub> [ADU/K]</th>
+        <th>G<sub>U1</sub> [ADU/K]</th>
+        <th>G<sub>U2</sub> [ADU/K]</th>
+        <th>G<sub>Q2</sub> [ADU/K]</th>
         <th>Analysis date</th>
         <th>Report</th>
+        <th>JSON</th>
     </thead>
     <tbody>
         {% for cur in tnoise_tests %}
         <tr>
+            {% with cur_result=cur.analysis_results %}
             <td>
                 <a href="{% url 'unittests:polarimeter_details' cur.test.polarimeter_name %}">
                     {{ cur.test.polarimeter_name }}
@@ -32,10 +36,12 @@ LSPE/Strip DB: List of tests
             <td>
                 <a href="{% url 'unittests:test_details' cur.test.id %}">{{ cur.test.test_type }} (PHSW {{ cur.test.phsw_state }})</a>
             </td>
-            <td>{{ cur.average_gain|floatformat:1 }}±{{ cur.average_gain_err|floatformat:1 }}</a></td>
-            <td>{{ cur.cross_gain|floatformat:1 }}±{{ cur.cross_gain_err|floatformat:1 }}</td>
-            <td>{{ cur.noise_temperature|floatformat:1 }}±{{ cur.noise_temperature_err|floatformat:1 }}</td>
-            <td><time datetime="{{cur.analysis_date|date:"Y-m-d"}}">{{cur.analysis_date|date:"l, F j, Y"}}</time></td>
+            <td>{{ cur_result.tnoise.mean|floatformat:1 }}±{{ cur_result.tnoise.std|floatformat:1 }}</a></td>
+            <td>{{ cur_result.gain_q1.mean|floatformat:0 }}±{{ cur_result.gain_q1.std|floatformat:0 }}</a></td>
+            <td>{{ cur_result.gain_u1.mean|floatformat:0 }}±{{ cur_result.gain_u1.std|floatformat:0 }}</a></td>
+            <td>{{ cur_result.gain_u2.mean|floatformat:0 }}±{{ cur_result.gain_u2.std|floatformat:0 }}</a></td>
+            <td>{{ cur_result.gain_q2.mean|floatformat:0 }}±{{ cur_result.gain_q2.std|floatformat:0 }}</a></td>
+            <td><time datetime="{{cur_result.analysis_date|date:"Y-m-d"}}">{{cur_result.analysis_date}}</time></td>
             <td>
                 {% if cur.report_file %}
                     <a href="{% url 'unittests:tnoise_report' cur.id %}">Report</a>
@@ -43,6 +49,8 @@ LSPE/Strip DB: List of tests
                     (None)
                 {% endif %}
             </td>
+            <td><a href="{% url 'unittests:api-tnoise-data' cur.id %}">Link</a></td>
+            {% endwith %}
         </tr>
         {% endfor %}
     </tbody>
@@ -51,13 +59,12 @@ LSPE/Strip DB: List of tests
 <script>
     $.ajax({
         method: "GET",
-        url: "{% url 'unittests:api-tnoise-data' %}",
+        url: "{% url 'unittests:api-tnoise-all-data' %}",
         success: function(data) {
             pol_name = data.polarimeters;
-            tnoise = data.tnoise;
-            error = data.error;
+            results = data.results;
 
-            plot_tnoise_chart(pol_name, tnoise, error);
+            plot_tnoise_chart(pol_name, results);
         },
         error: function(error_data) {
             console.log("error:");
@@ -65,21 +72,19 @@ LSPE/Strip DB: List of tests
         }
     });
 
-    function mean(arr) {
-        var sum = 0.0;
-        for (var i = 0; i < arr.length; i++) {
-            sum += arr[i];
-        }
-
-        return sum / arr.length;
-    }
-
-    function plot_tnoise_chart(pol_name, tnoise, error) {
+    function plot_tnoise_chart(pol_name, results) {
         mean_tnoise = [];
         text = [];
-        for(var i = 0; i < tnoise.length; i++) {
-            mean_tnoise.push(mean(tnoise[i]));
-            text.push('mean of ' + tnoise[i].length.toString() + ' estimate(s)');
+        for(var pol_idx = 0; pol_idx < results.length; pol_idx++) {
+            var tnoise = 0.0;
+            var pol_results = results[pol_idx];
+            for(var res_idx = 0; res_idx < pol_results.length; res_idx++) {
+                tnoise += results[pol_idx][res_idx].tnoise.mean;
+            }
+            tnoise /= pol_results.length;
+            console.log('tnoise: ' + tnoise.toString())
+            mean_tnoise.push(tnoise);
+            text.push('mean of ' + pol_results.length.toString() + ' estimate(s)');
         }
 
         var data = [{

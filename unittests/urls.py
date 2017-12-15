@@ -68,8 +68,6 @@ urlpatterns = [
     url(r'^tnoise/(?P<pk>\d+)$', views.TnoiseReport.as_view(), name='tnoise_report'),
     url(r'^tnoise/add/(?P<test_id>\d+)$',
         views.TnoiseAddView.as_view(), name='tnoise_create'),
-    url(r'^tnoise/add/(?P<test_id>\d+)/json$',
-        views.TnoiseAddFromJsonView.as_view(), name='tnoise_create_json'),
     url(r'^tnoise/(?P<pk>\d+)/update$',
         views.TnoiseUpdateView.as_view(), name='tnoise_update'),
     url(r'^tnoise/(?P<pk>\d+)/delete$',
@@ -97,7 +95,21 @@ urlpatterns = [
         views.SpectralAnalysisDeleteView.as_view(), name='spectrum_delete'),
 
     # REST API
-    url(r'^api/tnoise/$', views.TnoiseData.as_view(), name='api-tnoise-data'),
+
+    url(r'^api/tnoise/$', views.TnoiseAllData.as_view(), name='api-tnoise-all-data'),
+    url(r'^api/tnoise/(?P<pk>\d+)$',
+        views.TnoiseData.as_view(), name='api-tnoise-data'),
+
+    url(r'^api/bandpass/$', views.BandpassAllData.as_view(),
+        name='api-bandpass-all-data'),
+    url(r'^api/bandpass/(?P<pk>\d+)$',
+        views.BandpassData.as_view(), name='api-bandpass-data'),
+
+    url(r'^api/spectrum/$', views.SpectrumAllData.as_view(),
+        name='api-spectrum-all-data'),
+    url(r'^api/spectrum/(?P<pk>\d+)$',
+        views.SpectrumData.as_view(), name='api-spectrum-data'),
+
     url(r'^api/tests/users/$', views.UsersData.as_view(),
         name='api-tests-users'),
     url(r'^api/tests/countbydate/$', views.TestTimeTableData.as_view(),

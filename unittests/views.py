@@ -575,6 +575,17 @@ class TemperatureDeleteView(DeleteMixin):
     model = Temperatures
 
 
+@login_required
+def duplicate_last_temperature(request, test_id):
+    cur_test = get_object_or_404(PolarimeterTest, pk=test_id)
+    last_temperature = Temperatures.objects.filter(test=cur_test).last()
+    if last_temperature:
+        last_temperature.pk = None
+        last_temperature.save()
+
+    return HttpResponseRedirect(cur_test.get_absolute_url())
+
+
 class TemperatureJsonView(View):
     def post(self, request, test_id):
         'Import the set of temperatures for a test from a JSON record'

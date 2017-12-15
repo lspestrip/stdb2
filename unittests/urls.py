@@ -43,6 +43,8 @@ urlpatterns = [
         views.TemperatureAddView.as_view(), name='temperature_create'),
     url(r'^tests/(?P<test_id>\d+)/temperature/json$',
         views.TemperatureJsonView.as_view(), name='temperature_create_json'),
+    url(r'^tests/(?P<test_id>\d+)/newtemperature/duplicatelast$',
+        views.duplicate_last_temperature, name='temperature_duplicate_last'),
 
     url(r'^tests/(?P<test_id>\d+)/AdcOffset/(?P<pk>\d+)/update$',
         views.AdcOffsetUpdateView.as_view(), name='adc_update'),

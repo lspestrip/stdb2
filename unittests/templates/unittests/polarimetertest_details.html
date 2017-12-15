@@ -244,6 +244,9 @@ LSPE/Strip DB: Details of test on STRIP{{test.polarimeter_number}}
 
         <ul class="data-table-actions">
             <li><a href="{% url 'unittests:temperature_create' test.id %}">Add new</a></li>
+            {% if temperatures %}
+            <li><a href="{% url 'unittests:temperature_duplicate_last' test.id %}">Duplicate last</a></li>
+            {% endif %}
             <li><a href="{% url 'unittests:temperature_create_json' test.id %}">Import a JSON file</a></li>
         </ul>
     </div>

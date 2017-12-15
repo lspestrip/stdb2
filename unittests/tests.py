@@ -257,41 +257,21 @@ def populate_database():
 
     tnoise = NoiseTemperatureAnalysis(
         test=test,
-        noise_temperature=30.0,
-        noise_temperature_err=10.0,
         analysis_results=None,
-        estimation_method='nonlinear',
-        code_version='0.1',
-        code_commit='0123456789abcdef',
-        analysis_date=make_aware(datetime(year=2017, month=10,
-                                          day=1, hour=1, minute=2, second=3)),
         author=user
     )
     tnoise.save()
 
     spectrum = SpectralAnalysis(
         test=test,
-        oof_alpha=1.0,
-        oof_knee_frequency_hz=0.010,
-        sampling_frequency_hz=25.0,
         analysis_results=None,
-        code_version='0.2',
-        code_commit='fedcba9876543210',
-        analysis_date=make_aware(datetime(year=2016, month=9, day=2,
-                                          hour=2, minute=4, second=5)),
         author=user
     )
     spectrum.save()
 
     bandpass = BandpassAnalysis(
         test=test,
-        central_frequency_ghz=41.0,
-        bandwidth_ghz=8.0,
         analysis_results=None,
-        code_version='0.3',
-        code_commit='aaaaa0011223344',
-        analysis_date=make_aware(datetime(year=2015, month=8, day=1,
-                                          hour=21, minute=8, second=4)),
         author=user
     )
     bandpass.save()

@@ -442,18 +442,7 @@ class NoiseTemperatureAnalysis(models.Model):
     'Result of a noise temperature analysis'
 
     test = models.ForeignKey(to=PolarimeterTest, on_delete=models.CASCADE)
-
-    noise_temperature = models.FloatField()
-    noise_temperature_err = models.FloatField()
     analysis_results = JSONField(blank=True)
-
-    estimation_method = models.CharField(max_length=24, blank=True)
-
-    code_version = models.CharField(max_length=12,
-                                    verbose_name='version number of the analysis code')
-    code_commit = models.CharField(max_length=40,
-                                   verbose_name='last commit hash of the analysis code')
-    analysis_date = models.DateTimeField('date when the analysis was done')
     report_file = models.FileField(
         verbose_name='Report', upload_to='reports/',
         validators=[validate_report_file_ext], blank=True)
@@ -493,20 +482,7 @@ class SpectralAnalysis(models.Model):
 
     test = models.ForeignKey(to=PolarimeterTest, on_delete=models.CASCADE)
 
-    oof_alpha = models.FloatField(verbose_name='1/f noise slope')
-    oof_knee_frequency_hz = models.FloatField(
-        verbose_name='1/f knee frequency [Hz]')
-    sampling_frequency_hz = models.FloatField(
-        verbose_name='sampling frequency [Hz]', default=25.0)
     analysis_results = JSONField(blank=True)
-
-    estimation_method = models.CharField(max_length=24, blank=True)
-
-    code_version = models.CharField(max_length=12,
-                                    verbose_name='version number of the analysis code')
-    code_commit = models.CharField(max_length=40,
-                                   verbose_name='last commit hash of the analysis code')
-    analysis_date = models.DateTimeField('date when the analysis was done')
     report_file = models.FileField(
         verbose_name='Report', upload_to='reports/',
         validators=[validate_report_file_ext], blank=True)
@@ -529,18 +505,7 @@ class BandpassAnalysis(models.Model):
 
     test = models.ForeignKey(to=PolarimeterTest, on_delete=models.CASCADE)
 
-    central_frequency_ghz = models.FloatField(
-        verbose_name='central frequency [GHz]')
-    bandwidth_ghz = models.FloatField(verbose_name='bandwidth [GHz]')
     analysis_results = JSONField(blank=True)
-
-    estimation_method = models.CharField(max_length=24, blank=True)
-
-    code_version = models.CharField(max_length=12,
-                                    verbose_name='version number of the analysis code')
-    code_commit = models.CharField(max_length=40,
-                                   verbose_name='last commit hash of the analysis code')
-    analysis_date = models.DateTimeField('date when the analysis was done')
     report_file = models.FileField(
         verbose_name='Report', upload_to='reports/',
         validators=[validate_report_file_ext], blank=True)

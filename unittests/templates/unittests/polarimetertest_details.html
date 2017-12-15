@@ -43,6 +43,7 @@ LSPE/Strip DB: Details of test on STRIP{{test.polarimeter_number}}
         {% if test.short_description %}
         <tr><td><b>Description</b></td><td>{{ test.short_description }}</td></tr>
         {% endif %}
+        <tr><td><b>PHSW state</b></td><td>{{ test.phsw_state }}</td></tr>
         <tr><td><b>Notes</b></td><td>{% if test.notes %} {{test.notes|linebreaks}} {% else %} (None) {% endif %}</td></tr>
         <tr><td><b>Author</b></td><td>{{test.author}}</td></tr>
         <tr><td><b>Date of creation</b></td><td>

@@ -96,9 +96,25 @@ nav li.last {
     padding: 16px 32px;
     border: none;
     text-align: center;
-    font-size: 16px;
+    font-size: 1.1em;
     float: left;
     cursor: pointer;
+}
+
+/* Actions next to a data table */
+
+.data-table-actions li {
+    list-style: none;
+}
+
+.data-table-actions a {
+    text-decoration: none;
+    font-weight: bold;
+    border: none;
+    text-align: center;
+    font-size: 1.1em;
+    cursor: pointer;
+    margin: 1em 0.5em;    
 }
 
 /* Hierarchical lists which can make their elements collapse */

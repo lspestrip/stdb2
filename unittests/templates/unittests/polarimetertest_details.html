@@ -79,7 +79,7 @@ LSPE/Strip DB: Details of test on STRIP{{test.polarimeter_number}}
                         <a href="{% url 'unittests:adc_update' test.id ofs.id %}">
                             <img src="{% static 'site/edit.svg' %}" width="32" height="32" alt="Edit"/><!--
                             --></a>&nbsp;
-                        <a href="{% url 'unittests:adc_delete' test.id ofs.id %}">
+                        <a href="{% url 'unittests:adc_delete' ofs.id %}">
                             <img src="{% static 'site/delete.svg' %}" width="32" height="32" alt="Delete"/>
                         </a>
                     </td>
@@ -117,7 +117,7 @@ LSPE/Strip DB: Details of test on STRIP{{test.polarimeter_number}}
                         <a href="{% url 'unittests:detoutput_update' test.id out.id %}">
                             <img src="{% static 'site/edit.svg' %}" width="32" height="32" alt="Edit"/><!--
                             --></a>&nbsp;
-                        <a href="{% url 'unittests:detoutput_delete' test.id out.id %}">
+                        <a href="{% url 'unittests:detoutput_delete' out.id %}">
                             <img src="{% static 'site/delete.svg' %}" width="32" height="32" alt="Delete"/>
                         </a>
                     </td>
@@ -189,7 +189,7 @@ LSPE/Strip DB: Details of test on STRIP{{test.polarimeter_number}}
             <a href="{% url 'unittests:biases_update' test.id biases.id %}">
                 <img src="{% static 'site/edit.svg' %}" width="32" height="32" alt="Edit"/><!--
                 --></a>&nbsp;
-            <a href="{% url 'unittests:biases_delete' test.id biases.id %}">
+            <a href="{% url 'unittests:biases_delete' biases.id %}">
                 <img src="{% static 'site/delete.svg' %}" width="32" height="32" alt="Delete"/>                
             </a>
         </ul>
@@ -232,7 +232,7 @@ LSPE/Strip DB: Details of test on STRIP{{test.polarimeter_number}}
                         <a href="{% url 'unittests:temperature_update' test.id temp.id %}">
                             <img src="{% static 'site/edit.svg' %}" width="32" height="32" alt="Edit"/><!--
                             --></a>&nbsp;
-                        <a href="{% url 'unittests:temperature_delete' test.id temp.id %}">
+                        <a href="{% url 'unittests:temperature_delete' temp.id %}">
                             <img src="{% static 'site/delete.svg' %}" width="32" height="32" alt="Delete"/>
                         </a>
                     </td>
@@ -276,7 +276,7 @@ LSPE/Strip DB: Details of test on STRIP{{test.polarimeter_number}}
                     <a href="{% url 'unittests:tnoise_update' test.id analysis.id %}">
                         <img src="{% static 'site/edit.svg' %}" width="32" height="32" alt="Edit"/><!--
                         --></a>&nbsp;
-                    <a href="{% url 'unittests:tnoise_delete' test.id analysis.id %}">
+                    <a href="{% url 'unittests:tnoise_delete' analysis.id %}">
                         <img src="{% static 'site/delete.svg' %}" width="32" height="32" alt="Delete"/>
                     </a>
                 </td>
@@ -311,7 +311,7 @@ LSPE/Strip DB: Details of test on STRIP{{test.polarimeter_number}}
                     <a href="{% url 'unittests:bandpass_update' test.id analysis.id %}">
                         <img src="{% static 'site/edit.svg' %}" width="32" height="32" alt="Edit"/><!--
                         --></a>&nbsp;
-                    <a href="{% url 'unittests:bandpass_delete' test.id analysis.id %}">
+                    <a href="{% url 'unittests:bandpass_delete' analysis.id %}">
                         <img src="{% static 'site/delete.svg' %}" width="32" height="32" alt="Delete"/>
                     </a>
                 </td>
@@ -349,7 +349,7 @@ LSPE/Strip DB: Details of test on STRIP{{test.polarimeter_number}}
                     <a href="{% url 'unittests:spectrum_update' test.id analysis.id %}">
                         <img src="{% static 'site/edit.svg' %}" width="32" height="32" alt="Edit"/><!--
                         --></a>&nbsp;
-                    <a href="{% url 'unittests:spectrum_delete' test.id analysis.id %}">
+                    <a href="{% url 'unittests:spectrum_delete' analysis.id %}">
                         <img src="{% static 'site/delete.svg' %}" width="32" height="32" alt="Delete"/>
                     </a>
                 </td>

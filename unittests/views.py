@@ -347,12 +347,12 @@ class CreateMixinWithRequest(CreateMixin):
 class DeleteMixin(DeleteView):
     model = None
 
-    def get(self, request, test_id, obj_id):
-        cur_ofs = get_object_or_404(self.model, pk=obj_id)
-        cur_ofs.delete()
+    def get_success_url(self, **kwargs):
+        return redirect(self.test)
 
-        cur_obj = get_object_or_404(PolarimeterTest, pk=test_id)
-        return redirect(cur_obj)
+    def delete(self, request, *args, **kwargs):
+        self.test = self.get_object().test
+        return super().delete(request, *args, **kwargs)
 
 
 @method_decorator(login_required, name='dispatch')
@@ -377,6 +377,7 @@ class AdcOffsetUpdateView(UpdateView):
 @method_decorator(login_required, name='dispatch')
 class AdcOffsetDeleteView(DeleteMixin):
     model = AdcOffset
+    template_name = 'unittests/generic_confirm_delete.html'
 
 
 class AdcOffsetJsonView(View):
@@ -438,6 +439,7 @@ class DetOutputUpdateView(UpdateView):
 @method_decorator(login_required, name='dispatch')
 class DetOutputDeleteView(DeleteMixin):
     model = DetectorOutput
+    template_name = 'unittests/generic_confirm_delete.html'
 
 
 class DetOutputJsonView(View):
@@ -499,6 +501,7 @@ class BiasesUpdateView(UpdateView):
 @method_decorator(login_required, name='dispatch')
 class BiasesDeleteView(DeleteMixin):
     model = Biases
+    template_name = 'unittests/generic_confirm_delete.html'
 
 
 class BiasesJsonView(View):
@@ -573,6 +576,7 @@ class TemperatureUpdateView(UpdateView):
 @method_decorator(login_required, name='dispatch')
 class TemperatureDeleteView(DeleteMixin):
     model = Temperatures
+    template_name = 'unittests/generic_confirm_delete.html'
 
 
 @login_required
@@ -715,6 +719,7 @@ class TnoiseAddFromJsonView(View):
 @method_decorator(login_required, name='dispatch')
 class TnoiseDeleteView(DeleteMixin):
     model = NoiseTemperatureAnalysis
+    template_name = 'unittests/generic_confirm_delete.html'
 
 
 class DownloadReportMixin(View):
@@ -771,6 +776,7 @@ class SpectralAnalysisUpdateView(UpdateView):
 @method_decorator(login_required, name='dispatch')
 class SpectralAnalysisDeleteView(DeleteMixin):
     model = SpectralAnalysis
+    template_name = 'unittests/generic_confirm_delete.html'
 
 
 class SpectralAnalysisReport(DownloadReportMixin, View):
@@ -806,6 +812,7 @@ class BandpassAnalysisUpdateView(UpdateView):
 @method_decorator(login_required, name='dispatch')
 class BandpassAnalysisDeleteView(DeleteMixin):
     model = BandpassAnalysis
+    template_name = 'unittests/generic_confirm_delete.html'
 
 
 class BandpassAnalysisReport(DownloadReportMixin, View):

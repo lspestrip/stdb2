@@ -55,13 +55,13 @@ urlpatterns = [
     url(r'^tests/(?P<test_id>\d+)/temperature/(?P<pk>\d+)/update$',
         views.TemperatureUpdateView.as_view(), name='temperature_update'),
 
-    url(r'^tests/(?P<test_id>\d+)/AdcOffset/(?P<obj_id>\d+)/delete$',
+    url(r'^AdcOffset/(?P<pk>\d+)/delete$',
         views.AdcOffsetDeleteView.as_view(), name='adc_delete'),
-    url(r'^tests/(?P<test_id>\d+)/detoutput/(?P<obj_id>\d+)/delete$',
+    url(r'^detoutput/(?P<pk>\d+)/delete$',
         views.DetOutputDeleteView.as_view(), name='detoutput_delete'),
-    url(r'^tests/(?P<test_id>\d+)/biases/(?P<obj_id>\d+)/delete$',
+    url(r'^biases/(?P<pk>\d+)/delete$',
         views.BiasesDeleteView.as_view(), name='biases_delete'),
-    url(r'^tests/(?P<test_id>\d+)/temperature/(?P<obj_id>\d+)/delete$',
+    url(r'^temperature/(?P<pk>\d+)/delete$',
         views.TemperatureDeleteView.as_view(), name='temperature_delete'),
 
     url(r'^tnoise/$', views.TnoiseListView.as_view(), name='tnoise_list'),

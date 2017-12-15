@@ -32,6 +32,8 @@ from django.core.files.base import ContentFile
 import h5py
 import matplotlib as mpl
 
+from jsonfield import JSONField
+
 from .file_conversions import convert_data_file_to_h5
 from .validators import validate_report_file_ext
 
@@ -441,14 +443,9 @@ class NoiseTemperatureAnalysis(models.Model):
 
     test = models.ForeignKey(to=PolarimeterTest, on_delete=models.CASCADE)
 
-    average_gain = models.FloatField()
-    average_gain_err = models.FloatField()
-
-    cross_gain = models.FloatField()
-    cross_gain_err = models.FloatField()
-
     noise_temperature = models.FloatField()
     noise_temperature_err = models.FloatField()
+    analysis_results = JSONField(blank=True)
 
     estimation_method = models.CharField(max_length=24, blank=True)
 
@@ -497,16 +494,11 @@ class SpectralAnalysis(models.Model):
     test = models.ForeignKey(to=PolarimeterTest, on_delete=models.CASCADE)
 
     oof_alpha = models.FloatField(verbose_name='1/f noise slope')
-    oof_alpha_err = models.FloatField(verbose_name='error on 1/f noise slope')
     oof_knee_frequency_hz = models.FloatField(
         verbose_name='1/f knee frequency [Hz]')
-    oof_knee_frequency_err = models.FloatField(
-        verbose_name='error on 1/f knee frequency')
-    wn_level_adu2_rhz = models.FloatField(
-        verbose_name='white noise level [ADU^2]')
-    wn_level_err = models.FloatField(verbose_name='error on white noise level')
     sampling_frequency_hz = models.FloatField(
         verbose_name='sampling frequency [Hz]', default=25.0)
+    analysis_results = JSONField(blank=True)
 
     estimation_method = models.CharField(max_length=24, blank=True)
 
@@ -539,10 +531,8 @@ class BandpassAnalysis(models.Model):
 
     central_frequency_ghz = models.FloatField(
         verbose_name='central frequency [GHz]')
-    central_frequency_err = models.FloatField(
-        verbose_name='error on central frequency')
     bandwidth_ghz = models.FloatField(verbose_name='bandwidth [GHz]')
-    bandwidth_err = models.FloatField(verbose_name='error on bandwidth')
+    analysis_results = JSONField(blank=True)
 
     estimation_method = models.CharField(max_length=24, blank=True)
 

@@ -1,5 +1,6 @@
 django
 djangorestframework
+jsonfield
 simplejson
 python-decouple
 h5py

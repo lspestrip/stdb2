@@ -11,11 +11,18 @@ LSPE/Strip DB: List of tests
 <section id="test-section">
     <h3>Tests</h3>
 
+    <div class="action-bar">
+        <ul>
+            <li><a href="{% url 'unittests:test_create' %}">Add test</a></li>
+        </ul>
+    </div>
+
     <ul>
     {% for test in tests %}
         <li><a href="{% url 'unittests:test_details' test.id %}">{{ test.test_description }}</a></li>
     {% endfor %}
     </ul>
+
 </section>
 {% endif %}
 

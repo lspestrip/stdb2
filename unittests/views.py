@@ -78,6 +78,7 @@ class TestListView(View):
                         polarimeter_number=cur_pol_num)
 
             context = {
+                'num_of_tests': len(PolarimeterTest.objects.all()),
                 'polarimeter_tests': tests,
             }
         else:

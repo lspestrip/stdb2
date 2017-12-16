@@ -10,6 +10,7 @@ VALID_REPORT_EXTENSIONS = [
     '.xslx',
     '.md',
     '.rst',
+    '.zip',
 ]
 
 

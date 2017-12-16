@@ -194,16 +194,15 @@ class TestDetailsJson(View):
 
         tnoise_analyses = []
         for analysis in NoiseTemperatureAnalysis.objects.filter(test=cur_test):
-            tnoise_analyses.append({
-                'average_gain_K_over_ADU': analysis.average_gain,
-                'average_gain_err': analysis.average_gain_err,
+            tnoise_analyses.append(analysis.analysis_results)
 
-                'cross_gain_K_over_ADU': analysis.cross_gain,
-                'cross_gain_err': analysis.cross_gain_err,
+        bandpass_analyses = []
+        for analysis in BandpassAnalysis.objects.filter(test=cur_test):
+            bandpass_analyses.append(analysis.analysis_results)
 
-                'noise_temperature_K': analysis.noise_temperature,
-                'noise_temperature_err': analysis.noise_temperature_err,
-            })
+        spectrum_analyses = []
+        for analysis in SpectralAnalysis.objects.filter(test=cur_test):
+            spectrum_analyses.append(analysis.analysis_results)
 
         result = {
             'url': cur_test.get_absolute_url(),
@@ -219,6 +218,11 @@ class TestDetailsJson(View):
             'hemt_biases': hemt_biases,
             'temperatures': temperatures,
             'operators': [x.name for x in cur_test.operators.all()],
+            'analyses': {
+                'bandpass': bandpass_analyses,
+                'tnoise': tnoise_analyses,
+                'spectrum': spectrum_analyses,
+            },
         }
         return HttpResponse(json.dumps(result, indent=4), content_type='application/json')
 

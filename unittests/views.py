@@ -347,7 +347,7 @@ class DeleteMixin(DeleteView):
     model = None
 
     def get_success_url(self, **kwargs):
-        return redirect(self.test)
+        return self.test.get_absolute_url()
 
     def delete(self, request, *args, **kwargs):
         self.test = self.get_object().test

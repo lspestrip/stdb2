@@ -34,6 +34,11 @@ LSPE/Strip DB: Details of test on STRIP{{test.polarimeter_number}}
     </p>
 
     <table>
+        <tr><td><b>Polarimeter</b></td>
+            <td>
+                <a href="{% url 'unittests:polarimeter_details' test.polarimeter_name %}">{{test.polarimeter_name}}</a>
+            </td>
+        </tr>
         <tr><td><b>Acquisition date</b></td><td>
             <time datetime="{{test.acquisition_date|date:"Y-m-d"}}">{{test.acquisition_date|date:"l, F j, Y"}}</time>
         </td></tr>

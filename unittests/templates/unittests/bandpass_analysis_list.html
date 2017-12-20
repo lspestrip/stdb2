@@ -30,8 +30,8 @@ LSPE/Strip DB: List of bandpass analysis results
             <td>
                 <a href="{% url 'unittests:test_details' cur.test.id %}">{{ cur.test.test_type }} (PHSW {{ cur.test.phsw_state }})</a>
             </td>
-            <td>{{ cur_results.central_nu_ghz|floatformat:2 }}&pm;{{ cur_results.central_nu_err|floatformat:2 }}</a></td>
-            <td>{{ cur_results.bandwidth_ghz|floatformat:2 }}&pm;{{ cur_results.bandwidth_err|floatformat:2 }}</a></td>
+            <td>{{ cur_results.central_nu_ghz|floatformat:2 }}&pm;{{ cur_results.central_nu_err|floatformat:2 }}</td>
+            <td>{{ cur_results.bandwidth_ghz|floatformat:2 }}&pm;{{ cur_results.bandwidth_err|floatformat:2 }}</td>
             <td><time datetime="{{cur_results.analysis_date|date:"Y-m-d"}}">{{cur_results.analysis_date}}</time></td>
             <td><a href="{% url 'unittests:api-bandpass-data' cur.id %}">Link</a></td>
             <td>

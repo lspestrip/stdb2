@@ -36,7 +36,7 @@ LSPE/Strip DB: List of bandpass analysis results
             <td><a href="{% url 'unittests:api-bandpass-data' cur.id %}">Link</a></td>
             <td>
                 {% if cur.report_file %}
-                    <a href="{% url 'unittests:spectrum_report' cur.id %}">Report</a>
+                    <a href="{% url 'unittests:bandpass_report' cur.id %}">Report</a>
                 {% else %}
                     (None)
                 {% endif %}

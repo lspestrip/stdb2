@@ -317,9 +317,10 @@ LSPE/Strip DB: Details of test on STRIP{{test.polarimeter_number}}
         <tbody>
             {% for analysis in bandpass_analyses %}
             <tr>
-                <td>{{analysis.estimation_method}}</td>
-                <td>({{analysis.central_frequency_ghz|floatformat:2}}&plusmn;{{analysis.central_frequency_err|floatformat:2}}) GHz</td>
-                <td>({{analysis.bandwidth_ghz|floatformat:2}}&plusmn;{{analysis.bandwidth_err|floatformat:2}}) GHz</td>
+                {% with cur_result=analysis.analysis_results %}
+                <td>{{ cur_result.estimation_method }}</td>
+                <td>{{ cur_result.central_nu_ghz|floatformat:2 }}&pm;{{ cur_result.central_nu_err|floatformat:2 }}</td>
+                <td>{{ cur_result.bandwidth_ghz|floatformat:2 }}&pm;{{ cur_result.bandwidth_err|floatformat:2 }}</td>
                 <td>
                     <a href="{% url 'unittests:bandpass_update' analysis.id %}">
                         <img src="{% static 'site/edit.svg' %}" width="32" height="32" alt="Edit"/><!--
@@ -328,6 +329,7 @@ LSPE/Strip DB: Details of test on STRIP{{test.polarimeter_number}}
                         <img src="{% static 'site/delete.svg' %}" width="32" height="32" alt="Delete"/>
                     </a>
                 </td>
+                {% endwith %}
             </tr>
             {% endfor %}
         </tbody>

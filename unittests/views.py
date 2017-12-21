@@ -641,7 +641,8 @@ class TnoiseListView(View):
         'Show a list of the results of Tnoise tests'
 
         context = {
-            'tnoise_tests': NoiseTemperatureAnalysis.objects.all(),
+            'tnoise_tests': NoiseTemperatureAnalysis.objects
+            .order_by('test__polarimeter_number').all(),
         }
         return render(request, self.template, context)
 
@@ -710,7 +711,8 @@ class SpectralAnalysisListView(View):
         'Show a list of the results of a spectral analysis'
 
         context = {
-            'spectral_analysis_tests': SpectralAnalysis.objects.all(),
+            'spectral_analysis_tests': SpectralAnalysis.objects
+            .order_by('test__polarimeter_number').all(),
         }
         return render(request, self.template, context)
 
@@ -746,7 +748,8 @@ class BandpassAnalysisListView(View):
         'Show a list of the results of a bandpass analysis'
 
         context = {
-            'bandpass_analysis_tests': BandpassAnalysis.objects.all(),
+            'bandpass_analysis_tests': BandpassAnalysis.objects
+            .order_by('test__polarimeter_number').all(),
         }
         return render(request, self.template, context)
 

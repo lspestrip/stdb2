@@ -6,7 +6,11 @@ LSPE/Strip DB: List of bandpass analysis results
 
 {% block content %}
 <h2>Bandpass analysis results</h2>
+
 <p>Number of reports in the database: {{ bandpass_analysis_tests | length }}</p>
+
+<div id="bandpass-plot" style="height: 280px"></div>
+
 <table>
     {% if bandpass_analysis_tests %}
     <thead>
@@ -47,4 +51,68 @@ LSPE/Strip DB: List of bandpass analysis results
     </tbody>
     {% endif %}
 </table>
+
+<script>
+    $.ajax({
+        method: "GET",
+        url: "{% url 'unittests:api-bandpass-all-data' %}",
+        success: function(data) {
+            pol_name = data.polarimeters;
+            results = data.results;
+
+            plot_bandpass_chart(pol_name, results);
+        },
+        error: function(error_data) {
+            console.log("error:");
+            console.log(error_data);
+        }
+    });
+
+    function plot_bandpass_chart(pol_name, results) {
+        mean_central_nu = [];
+        mean_bandwidth = [];
+        text = [];
+        for(var pol_idx = 0; pol_idx < results.length; pol_idx++) {
+            var central_nu = 0.0;
+            var bandwidth = 0.0;
+            var pol_results = results[pol_idx];
+            for(var res_idx = 0; res_idx < pol_results.length; res_idx++) {
+                central_nu += results[pol_idx][res_idx].central_nu_ghz;
+                bandwidth += results[pol_idx][res_idx].bandwidth_ghz;
+            }
+            central_nu /= pol_results.length;
+            bandwidth /= pol_results.length;
+
+            mean_central_nu.push(central_nu);
+            mean_bandwidth.push(bandwidth);
+            
+            text.push('mean of ' + pol_results.length.toString() + ' estimate(s)');
+        }
+
+        var data = [{
+            x: mean_central_nu,
+            y: pol_name,
+            text: text,
+            type: "bar",
+            orientation: "h",
+            name: "central frequency"
+        }, {
+            x: mean_bandwidth,
+            y: pol_name,
+            xaxis: "x2",
+            yaxis: "y2",
+            text: text,
+            type: "bar",
+            orientation: "h",
+            name: "bandwidth"
+        }];
+
+        Plotly.newPlot("bandpass-plot", data, { 
+            xaxis: { domain: [0, 0.45] },
+            yaxis2: { anchor: "x2" },
+            xaxis2: { domain: [0.55, 1] }
+        });
+    }
+
+</script>
 {% endblock %}

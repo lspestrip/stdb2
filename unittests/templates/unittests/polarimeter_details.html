@@ -37,9 +37,9 @@ LSPE/Strip DB: List of tests
                 {{ band.test.test_description }}   
             </a>:
             &nu;<sub>cen</sub> = 
-            {{ band.central_frequency_ghz|floatformat:1 }}&plusmn;{{ band.central_frequency_err|floatformat:1 }} GHz,
+            {{ band.analysis_results.central_nu_ghz|floatformat:1 }}&plusmn;{{ band.analysis_results.central_nu_err|floatformat:1 }}&nbsp;GHz,
             &Delta;&nu; =
-            {{ band.bandwidth_ghz|floatformat:1 }}&plusmn;{{ band.bandwidth_err|floatformat:1 }} GHz
+            {{ band.analysis_results.bandwidth_ghz|floatformat:1 }}&plusmn;{{ band.analysis_results.bandwidth_err|floatformat:1 }}&nbsp;GHz
         </li>
         {% endfor %}
     </ul>
@@ -57,7 +57,7 @@ LSPE/Strip DB: List of tests
                 {{ tnoise.test.test_description }}   
             </a>:
             T<sub>noise</sub> = 
-            {{ tnoise.analysis_results.tnoise.mean|floatformat:1 }}&plusmn;{{ tnoise.analysis_results.tnoise.std|floatformat:1 }} K
+            {{ tnoise.analysis_results.tnoise.mean|floatformat:1 }}&plusmn;{{ tnoise.analysis_results.tnoise.std|floatformat:1 }}&nbsp;K
             (<a href="{% url 'unittests:api-tnoise-data' tnoise.id %}">details</a>)
         </li>
         {% endfor %}
@@ -76,9 +76,9 @@ LSPE/Strip DB: List of tests
                 {{ spec.test.test_description }}   
             </a>:
             f<sub>knee</sub> = 
-            {{ spec.oof_knee_frequency_hz|floatformat:1 }}&plusmn;{{ spec.oof_knee_frequency_err|floatformat:1 }} Hz,
+            {{ spec.analysis_results.oof_knee_frequency_hz|floatformat:1 }}&plusmn;{{ spec.analysis_results.oof_knee_frequency_err|floatformat:1 }}&nbsp;Hz,
             wn =
-            {{ spec.wn_level_adu2_rhz|floatformat:1 }}&plusmn;{{ spec.wn_level_err|floatformat:1 }} ADU<sup>2</sup>/&radic;Hz
+            {{ spec.analysis_results.wn_level_adu2_rhz|floatformat:1 }}&plusmn;{{ spec.analysis_results.wn_level_err|floatformat:1 }}&nbsp;ADU<sup>2</sup>/&radic;Hz
         </li>
         {% endfor %}
     </ul>

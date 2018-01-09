@@ -271,7 +271,8 @@ LSPE/Strip DB: Details of test on STRIP{{test.polarimeter_number}}
             <th>G<sub>U1</sub>&nbsp;[ADU/K]</th>
             <th>G<sub>U2</sub>&nbsp;[ADU/K]</th>
             <th>G<sub>Q2</sub>&nbsp;[ADU/K]</th>
-            <th>JSON</th>
+            <th>Details</th>
+            <th>Report</th>
             <th>Action</th>
         </thead>
         <tbody>
@@ -284,7 +285,14 @@ LSPE/Strip DB: Details of test on STRIP{{test.polarimeter_number}}
                 <td>{{cur_result.gain_u1.mean|floatformat:0}}&plusmn;{{cur_result.gain_u1.std|floatformat:0}}</td>
                 <td>{{cur_result.gain_u2.mean|floatformat:0}}&plusmn;{{cur_result.gain_u2.std|floatformat:0}}</td>
                 <td>{{cur_result.gain_q2.mean|floatformat:0}}&plusmn;{{cur_result.gain_q2.std|floatformat:0}}</td>
-                <td><a href="{% url 'unittests:api-tnoise-data' analysis.id %}">Link</a></td>
+                <td><a href="{% url 'unittests:api-tnoise-data' analysis.id %}">JSON</a></td>
+                <td>
+                    {% if analysis.report_file %}
+                        <a href="{% url 'unittests:tnoise_report' analysis.id %}">Download</a>
+                    {% else %}
+                        No report
+                    {% endif %}
+                </td>
                 <td>
                     <a href="{% url 'unittests:tnoise_update' analysis.id %}">
                         <img src="{% static 'site/edit.svg' %}" width="32" height="32" alt="Edit"/><!--
@@ -312,6 +320,8 @@ LSPE/Strip DB: Details of test on STRIP{{test.polarimeter_number}}
             <th>Method</th>
             <th>Central frequency</th>
             <th>Bandwidth</th>
+            <th>Details</th>
+            <th>Report</th>
             <th>Actions</th>
         </thead>
         <tbody>
@@ -321,6 +331,14 @@ LSPE/Strip DB: Details of test on STRIP{{test.polarimeter_number}}
                 <td>{{ cur_result.estimation_method }}</td>
                 <td>{{ cur_result.central_nu_ghz|floatformat:2 }}&pm;{{ cur_result.central_nu_err|floatformat:2 }}</td>
                 <td>{{ cur_result.bandwidth_ghz|floatformat:2 }}&pm;{{ cur_result.bandwidth_err|floatformat:2 }}</td>
+                <td><a href="{% url 'unittests:api-bandpass-data' analysis.id %}">JSON</a></td>
+                <td>
+                    {% if analysis.report_file %}
+                        <a href="{% url 'unittests:bandpass_report' analysis.id %}">Download</a>
+                    {% else %}
+                        No report
+                    {% endif %}
+                </td>
                 <td>
                     <a href="{% url 'unittests:bandpass_update' analysis.id %}">
                         <img src="{% static 'site/edit.svg' %}" width="32" height="32" alt="Edit"/><!--
@@ -350,6 +368,8 @@ LSPE/Strip DB: Details of test on STRIP{{test.polarimeter_number}}
             <th>f<sub>knee</sub></th>
             <th>White noise</th>
             <th>f<sub>samp</sub></th>
+            <th>Details</th>
+            <th>Report</th>
             <th>Actions</th>
         </thead>
         <tbody>
@@ -360,6 +380,14 @@ LSPE/Strip DB: Details of test on STRIP{{test.polarimeter_number}}
                 <td>({{analysis.oof_knee_frequency|floatformat:1}}&plusmn;{{analysis.oof_knee_frequency_err|floatformat:1}}) Hz</td>
                 <td>({{analysis.wn_level|floatformat:1}}&plusmn;{{analysis.wn_level_err|floatformat:1}}) ADU<sup>2</sup>/&radic;Hz</td>
                 <td>({{analysis.sampling_frequency_hz}} Hz</td>
+                <td><a href="{% url 'unittests:api-spectrum-data' analysis.id %}">JSON</a></td>
+                <td>
+                    {% if analysis.report_file %}
+                        <a href="{% url 'unittests:spectrum_report' analysis.id %}">Download</a>
+                    {% else %}
+                        No report
+                    {% endif %}
+                </td>
                 <td>
                     <a href="{% url 'unittests:spectrum_update' analysis.id %}">
                         <img src="{% static 'site/edit.svg' %}" width="32" height="32" alt="Edit"/><!--

@@ -40,6 +40,12 @@ LSPE/Strip DB: List of tests
             {{ band.analysis_results.central_nu_ghz|floatformat:1 }}&plusmn;{{ band.analysis_results.central_nu_err|floatformat:1 }}&nbsp;GHz,
             &Delta;&nu; =
             {{ band.analysis_results.bandwidth_ghz|floatformat:1 }}&plusmn;{{ band.analysis_results.bandwidth_err|floatformat:1 }}&nbsp;GHz
+            (<a href="{% url 'unittests:api-bandpass-data' band.id %}">details</a>,
+            {% if band.report_file %}
+                <a href="{% url 'unittests:bandpass_report' band.id %}">analysis report</a>).
+            {% else %}
+                no report).
+            {% endif %}
         </li>
         {% endfor %}
     </ul>
@@ -58,7 +64,12 @@ LSPE/Strip DB: List of tests
             </a>:
             T<sub>noise</sub> = 
             {{ tnoise.analysis_results.tnoise.mean|floatformat:1 }}&plusmn;{{ tnoise.analysis_results.tnoise.std|floatformat:1 }}&nbsp;K
-            (<a href="{% url 'unittests:api-tnoise-data' tnoise.id %}">details</a>)
+            (<a href="{% url 'unittests:api-tnoise-data' tnoise.id %}">details</a>,
+            {% if tnoise.report_file %}
+                <a href="{% url 'unittests:tnoise_report' tnoise.id %}">analysis report</a>).
+            {% else %}
+                no report).
+            {% endif %}
         </li>
         {% endfor %}
     </ul>
@@ -79,6 +90,12 @@ LSPE/Strip DB: List of tests
             {{ spec.analysis_results.oof_knee_frequency_hz|floatformat:1 }}&plusmn;{{ spec.analysis_results.oof_knee_frequency_err|floatformat:1 }}&nbsp;Hz,
             wn =
             {{ spec.analysis_results.wn_level_adu2_rhz|floatformat:1 }}&plusmn;{{ spec.analysis_results.wn_level_err|floatformat:1 }}&nbsp;ADU<sup>2</sup>/&radic;Hz
+            (<a href="{% url 'unittests:api-spectrum-data' spec.id %}">details</a>,
+            {% if spec.report_file %}
+                <a href="{% url 'unittests:spectrum_report' spec.id %}">analysis report</a>).
+            {% else %}
+                no report).
+            {% endif %}
         </li>
         {% endfor %}
     </ul>

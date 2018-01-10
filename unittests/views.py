@@ -465,7 +465,7 @@ class DetOutputJsonView(View):
         form = CreateFromJSON(initial={
             'json_text': json.dumps(
                 {
-                    "detector_offsets": [{
+                    "detector_outputs": [{
                         "q1_adu": 1.0,
                         "u1_adu": 2.0,
                         "u2_adu": 3.0,

@@ -17,7 +17,6 @@ part of the data in the database via HTTP. Here are its primary features:
 | `/unittests/api/tests/tnoise/NN` | Details about the noise temperature analysis with id NN |
 | `/unittests/api/tests/countbydate` | Number of tests inserted in the database in the last 30 days |
 | `/unittests/api/tests/STRIPNN` | List of all the tests done on polarimeter NN |
-| `/unittests/api/tests/STRIPNN` | List of all the tests done on polarimeter NN |
 | `/unittests/api/tests/types` | List of test types |
 | `/unittests/api/tests/types/NN` | List of all the tests with type id equal to NN |
 | `/unittests/api/tests/users` | List of users (no sensitive information is included) |

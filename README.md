@@ -83,6 +83,11 @@ directory of the source code. You can customize the location of this file
 by setting the variable `LOG_FILE_PATH` in the configuration file `.env`.
 
 
+## REST API
+
+Documentation for a JSON-based REST API is available [here](API.md).
+
+
 ## Utilities
 
 The base directory contains a standalone program, `convert_to_hdf5.py`, which

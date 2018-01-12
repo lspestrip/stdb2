@@ -110,6 +110,14 @@ urlpatterns = [
     url(r'^api/spectrum/(?P<pk>\d+)$',
         views.SpectrumData.as_view(), name='api-spectrum-data'),
 
+    url(r'^api/tests/STRIP(?P<num>\d+)/$', views.TestsByPolarimeter.as_view(),
+        name='api-tests-polarimeter'),
+
+    url(r'^api/tests/types/$', views.TestTypes.as_view(),
+        name='api-tests-types'),
+    url(r'^api/tests/types/(?P<pk>\d+)$', views.TestsByType.as_view(),
+        name='api-tests-types'),
+
     url(r'^api/tests/users/$', views.UsersData.as_view(),
         name='api-tests-users'),
     url(r'^api/tests/countbydate/$', views.TestTimeTableData.as_view(),

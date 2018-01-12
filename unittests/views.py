@@ -31,6 +31,7 @@ from rest_framework.response import Response as RESTResponse
 
 from .models import (
     get_polarimeter_name,
+    TestType,
     PolarimeterTest,
     AdcOffset,
     DetectorOutput,
@@ -869,3 +870,35 @@ class TestTimeTableData(APIView):
         }
 
         return RESTResponse(data)
+
+
+class TestTypes(APIView):
+    def get(self, request, format=None):
+        response = []
+        for cur_type in TestType.objects.all():
+            response.append({'id': cur_type.pk,
+                             'description': cur_type.description})
+
+        return RESTResponse({'types': response})
+
+
+class TestsByPolarimeter(APIView):
+    def get(self, request, num):
+        tests = []
+        for cur_test in PolarimeterTest.objects.filter(polarimeter_number=num).order_by('polarimeter_number'):
+            tests.append(cur_test.to_dict())
+
+        return RESTResponse(tests)
+
+
+class TestsByType(APIView):
+    def get(self, request, pk):
+        test_type = get_object_or_404(TestType, pk=pk)
+        tests = []
+        for cur_test in PolarimeterTest.objects.filter(test_type=test_type).order_by(polarimeter_number):
+            tests.append(cur_test.to_dict())
+
+        return RESTResponse({'type': {
+                                 'id': test_type.pk,
+                                 'description': test_type.description,
+        }, 'tests': tests})

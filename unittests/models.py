@@ -230,6 +230,19 @@ class PolarimeterTest(models.Model):
         else:
             super(PolarimeterTest, self).save(*args, **kwargs)
 
+    def to_dict(self):
+        'Create a dictionary containing a summary of the test (useful for the REST API)'
+
+        return {
+            'id': self.pk,
+            'polarimeter_number': self.polarimeter_number,
+            'test_type': self.test_type.pk,
+            'description': self.test_description,
+            'absolute_url': self.get_absolute_url(),
+            'download_url': self.get_download_url(),
+            'json_url': self.get_json_url(),
+        }
+
     class Meta:
         verbose_name = 'test of a polarimetric unit'
         ordering = ['polarimeter_number', 'acquisition_date']

@@ -843,7 +843,7 @@ class UsersData(APIView):
         for cur_user in get_user_model().objects.all():
             users.append({
                 'id': cur_user.pk,
-                'name': cur_user.username,
+                'name': cur_user.get_full_name(),
                 'num_of_tests': PolarimeterTest.objects.filter(author=cur_user).count(),
             })
 

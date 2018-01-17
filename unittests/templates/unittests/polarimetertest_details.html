@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load mathfilters %}
 {% load staticfiles %}
 
 {% block title %}
@@ -364,22 +365,37 @@ LSPE/Strip DB: Details of test on STRIP{{test.polarimeter_number}}
     <table class="data-table" id="spectrum-table">
         <thead>
             <th>Method</th>
-            <th>&alpha;</th>
-            <th>f<sub>knee</sub></th>
-            <th>White noise</th>
-            <th>f<sub>samp</sub></th>
+
+            <th>&alpha;<sub>I</sub></th>
+
+            <th>&alpha;<sub>Q</sub></th>
+            <th>fk<sub>Q</sub> [mHz]</th>
+            <th>WN<sub>Q</sub> [mK<sup>2</sup>/Hz]</th>
+    
+            <th>&alpha;<sub>U</sub></th>
+            <th>fk<sub>U</sub> [mHz]</th>
+            <th>WN<sub>U</sub> [mK<sup>2</sup>/Hz]</th>
+    
             <th>Details</th>
             <th>Report</th>
             <th>Actions</th>
         </thead>
         <tbody>
             {% for analysis in spectrum_analyses %}
+            {% with cur_results=analysis.analysis_results %}
             <tr>
                 <td>{{analysis.estimation_method}}</td>
-                <td>({{analysis.oof_alpha|floatformat:2}}&plusmn;{{analysis.oof_alpha_err|floatformat:2}})</td>
-                <td>({{analysis.oof_knee_frequency|floatformat:1}}&plusmn;{{analysis.oof_knee_frequency_err|floatformat:1}}) Hz</td>
-                <td>({{analysis.wn_level|floatformat:1}}&plusmn;{{analysis.wn_level_err|floatformat:1}}) ADU<sup>2</sup>/&radic;Hz</td>
-                <td>({{analysis.sampling_frequency_hz}} Hz</td>
+
+                <td>{{ cur_results.I.slope|floatformat:5 }}±{{ cur_results.I.delta_slope|floatformat:5 }}</a></td>
+
+                <td>{{ cur_results.Q.slope|floatformat:3 }}±{{ cur_results.Q.delta_slope|floatformat:3 }}</a></td>
+                <td>{{ cur_results.Q.f_knee_hz|mul:1e3|floatformat:1 }}±{{ cur_results.Q.delta_f_knee_hz|mul:1e3|floatformat:1 }}</td>
+                <td>{{ cur_results.Q.WN_level_K2_hz|mul:1e6|floatformat:2 }}±{{ cur_results.Q.delta_WN_level_K2_hz|mul:1e6|floatformat:3 }}</td>
+    
+                <td>{{ cur_results.U.slope|floatformat:3 }}±{{ cur_results.U.delta_slope|floatformat:3 }}</a></td>
+                <td>{{ cur_results.U.f_knee_hz|mul:1e3|floatformat:1 }}±{{ cur_results.U.delta_f_knee_hz|mul:1e3|floatformat:1 }}</td>
+                <td>{{ cur_results.U.WN_level_K2_hz|mul:1e6|floatformat:2 }}±{{ cur_results.U.delta_WN_level_K2_hz|mul:1e6|floatformat:3 }}</td>
+                    
                 <td><a href="{% url 'unittests:api-spectrum-data' analysis.id %}">JSON</a></td>
                 <td>
                     {% if analysis.report_file %}
@@ -397,6 +413,7 @@ LSPE/Strip DB: Details of test on STRIP{{test.polarimeter_number}}
                     </a>
                 </td>
             </tr>
+            {% endwith %}
             {% endfor %}
         </tbody>
     </table>

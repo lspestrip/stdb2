@@ -895,7 +895,7 @@ class TestsByType(APIView):
     def get(self, request, pk):
         test_type = get_object_or_404(TestType, pk=pk)
         tests = []
-        for cur_test in PolarimeterTest.objects.filter(test_type=test_type).order_by(polarimeter_number):
+        for cur_test in PolarimeterTest.objects.filter(test_type=test_type).order_by('polarimeter_number'):
             tests.append(cur_test.to_dict())
 
         return RESTResponse({'type': {

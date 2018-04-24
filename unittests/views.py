@@ -206,6 +206,7 @@ class TestDetailsJson(View):
             spectrum_analyses.append(analysis.analysis_results)
 
         result = {
+            'id': cur_test.id,
             'url': cur_test.get_absolute_url(),
             'download_url': cur_test.get_download_url(),
             'polarimeter_number': cur_test.polarimeter_number,
@@ -899,6 +900,6 @@ class TestsByType(APIView):
             tests.append(cur_test.to_dict())
 
         return RESTResponse({'type': {
-                                 'id': test_type.pk,
-                                 'description': test_type.description,
+            'id': test_type.pk,
+            'description': test_type.description,
         }, 'tests': tests})

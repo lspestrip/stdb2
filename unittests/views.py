@@ -195,15 +195,21 @@ class TestDetailsJson(View):
 
         tnoise_analyses = []
         for analysis in NoiseTemperatureAnalysis.objects.filter(test=cur_test):
-            tnoise_analyses.append(analysis.analysis_results)
+            d = analysis.analysis_results
+            d['analysis_id'] = analysis.id
+            tnoise_analyses.append(d)
 
         bandpass_analyses = []
         for analysis in BandpassAnalysis.objects.filter(test=cur_test):
-            bandpass_analyses.append(analysis.analysis_results)
+            d = analysis.analysis_results
+            d['analysis_id'] = analysis.id
+            bandpass_analyses.append(d)
 
         spectrum_analyses = []
         for analysis in SpectralAnalysis.objects.filter(test=cur_test):
-            spectrum_analyses.append(analysis.analysis_results)
+            d = analysis.analysis_results
+            d['analysis_id'] = analysis.id
+            spectrum_analyses.append(d)
 
         result = {
             'id': cur_test.id,

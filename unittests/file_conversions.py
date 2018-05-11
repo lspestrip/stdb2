@@ -162,6 +162,16 @@ def unit_from_name(name):
         raise ValueError('column "{0}" was not recognized'.format(name))
 
 
+def column_to_numpy_array(values):
+    result = np.empty(len(values), dtype='float64')
+    for idx, val in enumerate(values):
+        if val == '#REF':
+            result[idx] = np.NaN
+        else:
+            result[idx] = float(val)
+    return result
+
+
 def convert_excel_file_to_h5(input_file, h5_file, dataset_name):
     'Convert an Excel file into a HDF5 dataset'
 
@@ -234,9 +244,15 @@ def convert_excel_file_to_h5(input_file, h5_file, dataset_name):
         for cur_basename in basenames:
             if num_of_blocks > 1:
                 cur_key = '{0}({1})'.format(cur_basename, cur_block_idx + 1)
-                values = datatable[cur_key]
+                try:
+                    values = column_to_numpy_array(datatable[cur_key])
+                except KeyError:
+                    if cur_block_idx == 0:
+                        values = column_to_numpy_array(datatable[cur_basename])
+                    else:
+                        raise
             else:
-                values = datatable[cur_basename]
+                values = column_to_numpy_array(datatable[cur_basename])
 
             dataset[cur_basename, :, cur_block_idx] = values
 

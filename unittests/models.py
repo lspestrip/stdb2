@@ -155,7 +155,7 @@ class PolarimeterTest(models.Model):
     test_type = models.ForeignKey(TestType, on_delete=models.CASCADE)
     operators = models.ManyToManyField(Operator, related_name='tests')
     author = models.ForeignKey(
-        settings.AUTH_USER_MODEL, related_name='tests_owned')
+        settings.AUTH_USER_MODEL, related_name='tests_owned', on_delete=models.PROTECT)
     creation_date = models.DateField(auto_now_add=True)
 
     def __str__(self):
@@ -461,7 +461,7 @@ class NoiseTemperatureAnalysis(models.Model):
         validators=[validate_report_file_ext], blank=True)
 
     author = models.ForeignKey(
-        settings.AUTH_USER_MODEL, related_name='tnoise_owned')
+        settings.AUTH_USER_MODEL, related_name='tnoise_owned', on_delete=models.PROTECT)
 
     def __str__(self):
         return ('noise temperature analysis for {0}'.format(self.test))
@@ -484,7 +484,7 @@ class SpectralAnalysis(models.Model):
         validators=[validate_report_file_ext], blank=True)
 
     author = models.ForeignKey(
-        settings.AUTH_USER_MODEL, related_name='spectral_owned')
+        settings.AUTH_USER_MODEL, related_name='spectral_owned', on_delete=models.PROTECT)
 
     def get_absolute_url(self):
         return reverse('unittests:spectrum_list')
@@ -507,7 +507,7 @@ class BandpassAnalysis(models.Model):
         validators=[validate_report_file_ext], blank=True)
 
     author = models.ForeignKey(
-        settings.AUTH_USER_MODEL, related_name='bandpass_owned')
+        settings.AUTH_USER_MODEL, related_name='bandpass_owned', on_delete=models.PROTECT)
 
     def get_absolute_url(self):
         return reverse('unittests:bandpass_list')

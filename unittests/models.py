@@ -26,7 +26,7 @@ from tempfile import NamedTemporaryFile
 from django.conf import settings
 from django.db import models
 from django.conf import settings
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.core.files import File
 from django.core.files.base import ContentFile
 import h5py

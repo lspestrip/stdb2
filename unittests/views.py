@@ -11,7 +11,7 @@ import os.path
 import simplejson as json
 
 from django.contrib.auth import get_user
-from django.core.urlresolvers import reverse_lazy
+from django.urls import reverse_lazy
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
 from django.http import HttpResponse, HttpResponseRedirect, Http404

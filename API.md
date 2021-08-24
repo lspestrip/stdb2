@@ -20,3 +20,39 @@ part of the data in the database via HTTP. Here are its primary features:
 | `/unittests/api/tests/types` | List of test types |
 | `/unittests/api/tests/types/NN` | List of all the tests with type id equal to NN |
 | `/unittests/api/tests/users` | List of users (no sensitive information is included) |
+
+## Examples
+
+This snippet queries the list of tests associated with polarimeter STRIP02:
+
+```python
+import requests
+
+d = requests.get("https://striptest.fisica.unimi.it/unittests/api/tests/STRIP02").json()
+
+for test in d:
+    print(f"test {test['id']}: {test['description']}")
+```
+
+This example shows how to retrieve the list of polarimeters that contain results about bandpass measurements:
+
+```python
+import requests
+
+d = requests.get("https://striptest.fisica.unimi.it/unittests/api/bandpass").json()
+
+for pol_name in d["polarimeters"]:
+    print(pol_name)
+```
+
+Finally, this script prints a table containing the bandpasses (in GHz) of every known polarimeter:
+
+```python
+import requests
+
+d = requests.get("https://striptest.fisica.unimi.it/unittests/api/bandpass").json()
+
+for polarimeter_tests in d["results"]:
+    for test in polarimeter_tests:
+        print(f"{test['polarimeter_name']}: {test['bandwidth_ghz']:.2f} GHz")
+```

@@ -1,4 +1,4 @@
-django==4.2.26
+django==3.2.25
 djangorestframework
 django-mathfilters
 jsonfield
